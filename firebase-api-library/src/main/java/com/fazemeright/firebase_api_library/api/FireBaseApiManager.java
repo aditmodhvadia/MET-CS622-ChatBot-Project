@@ -97,8 +97,19 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         }
     }
 
-    public void reloadUserAuthState(OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener) {
-        reloadCurrentUserAuthState(onSuccessListener, onFailureListener);
+    public void reloadUserAuthState(final OnTaskCompleteListener onTaskCompleteListener) {
+        reloadCurrentUserAuthState(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                onTaskCompleteListener.onTaskSuccessful();
+            }
+        }, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onTaskCompleteListener.onTaskFailed(e);
+            }
+        });
+
     }
 
     public boolean isUserLoggedIn() {
