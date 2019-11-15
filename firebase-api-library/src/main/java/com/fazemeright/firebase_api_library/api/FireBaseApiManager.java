@@ -37,11 +37,12 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         return isUserVerified();
     }
 
-    public void createNewUserWithEmailPassword(String userEmail, String password, final OnTaskCompleteListener onTaskCompleteListener) {
+    public void registerNewUserWithEmailPassword(String userEmail, String password, final OnTaskCompleteListener onTaskCompleteListener) {
         createNewUserWithEmailPassword(userEmail, password, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+//                    TODO: Store userId and displayName in users collection under user id to firestore
                     onTaskCompleteListener.onTaskSuccessful();
                 } else {
                     onTaskFailed(task.getException(), onTaskCompleteListener);
