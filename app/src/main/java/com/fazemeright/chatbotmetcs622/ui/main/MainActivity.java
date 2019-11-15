@@ -1,8 +1,10 @@
-package com.fazemeright.chatbotmetcs622;
+package com.fazemeright.chatbotmetcs622.ui.main;
+
+import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+import com.fazemeright.chatbotmetcs622.R;
 
 public class MainActivity extends AppCompatActivity {
 
