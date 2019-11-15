@@ -9,14 +9,18 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
+
 public abstract class BaseActivity extends AppCompatActivity {
 
     public Context mContext;
+    protected FireBaseApiManager apiManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        apiManager = FireBaseApiManager.getInstance();
         setContentView(getLayoutResId());
     }
 

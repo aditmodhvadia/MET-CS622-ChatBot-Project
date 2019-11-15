@@ -13,14 +13,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
+
 public abstract class BaseFragment extends Fragment {
 
     public Context mContext;
+    public FireBaseApiManager apiManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
+        apiManager = FireBaseApiManager.getInstance();
     }
 
     @Nullable
