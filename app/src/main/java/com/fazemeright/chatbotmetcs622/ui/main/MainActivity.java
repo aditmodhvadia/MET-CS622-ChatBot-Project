@@ -1,16 +1,22 @@
 package com.fazemeright.chatbotmetcs622.ui.main;
 
-import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.fazemeright.chatbotmetcs622.R;
+import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public void initViews() {
+
+    }
+
+    @Override
+    public void setListeners() {
+
+    }
+
+    @Override
+    public int getLayoutResId() {
+        return R.layout.activity_main;
     }
 }
