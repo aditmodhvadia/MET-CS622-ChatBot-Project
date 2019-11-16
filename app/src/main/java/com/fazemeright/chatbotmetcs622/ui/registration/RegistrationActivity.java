@@ -1,10 +1,12 @@
 package com.fazemeright.chatbotmetcs622.ui.registration;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.fazemeright.chatbotmetcs622.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
@@ -96,6 +98,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
             public void onTaskSuccessful() {
                 Timber.i("New user registered successfully %s", apiManager.getCurrentLoggedInUserEmail());
                 btnRegister.setText(getString(R.string.registration_success_msg));
+                openLandingActivity();
             }
 
             @Override
@@ -109,6 +112,14 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
             }
         });
 
+    }
+
+    /**
+     * Open LandingActivity and finish this one
+     */
+    private void openLandingActivity() {
+        startActivity(new Intent(RegistrationActivity.this, LandingActivity.class));
+        finish();
     }
 
     /**

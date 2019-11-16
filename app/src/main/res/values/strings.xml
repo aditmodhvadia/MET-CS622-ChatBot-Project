@@ -13,4 +13,5 @@
     <string name="incorrect_pass_err_msg">Please enter password longer than 8 characters</string>
     <string name="passwords_dont_match_err_msg">Both passwords should match</string>
     <string name="registration_success_msg">Registered Successfully</string>
+    <string name="welcome_title">Welcome</string>
 </resources>

@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.fazemeright.chatbotmetcs622.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
@@ -38,6 +39,7 @@ public class SplashActivity extends BaseActivity {
             public void onTaskSuccessful() {
 //                user is logged in, open landing activity
                 Timber.i("Open Landing Activity");
+                openLandingActivity();
             }
 
             @Override
@@ -61,6 +63,14 @@ public class SplashActivity extends BaseActivity {
      */
     private void openRegistrationActivity() {
         startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
+        finish();
+    }
+
+    /**
+     * Open LandingActivity and finish this one
+     */
+    private void openLandingActivity() {
+        startActivity(new Intent(SplashActivity.this, LandingActivity.class));
         finish();
     }
 
