@@ -30,7 +30,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         return apiManager;
     }
 
-    public void forceSignOutUser() {
+    public void logOutUser() {
 //        todo: log analytics event
         signOutUser();
     }
@@ -82,7 +82,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         return Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
     }
 
-    public void signInWithEmailAndPassword(@NonNull String userEmail, @NonNull String password, final OnTaskCompleteListener onCompleteListener) {
+    public void logInWithEmailAndPassword(@NonNull String userEmail, @NonNull String password, final OnTaskCompleteListener onCompleteListener) {
         signInWithEmailAndPassword(userEmail, password, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

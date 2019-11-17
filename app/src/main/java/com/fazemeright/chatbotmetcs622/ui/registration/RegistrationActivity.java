@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.fazemeright.chatbotmetcs622.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
+import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 
@@ -50,19 +51,25 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tvHaveAccount:
-//                TODO: Open LoginActivity
+                openLoginActivity();
                 break;
             case R.id.btnRegister:
 //                TODO: Disable and re-enable the button after performing registration and validation
-                disableRegistrationButton();
+                disableButton(btnRegister);
                 String email = userEmailEditText.getText().toString();
-                String password = userEmailEditText.getText().toString();
-                String conPassword = userEmailEditText.getText().toString();
+                String password = userPasswordEditText.getText().toString();
+                String conPassword = userConPasswordEditText.getText().toString();
                 performRegistration(email, password, conPassword);
-                enableRegistrationButton();
+                enableButton(btnRegister);
                 break;
         }
+    }
 
+    /**
+     * Open Login Activity
+     */
+    private void openLoginActivity() {
+        startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
     }
 
     /**
@@ -103,12 +110,14 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
 
             @Override
             public void onTaskCompleteButFailed(String errMsg) {
-                Timber.i(errMsg);
+                Timber.e(errMsg);
+//                TODO: Show error to user
             }
 
             @Override
             public void onTaskFailed(Exception e) {
-                Timber.i(e);
+                Timber.e(e);
+//                TODO: Show error to user
             }
         });
 
@@ -120,19 +129,5 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
     private void openLandingActivity() {
         startActivity(new Intent(RegistrationActivity.this, LandingActivity.class));
         finish();
-    }
-
-    /**
-     * Enable Registration button
-     */
-    private void enableRegistrationButton() {
-        btnRegister.setEnabled(true);
-    }
-
-    /**
-     * Disable Registration button
-     */
-    private void disableRegistrationButton() {
-        btnRegister.setEnabled(false);
     }
 }

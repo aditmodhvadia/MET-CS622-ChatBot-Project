@@ -47,7 +47,7 @@
         android:layout_marginTop="@dimen/regular_margin"
         android:hint="@string/password"
         android:textColorHint="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayout3"
+        app:layout_constraintBottom_toTopOf="@+id/btnLogin"
         app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalEnd"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guidelineVerticalStart"
@@ -66,59 +66,31 @@
             android:textColorHint="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout3"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/regular_margin"
-        android:hint="@string/confirm_password"
-        android:textColorHint="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/btnRegister"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalEnd"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/guidelineVerticalStart"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
-        app:passwordToggleEnabled="true"
-        app:passwordToggleTint="@android:color/black">
-
-        <EditText
-            android:id="@+id/userConPasswordEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
-            android:textColor="@android:color/black"
-            android:textColorHint="@android:color/black" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <Button
-        android:id="@+id/btnRegister"
+        android:id="@+id/btnLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/regular_margin"
-        android:text="@string/register_button"
-        app:layout_constraintBottom_toTopOf="@+id/tvHaveAccount"
+        android:text="@string/login_button"
+        app:layout_constraintBottom_toTopOf="@+id/tvDontHaveAccount"
         app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalEnd"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guidelineVerticalStart"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
 
     <TextView
-        android:id="@+id/tvHaveAccount"
+        android:id="@+id/tvDontHaveAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/regular_margin"
         android:layout_marginBottom="@dimen/regular_margin"
-        android:text="@string/already_have_an_account"
+        android:text="@string/no_account_register"
         android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnRegister" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineVerticalStart"

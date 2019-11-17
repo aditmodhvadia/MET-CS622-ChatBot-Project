@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
@@ -29,6 +30,24 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.setContentView(layoutResID);
         initViews();
         setListeners();
+    }
+
+    /**
+     * Call to disable the given button
+     *
+     * @param button given button
+     */
+    protected void disableButton(Button button) {
+        button.setEnabled(false);
+    }
+
+    /**
+     * Call to enable the given button
+     *
+     * @param button given button
+     */
+    protected void enableButton(Button button) {
+        button.setEnabled(true);
     }
 
     /**
