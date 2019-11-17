@@ -2,6 +2,7 @@ package com.fazemeright.firebase_api_library.api;
 
 import androidx.annotation.NonNull;
 
+import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -11,6 +12,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+
+import java.util.Map;
 
 
 /**
@@ -107,6 +111,20 @@ abstract class FireBaseApiWrapper implements FireBaseApiWrapperInterface {
         } else {
             onFailureListener.onFailure(new Exception("Some Error Occurred, Try again later"));
         }
+    }
+
+    void writeToFireStoreDocument(DocumentReference dr, Map<String, Object> map, final OnTaskCompleteListener onTaskCompleteListener) {
+        dr.set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                onTaskCompleteListener.onTaskSuccessful();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onTaskCompleteListener.onTaskFailed(e);
+            }
+        });
     }
 
     @Override
