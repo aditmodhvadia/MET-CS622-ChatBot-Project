@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.chat.ChatActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChatList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/etMsg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:itemCount="20"
+        tools:listitem="@layout/sender_message_display_view_item" />
+
+    <EditText
+        android:id="@+id/etMsg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/type_msg_hint"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivChatRoomHolder"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ivChatRoomHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/tiny_margin"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/etMsg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/etMsg">
+
+        <ImageView
+            android:id="@+id/ivSendMsg"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:padding="@dimen/small_padding"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_send"
+            tools:layout_editor_absoluteX="249dp"
+            tools:layout_editor_absoluteY="539dp" />
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

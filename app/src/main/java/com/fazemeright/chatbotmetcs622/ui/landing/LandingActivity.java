@@ -3,7 +3,6 @@ package com.fazemeright.chatbotmetcs622.ui.landing;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -13,14 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
+import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 
 import java.util.ArrayList;
 
-public class LandingActivity extends BaseActivity implements ChatListAdapter.ChatListInteractionListener {
+public class LandingActivity extends BaseActivity implements ChatSelectionListAdapter.ChatListInteractionListener {
 
-    private RecyclerView rvChatList;
-    private ChatListAdapter adapter;
+    private RecyclerView rvChatRoomList;
+    private ChatSelectionListAdapter adapter;
 
     @Override
     public void initViews() {
@@ -28,12 +28,12 @@ public class LandingActivity extends BaseActivity implements ChatListAdapter.Cha
             getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + apiManager.getCurrentLoggedInUserEmail());
         }
 
-        rvChatList = findViewById(R.id.rvChatList);
-        rvChatList.setHasFixedSize(true);
-        rvChatList.setLayoutManager(new LinearLayoutManager(mContext));
-        rvChatList.addItemDecoration(new DividerItemDecoration(rvChatList.getContext(), LinearLayoutManager.VERTICAL));
-        adapter = new ChatListAdapter(this);
-        rvChatList.setAdapter(adapter);
+        rvChatRoomList = findViewById(R.id.rvChatRoomList);
+        rvChatRoomList.setHasFixedSize(true);
+        rvChatRoomList.setLayoutManager(new LinearLayoutManager(mContext));
+        rvChatRoomList.addItemDecoration(new DividerItemDecoration(rvChatRoomList.getContext(), LinearLayoutManager.VERTICAL));
+        adapter = new ChatSelectionListAdapter(this);
+        rvChatRoomList.setAdapter(adapter);
 
         adapter.submitDataList(getChatRoomList());
     }
@@ -86,6 +86,7 @@ public class LandingActivity extends BaseActivity implements ChatListAdapter.Cha
 
     @Override
     public void onChatRoomClicked(ChatRoom chatRoom) {
-        Toast.makeText(mContext, chatRoom.getName() + " clicked", Toast.LENGTH_SHORT).show();
+//        TODO: Add chatroom object to intent before sending it as well
+        startActivity(new Intent(LandingActivity.this, ChatActivity.class));
     }
 }

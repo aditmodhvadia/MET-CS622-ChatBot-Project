@@ -20,11 +20,11 @@ import java.util.ArrayList;
  *
  * @see LandingActivity for use
  */
-public class ChatListAdapter extends ListAdapter<ChatRoom, ChatListAdapter.ViewHolder> {
+public class ChatSelectionListAdapter extends ListAdapter<ChatRoom, ChatSelectionListAdapter.ViewHolder> {
 
     private ChatListInteractionListener listener;
 
-    protected ChatListAdapter(ChatListInteractionListener listener) {
+    protected ChatSelectionListAdapter(ChatListInteractionListener listener) {
         super(new ChatRoomDiffCallBack());
         this.listener = listener;
     }

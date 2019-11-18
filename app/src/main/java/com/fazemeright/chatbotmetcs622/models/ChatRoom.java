@@ -4,6 +4,7 @@ package com.fazemeright.chatbotmetcs622.models;
  * POJO to hold Chat room
  */
 public class ChatRoom {
+    public static final String MONGODB = "MongoDB";
     /**
      * is of the chat room
      */
