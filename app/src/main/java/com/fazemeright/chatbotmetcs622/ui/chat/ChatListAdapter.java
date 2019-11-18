@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fazemeright.chatbotmetcs622.R;
-import com.fazemeright.chatbotmetcs622.models.Message;
+import com.fazemeright.chatbotmetcs622.database.messages.Message;
 
 import java.util.ArrayList;
 
@@ -67,12 +67,28 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return messages.size();
+        return messages == null ? 0 : messages.size();
     }
 
+    /**
+     * Call to add given new message to ArrayList at the bottom of the list and notify it was inserted
+     *
+     * @param newMessage given new message
+     */
     void addMessage(Message newMessage) {
+        if (messages == null) {
+            messages = new ArrayList<>();
+        }
         messages.add(POSITION_OF_ADDITION, newMessage);
         notifyItemInserted(POSITION_OF_ADDITION);
+    }
+
+    /**
+     * Call to remove all messages from the Data List and notify data set changed
+     */
+    void clearAllMessages() {
+        messages.clear();
+        notifyDataSetChanged();
     }
 
     public interface ChatMessageInteractionListener {

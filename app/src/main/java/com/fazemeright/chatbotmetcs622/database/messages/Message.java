@@ -1,19 +1,23 @@
-package com.fazemeright.chatbotmetcs622.models;
+package com.fazemeright.chatbotmetcs622.database.messages;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Random;
 
 /**
  * POJO for a message
  */
+@Entity(tableName = "my_messages_table")
 public class Message {
     public static final String SENDER_USER = "User";
     /**
-     * id of message
+     * mid of message
      */
-    private long id;
+    @PrimaryKey(autoGenerate = true)
+    private long mid;
     /**
      * text of message
      */
@@ -27,16 +31,16 @@ public class Message {
      */
     private String receiver;
     /**
-     * id of the chat room where message was sent
+     * mid of the chat room where message was sent
      */
-    private int chatRoomId;
+    private long chatRoomId;
     /**
      * timestamp of the message
      */
     private long timestamp;
 
-    public Message(long id, String msg, String sender, String receiver, int chatRoomId, long timestamp) {
-        this.id = id;
+    public Message(long mid, String msg, String sender, String receiver, long chatRoomId, long timestamp) {
+        this.mid = mid;
         this.msg = msg;
         this.sender = sender;
         this.receiver = receiver;
@@ -44,12 +48,12 @@ public class Message {
         this.timestamp = timestamp;
     }
 
-    public static Message newMessage(String msg, String sender, String receiver, int chatRoomId) {
-        return new Message(new Random().nextInt(), msg, sender, receiver, chatRoomId, System.currentTimeMillis());
+    public static Message newMessage(String msg, String sender, String receiver, long chatRoomId) {
+        return new Message(0, msg, sender, receiver, chatRoomId, System.currentTimeMillis());
     }
 
-    public long getId() {
-        return id;
+    public long getMid() {
+        return mid;
     }
 
     public String getMsg() {
@@ -64,7 +68,7 @@ public class Message {
         return receiver;
     }
 
-    public int getChatRoomId() {
+    public long getChatRoomId() {
         return chatRoomId;
     }
 
