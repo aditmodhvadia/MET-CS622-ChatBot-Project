@@ -6,7 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.fazemeright.chatbotmetcs622.LandingActivity;
+import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;

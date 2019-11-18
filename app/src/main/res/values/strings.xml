@@ -20,4 +20,6 @@
     <string name="login_success_msg">Logged In</string>
     <string name="select_your_chat_msg">Select your chat:</string>
     <string name="no_account_register">Don\'t have an account? Register now!</string>
+    <string name="chat_room_photo_cd">Chat Room photo</string>
+    <string name="type_msg_hint">Type a message</string>
 </resources>
