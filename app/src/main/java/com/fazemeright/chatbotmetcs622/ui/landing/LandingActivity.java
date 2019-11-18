@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public class LandingActivity extends BaseActivity implements ChatSelectionListAdapter.ChatListInteractionListener {
 
+    public static final String SELECTED_CHAT_ROOM = "chatRoomSelected";
     private RecyclerView rvChatRoomList;
     private ChatSelectionListAdapter adapter;
 
@@ -87,6 +88,8 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
     @Override
     public void onChatRoomClicked(ChatRoom chatRoom) {
 //        TODO: Add chatroom object to intent before sending it as well
-        startActivity(new Intent(LandingActivity.this, ChatActivity.class));
+        Intent intent = new Intent(LandingActivity.this, ChatActivity.class);
+        intent.putExtra(SELECTED_CHAT_ROOM, chatRoom);
+        startActivity(intent);
     }
 }

@@ -1,9 +1,11 @@
 package com.fazemeright.chatbotmetcs622.models;
 
+import java.io.Serializable;
+
 /**
  * POJO to hold Chat room
  */
-public class ChatRoom {
+public class ChatRoom implements Serializable {
     public static final String MONGODB = "MongoDB";
     /**
      * is of the chat room

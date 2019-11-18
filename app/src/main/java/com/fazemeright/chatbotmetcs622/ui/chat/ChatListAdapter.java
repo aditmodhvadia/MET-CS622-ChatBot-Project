@@ -21,12 +21,14 @@ import java.util.ArrayList;
  */
 public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    static final int POSITION_OF_ADDITION = 0;
     private static final int TYPE_SENT = 0;
     private static final int TYPE_RECEIVED = 1;
     private ArrayList<Message> messages;
     private Context context;
 
-    public ChatListAdapter(ArrayList<Message> messages, Context context) {
+
+    ChatListAdapter(ArrayList<Message> messages, Context context) {
         this.messages = messages;
         this.context = context;
     }
@@ -68,6 +70,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return messages.size();
     }
 
+    void addMessage(Message newMessage) {
+        messages.add(POSITION_OF_ADDITION, newMessage);
+        notifyItemInserted(POSITION_OF_ADDITION);
+    }
+
     public interface ChatMessageInteractionListener {
     }
 
@@ -75,13 +82,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         TextView tvMsg, tvTimestamp;
 
-        public SentViewHolder(@NonNull View itemView) {
+        SentViewHolder(@NonNull View itemView) {
             super(itemView);
             tvMsg = itemView.findViewById(R.id.tvMsg);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
-        public void bind(Message item) {
+        void bind(Message item) {
             tvMsg.setText(item.getMsg());
             tvTimestamp.setText(item.getFormattedTime());
         }
@@ -91,13 +98,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         TextView tvMsg, tvTimestamp;
 
-        public ReceivedViewHolder(@NonNull View itemView) {
+        ReceivedViewHolder(@NonNull View itemView) {
             super(itemView);
             tvMsg = itemView.findViewById(R.id.tvMsg);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
-        public void bind(Message item) {
+        void bind(Message item) {
             tvMsg.setText(item.getMsg());
             tvTimestamp.setText(item.getFormattedTime());
         }

@@ -1,9 +1,9 @@
 package com.fazemeright.chatbotmetcs622.models;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * POJO for a message
@@ -44,6 +44,10 @@ public class Message {
         this.timestamp = timestamp;
     }
 
+    public static Message newMessage(String msg, String sender, String receiver, int chatRoomId) {
+        return new Message(new Random().nextInt(), msg, sender, receiver, chatRoomId, System.currentTimeMillis());
+    }
+
     public long getId() {
         return id;
     }
@@ -69,13 +73,10 @@ public class Message {
     }
 
     public String getFormattedTime() {
-        String pattern = "HH:mm";
+        String pattern = "HH:mm a";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.US);
-        try {
-            return String.valueOf(simpleDateFormat.parse(new Date(timestamp).toString()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return "";
-        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timestamp);
+        return simpleDateFormat.format(cal.getTime());
     }
 }
