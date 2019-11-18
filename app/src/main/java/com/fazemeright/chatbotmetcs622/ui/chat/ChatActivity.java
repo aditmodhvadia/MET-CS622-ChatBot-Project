@@ -1,6 +1,7 @@
 package com.fazemeright.chatbotmetcs622.ui.chat;
 
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -11,13 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fazemeright.chatbotmetcs622.R;
+import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
-import com.fazemeright.chatbotmetcs622.models.Message;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
@@ -43,14 +43,15 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
-        setupDummyData();
+
         rvChatList.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         rvChatList.setLayoutManager(linearLayoutManager);
 
-        adapter = new ChatListAdapter(getMessages(), mContext);
+        ArrayList<Message> messages = messageRepository.getMessagesForChatRoom(chatRoom);
+        adapter = new ChatListAdapter(messages, mContext);
 
         rvChatList.setAdapter(adapter);
     }
@@ -61,26 +62,21 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case R.id.action_clear:
+                clearChatRoomMessagesClicked(chatRoom);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupDummyData() {
-        messages = new ArrayList<>();
-        messages.add(new Message(0, "Hi", Message.SENDER_USER, chatRoom.getName(), chatRoom.getId(), System.currentTimeMillis() - 2500));
-        messages.add(new Message(1, "Hi how are you", chatRoom.getName(), Message.SENDER_USER, chatRoom.getId(), System.currentTimeMillis() - 1500));
-        messages.add(new Message(2, "I am fine thank you, What about you", Message.SENDER_USER, chatRoom.getName(), chatRoom.getId(), System.currentTimeMillis() - 500));
-        messages.add(new Message(3, "I'm great, thank you for asking", chatRoom.getName(), Message.SENDER_USER, chatRoom.getId(), System.currentTimeMillis()));
-        Collections.reverse(messages);
-    }
-
     /**
-     * Get dummy data for messages
+     * Call to clear all message for the given ChatRoom
      *
-     * @return dummy data
+     * @param chatRoom given ChatRoom
      */
-    private ArrayList<Message> getMessages() {
-        return messages;
+    private void clearChatRoomMessagesClicked(ChatRoom chatRoom) {
+        messageRepository.clearAllChatRoomMessages(chatRoom);
+        adapter.clearAllMessages();
     }
 
     @Override
@@ -100,13 +96,25 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
+    /**
+     * User clicked send message. Show new message to user and pass it to repository
+     */
     private void sendMessageClicked() {
         String msg = etMsg.getText().toString().trim();
         if (TextUtils.isEmpty(msg)) {
             return;
         }
         etMsg.setText("");
-        adapter.addMessage(Message.newMessage(msg, Message.SENDER_USER, ChatRoom.MONGODB, 0));
+        Message newMessage = Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
+        adapter.addMessage(newMessage);
         rvChatList.scrollToPosition(ChatListAdapter.POSITION_OF_ADDITION);
+//        send new message to repository
+        messageRepository.newMessageSent(newMessage);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }

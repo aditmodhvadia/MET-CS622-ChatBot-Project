@@ -13,14 +13,32 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
     public Context mContext;
     protected FireBaseApiManager apiManager;
+    protected MessageRepository messageRepository;
 
-    public static void hideKeyboard(Activity activity) {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext = this;
+        apiManager = FireBaseApiManager.getInstance();
+        messageRepository = MessageRepository.getInstance(mContext);
+        setContentView(getLayoutResId());
+    }
+
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        super.setContentView(layoutResID);
+        initViews();
+        setListeners();
+    }
+
+    public void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
@@ -31,21 +49,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mContext = this;
-        apiManager = FireBaseApiManager.getInstance();
-        setContentView(getLayoutResId());
-    }
-
-    @Override
-    public void setContentView(@LayoutRes int layoutResID) {
-        super.setContentView(layoutResID);
-        initViews();
-        setListeners();
     }
 
     /**

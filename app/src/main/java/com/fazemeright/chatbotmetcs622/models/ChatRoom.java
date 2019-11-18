@@ -10,7 +10,7 @@ public class ChatRoom implements Serializable {
     /**
      * is of the chat room
      */
-    private int id;
+    private long id;
     /**
      * Name of the chat room
      */
@@ -21,7 +21,7 @@ public class ChatRoom implements Serializable {
         this.name = name;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
