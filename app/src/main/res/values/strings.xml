@@ -23,4 +23,5 @@
     <string name="chat_room_photo_cd">Chat Room photo</string>
     <string name="type_msg_hint">Type a message</string>
     <string name="clear_action">Clear</string>
+    <string name="no_internet_connection_available">No internet available</string>
 </resources>
