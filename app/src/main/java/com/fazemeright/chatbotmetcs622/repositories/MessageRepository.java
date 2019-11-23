@@ -9,6 +9,10 @@ import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
+import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
+import com.fazemeright.chatbotmetcs622.network.models.NetError;
+import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
+import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,8 +142,25 @@ public class MessageRepository {
      *
      * @param newMessage given new message
      */
-    public void newMessageSent(Message newMessage) {
+    public void newMessageSent(Context context, final Message newMessage, final OnMessageResponseReceivedListener listener) {
         insertMessageInRoom(newMessage);
+
+        apiManager.queryDatabase(context, newMessage, new NetworkCallback<QueryResponseMessage>() {
+            @Override
+            public void onSuccess(NetResponse<QueryResponseMessage> response) {
+                Message queryResponseMessage = Message.newMessage(response.getResponse().getData().getResponseMsg(),
+                        newMessage.getReceiver(), newMessage.getSender(), newMessage.getChatRoomId());
+
+                insertMessageInRoom(queryResponseMessage);
+                listener.onMessageResponseReceived(queryResponseMessage);
+            }
+
+            @Override
+            public void onError(NetError error) {
+                listener.onNoResponseReceived(new Error(error.getErrorLocalizeMessage()));
+            }
+        });
+
 //        TODO: Finish the remaining cart
     }
 
@@ -268,5 +289,11 @@ public class MessageRepository {
             mAsyncTaskDao.update(params[0]);
             return null;
         }
+    }
+
+    public interface OnMessageResponseReceivedListener {
+        void onMessageResponseReceived(Message response);
+
+        void onNoResponseReceived(Error error);
     }
 }

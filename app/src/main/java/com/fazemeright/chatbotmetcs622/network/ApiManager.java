@@ -2,6 +2,8 @@ package com.fazemeright.chatbotmetcs622.network;
 
 import android.content.Context;
 
+import com.fazemeright.chatbotmetcs622.database.messages.Message;
+import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkWrapper;
 import com.fazemeright.chatbotmetcs622.network.models.NetError;
@@ -32,11 +34,36 @@ public class ApiManager {
 
     }
 
-    public void hiWorld(Context context, final NetworkCallback<QueryResponseMessage> networkCallback) {
-        String url = BaseUrl.BASE_URL.concat(BaseUrl.BASE_APP_NAME).concat(BaseUrl.BASE_HI);
+
+    /**
+     * Call Query API to backend to fetch results for the given Message query
+     *
+     * @param context         context
+     * @param newMessage      given message query
+     * @param networkCallback callback to listen to response
+     */
+    public void queryDatabase(Context context, Message newMessage,
+                              final NetworkCallback<QueryResponseMessage> networkCallback) {
+        String serverEndPoint;
+        switch ((int) newMessage.getChatRoomId()) {
+            case ChatRoom.BRUTE_FORCE_ID:
+                serverEndPoint = DatabaseUrl.BRUTE_FORCE;
+                break;
+            case ChatRoom.LUCENE_ID:
+                serverEndPoint = DatabaseUrl.LUCENE;
+                break;
+            case ChatRoom.MONGO_DB_ID:
+                serverEndPoint = DatabaseUrl.MONGO_DB;
+                break;
+            default:
+                serverEndPoint = DatabaseUrl.MY_SQL;
+                break;
+        }
+        String url = BaseUrl.BASE_URL.concat(BaseUrl.BASE_APP_NAME).concat(serverEndPoint);
 
         TypeToken<QueryResponseMessage> typeToken = new TypeToken<QueryResponseMessage>() {
         };
+//        TODO: Update GET request to POST request and also attach QueryRequest Object and parse information with it
         networkManager.makeGetRequest(context, url, typeToken, "", new NetworkCallback<QueryResponseMessage>() {
             @Override
             public void onSuccess(NetResponse<QueryResponseMessage> response) {
@@ -48,12 +75,13 @@ public class ApiManager {
                 networkCallback.onError(error);
             }
         });
+
     }
 
     /**
-     * QueryModel module Api sub url
+     * DatabaseUrl module Api sub url
      */
-    class QueryModel {
+    class DatabaseUrl {
         final static String MONGO_DB = "/mongodb";
         final static String LUCENE = "/lucene";
         final static String MY_SQL = "/mysql";
@@ -65,6 +93,5 @@ public class ApiManager {
         final static String BASE_URL = "http://192.168.0.24:8080";
         final static String BASE_APP_NAME = "/MET_CS622_ChatBot_Backend_war_exploded";
         final static String BASE_HI = "/hi";
-
     }
 }
