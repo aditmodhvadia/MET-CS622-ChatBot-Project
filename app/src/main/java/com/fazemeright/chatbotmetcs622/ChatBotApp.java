@@ -2,6 +2,8 @@ package com.fazemeright.chatbotmetcs622;
 
 import android.app.Application;
 
+import com.fazemeright.chatbotmetcs622.network.NetworkManager;
+
 import timber.log.Timber;
 
 public class ChatBotApp extends Application {
@@ -12,5 +14,6 @@ public class ChatBotApp extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+        NetworkManager.getInstance().init(getApplicationContext(), 300);
     }
 }

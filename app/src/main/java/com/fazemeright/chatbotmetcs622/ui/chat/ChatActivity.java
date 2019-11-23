@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
+import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 
@@ -54,6 +56,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         adapter = new ChatListAdapter(messages, mContext);
 
         rvChatList.setAdapter(adapter);
+//        Show user the most recent messages, hence scroll to the top
+        rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
     }
 
     @Override
@@ -106,10 +110,30 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         }
         etMsg.setText("");
         Message newMessage = Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
-        adapter.addMessage(newMessage);
-        rvChatList.scrollToPosition(ChatListAdapter.POSITION_OF_ADDITION);
+        addMessageToAdapter(newMessage);
 //        send new message to repository
-        messageRepository.newMessageSent(newMessage);
+        messageRepository.newMessageSent(mContext, newMessage, new MessageRepository.OnMessageResponseReceivedListener() {
+            @Override
+            public void onMessageResponseReceived(Message response) {
+                addMessageToAdapter(response);
+            }
+
+            @Override
+            public void onNoResponseReceived(Error error) {
+                Toast.makeText(mContext, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+//                TODO: Show error to the user
+            }
+        });
+    }
+
+    /**
+     * Call to add given new message to the Adapter and display it to the user and scroll to it
+     *
+     * @param newMessage given new message to be displayed
+     */
+    private void addMessageToAdapter(Message newMessage) {
+        adapter.addMessage(newMessage);
+        rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
     }
 
     @Override

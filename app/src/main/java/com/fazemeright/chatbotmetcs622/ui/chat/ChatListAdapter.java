@@ -21,7 +21,7 @@ import java.util.ArrayList;
  */
 public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    static final int POSITION_OF_ADDITION = 0;
+    static final int MOST_RECENT_MSG_POSITION = 0;
     private static final int TYPE_SENT = 0;
     private static final int TYPE_RECEIVED = 1;
     private ArrayList<Message> messages;
@@ -79,8 +79,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (messages == null) {
             messages = new ArrayList<>();
         }
-        messages.add(POSITION_OF_ADDITION, newMessage);
-        notifyItemInserted(POSITION_OF_ADDITION);
+        messages.add(MOST_RECENT_MSG_POSITION, newMessage);
+        notifyItemInserted(MOST_RECENT_MSG_POSITION);
     }
 
     /**

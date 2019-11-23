@@ -7,6 +7,12 @@ import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
+import com.fazemeright.chatbotmetcs622.network.ApiManager;
+import com.fazemeright.chatbotmetcs622.network.NetworkManager;
+import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
+import com.fazemeright.chatbotmetcs622.network.models.NetError;
+import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
+import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +24,12 @@ import timber.log.Timber;
 public class MessageRepository {
 
     private static MessageRepository repository;
-    //    public LiveData<List<Message>> messageList;
     private ChatBotDatabase database;
+    private ApiManager apiManager;
 
-    private MessageRepository(ChatBotDatabase database) {
+    private MessageRepository(ChatBotDatabase database, ApiManager apiManager) {
         this.database = database;
+        this.apiManager = apiManager;
 //        messageList = this.database.messageDao().getAllMessages();
     }
 
@@ -37,7 +44,9 @@ public class MessageRepository {
             synchronized (MessageRepository.class) {
 //                get instance of database
                 ChatBotDatabase database = ChatBotDatabase.getInstance(context);
-                repository = new MessageRepository(database);
+                ApiManager apiManager = ApiManager.getInstance();
+                apiManager.init(NetworkManager.getInstance());
+                repository = new MessageRepository(database, apiManager);
             }
         }
         return repository;
@@ -133,8 +142,25 @@ public class MessageRepository {
      *
      * @param newMessage given new message
      */
-    public void newMessageSent(Message newMessage) {
+    public void newMessageSent(Context context, final Message newMessage, final OnMessageResponseReceivedListener listener) {
         insertMessageInRoom(newMessage);
+
+        apiManager.queryDatabase(context, newMessage, new NetworkCallback<QueryResponseMessage>() {
+            @Override
+            public void onSuccess(NetResponse<QueryResponseMessage> response) {
+                Message queryResponseMessage = Message.newMessage(response.getResponse().getData().getResponseMsg(),
+                        newMessage.getReceiver(), newMessage.getSender(), newMessage.getChatRoomId());
+
+                insertMessageInRoom(queryResponseMessage);
+                listener.onMessageResponseReceived(queryResponseMessage);
+            }
+
+            @Override
+            public void onError(NetError error) {
+                listener.onNoResponseReceived(new Error(error.getErrorLocalizeMessage()));
+            }
+        });
+
 //        TODO: Finish the remaining cart
     }
 
@@ -263,5 +289,11 @@ public class MessageRepository {
             mAsyncTaskDao.update(params[0]);
             return null;
         }
+    }
+
+    public interface OnMessageResponseReceivedListener {
+        void onMessageResponseReceived(Message response);
+
+        void onNoResponseReceived(Error error);
     }
 }
