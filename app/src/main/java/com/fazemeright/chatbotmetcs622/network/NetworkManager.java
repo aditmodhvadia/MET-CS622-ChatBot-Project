@@ -224,9 +224,43 @@ public class NetworkManager implements NetworkWrapper {
 
 
     @Override
-    public <T> void makePostRequest(Context context, String url, Object dataObject, TypeToken typeToken,
-                                    String tag, NetworkCallback<T> networkCallback) {
+    public <T> void makePostRequest(Context context, String url, final Object dataObject, TypeToken typeToken,
+                                    String tag, final NetworkCallback<T> networkCallback) {
+        if (CoreUtils.isValidUrl(url)) {
+            if (CoreUtils.isNetworkAvailable(context)) {
+                printURLAndRequestParameters(url, dataObject);
+//.addBodyParameter(dataObject)
+//.addStringBody(NetworkUtility.getStringFromObject(dataObject))
+                AndroidNetworking.post(url)
+                        .addApplicationJsonBody(dataObject)
+//                        .addHeaders(hashMapHeader)
+                        .setContentType(CONTENT_TYPE) // custom ContentType
+                        .setTag(tag)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(typeToken, new ParsedRequestListener<T>() {
+                            @Override
+                            public void onResponse(T response) {
+                                // LogUtils.getInstance().printLog(TAG, "onResponse :: "
+                                // + CoreUtils.getStringFromObject(response));
+                                NetResponse netResponse = new NetResponse();
+                                netResponse.setResponse(response);
+                                networkCallback.onSuccess(netResponse);
+                            }
 
+                            @Override
+                            public void onError(ANError anError) {
+                                //   LogUtils.getInstance().printLog(TAG, "onError :: "
+                                // + CoreUtils.getStringFromObject(anError));
+                                networkCallback.onError(getNetError(anError, dataObject));
+                            }
+                        });
+            } else {
+                networkCallback.onError(getNetErrorConnectivityError(getConnectivityError(context), dataObject));
+            }
+        } else {
+            networkCallback.onError(getInvalidUrlError(url));
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkWrapper;
 import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
+import com.fazemeright.chatbotmetcs622.network.models.request.MessageQueryRequestModel;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 import com.google.gson.reflect.TypeToken;
 
@@ -61,10 +62,11 @@ public class ApiManager {
         }
         String url = BaseUrl.BASE_URL.concat(BaseUrl.BASE_APP_NAME).concat(serverEndPoint);
 
+        MessageQueryRequestModel messageQuery = new MessageQueryRequestModel(newMessage.getMsg());
+
         TypeToken<QueryResponseMessage> typeToken = new TypeToken<QueryResponseMessage>() {
         };
-//        TODO: Update GET request to POST request and also attach QueryRequest Object and parse information with it
-        networkManager.makeGetRequest(context, url, typeToken, "", new NetworkCallback<QueryResponseMessage>() {
+        networkManager.makePostRequest(context, url, messageQuery, typeToken, "", new NetworkCallback<QueryResponseMessage>() {
             @Override
             public void onSuccess(NetResponse<QueryResponseMessage> response) {
                 networkCallback.onSuccess(response);
