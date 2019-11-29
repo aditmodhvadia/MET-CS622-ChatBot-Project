@@ -1,5 +1,7 @@
 package com.fazemeright.firebase_api_library.api;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
@@ -21,6 +23,7 @@ import java.util.Objects;
 
 public class FireBaseApiManager extends FireBaseApiWrapper {
 
+    private static final String TAG = "FireBaseApiManager";
     private static FireBaseApiManager apiManager;
 
     public static FireBaseApiManager getInstance() {
@@ -148,9 +151,23 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         return getCurrentUserEmail() != null;
     }
 
+    public void addMessageToUserDatabase(Map<String, Object> messageHashMap) {
+        db.collection(BaseUrl.USERS)
+                .document(getCurrentUserUid())
+                .collection(BaseUrl.MESSAGES)
+                .document(String.valueOf(messageHashMap.get("mid"))).set(messageHashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "onSuccess: Message written to database");
+                    }
+                });
+    }
+
 
     public static class BaseUrl {
-        public static final String USERS = "users";
+        static final String USERS = "users";
+        static final String MESSAGES = "messages";
         // Declare the constants over here
     }
 

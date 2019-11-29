@@ -1,11 +1,13 @@
 package com.fazemeright.chatbotmetcs622.repositories;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
+import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
@@ -56,11 +58,17 @@ public class MessageRepository {
      * Call to insert given project into database with thread safety
      *
      * @param newMessage given project
+     * @return
      */
-    private void insertMessageInRoom(Message newMessage) {
+    private Message insertMessageInRoom(Message newMessage) {
 //        insert into Room using AsyncTask
         Timber.i("Insert message in Room called%s", newMessage.getMsg());
-        new InsertAsyncTask(database.messageDao()).execute(newMessage);
+        try {
+            return new InsertAsyncTask(database.messageDao()).execute(newMessage).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return newMessage;
     }
 
     /**
@@ -142,16 +150,17 @@ public class MessageRepository {
      *
      * @param newMessage given new message
      */
-    public void newMessageSent(Context context, final Message newMessage, final OnMessageResponseReceivedListener listener) {
-        insertMessageInRoom(newMessage);
-
+    public void newMessageSent(final Context context, final Message newMessage, final OnMessageResponseReceivedListener listener) {
+        final Message roomLastMessage = insertMessageInRoom(newMessage);
+        insertMessageInFireBase(context, roomLastMessage);
         apiManager.queryDatabase(context, newMessage, new NetworkCallback<QueryResponseMessage>() {
             @Override
             public void onSuccess(NetResponse<QueryResponseMessage> response) {
                 Message queryResponseMessage = Message.newMessage(response.getResponse().getData().getResponseMsg(),
                         newMessage.getReceiver(), newMessage.getSender(), newMessage.getChatRoomId());
 
-                insertMessageInRoom(queryResponseMessage);
+                Message roomLastInsertedMessage = insertMessageInRoom(queryResponseMessage);
+                insertMessageInFireBase(context, roomLastInsertedMessage);
                 listener.onMessageResponseReceived(queryResponseMessage);
             }
 
@@ -162,6 +171,19 @@ public class MessageRepository {
         });
 
 //        TODO: Finish the remaining cart
+    }
+
+    /**
+     * Call to insert the given new message to FireStore database
+     *
+     * @param context    context
+     * @param newMessage given new message
+     */
+    private void insertMessageInFireBase(Context context, Message newMessage) {
+        Intent intent = new Intent(context, FireBaseIntentService.class);
+        intent.putExtra(FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_ADD_MESSAGE);
+        intent.putExtra(FireBaseIntentService.MESSAGE, newMessage);
+        context.startService(intent);
     }
 
     public ArrayList<Message> getAllMessages() {
@@ -257,7 +279,7 @@ public class MessageRepository {
     /**
      * AsyncTask which makes insert operation thread safe and does not block the main thread for a long time
      */
-    private static class InsertAsyncTask extends AsyncTask<Message, Void, Void> {
+    private static class InsertAsyncTask extends AsyncTask<Message, Void, Message> {
 
         private MessageDao mAsyncTaskDao;
 
@@ -266,10 +288,10 @@ public class MessageRepository {
         }
 
         @Override
-        protected Void doInBackground(final Message... params) {
+        protected Message doInBackground(final Message... params) {
             mAsyncTaskDao.insert(params[0]);
             Timber.i("Inside AsyncTask to insert message in Room %s", params[0].getMsg());
-            return null;
+            return mAsyncTaskDao.getLatestMessage(params[0].getChatRoomId());
         }
     }
 

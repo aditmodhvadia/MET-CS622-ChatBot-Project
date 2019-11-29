@@ -24,4 +24,7 @@ public interface MessageDao extends BaseDao<Message> {
 
     @Query("DELETE from my_messages_table WHERE chatRoomId = :chatRoomId")
     void clearChatRoomMessages(long chatRoomId);
+
+    @Query("SELECT * FROM my_messages_table WHERE chatRoomId = :chatRoomId ORDER BY timestamp DESC LIMIT 1")
+    Message getLatestMessage(long chatRoomId);
 }

@@ -3,6 +3,7 @@ package com.fazemeright.chatbotmetcs622.database.messages;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -11,7 +12,7 @@ import java.util.Locale;
  * POJO for a message
  */
 @Entity(tableName = "my_messages_table")
-public class Message {
+public class Message implements Serializable {
     public static final String SENDER_USER = "User";
     /**
      * mid of message
