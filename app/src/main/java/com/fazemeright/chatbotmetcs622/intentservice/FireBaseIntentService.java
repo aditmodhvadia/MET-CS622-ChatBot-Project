@@ -102,28 +102,7 @@ public class FireBaseIntentService extends IntentService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        fireBaseApiManager.syncMessages(new DBValueListener<List<Map<String, Object>>>() {
-            @Override
-            public void onDataReceived(List<Map<String, Object>> data) {
-//                This code runs on the UI thread
-                List<Message> messages = new ArrayList<>();
-                for (Map<String, Object> object :
-                        data) {
-                    Timber.i(String.valueOf(object.get("mid")));
-                    Message newMessage = new Message((long) object.get("mid"), String.valueOf(object.get("msg")),
-                            String.valueOf(object.get("sender")), String.valueOf(object.get("receiver")),
-                            (long) object.get("chatRoomId"), (long) object.get("timestamp"));
-                    Timber.i(newMessage.toString());
-                    messages.add(newMessage);
-                }
-                messageRepository.addMessages(messages);
-            }
-
-            @Override
-            public void onCancelled(Error error) {
-
-            }
-        });
+        messageRepository.syncMessagesFromFireStoreToRoom();
     }
 
     /**
@@ -132,14 +111,7 @@ public class FireBaseIntentService extends IntentService {
      * @param message given message
      */
     private void addMessageToFireStore(Message message) {
-        Map<String, Object> messageHashMap = new HashMap<>();
-        messageHashMap.put("mid", message.getMid());
-        messageHashMap.put("msg", message.getMsg());
-        messageHashMap.put("sender", message.getSender());
-        messageHashMap.put("receiver", message.getReceiver());
-        messageHashMap.put("chatRoomId", message.getChatRoomId());
-        messageHashMap.put("timestamp", message.getTimestamp());
-        fireBaseApiManager.addMessageToUserDatabase(messageHashMap);
+        messageRepository.addMessageToFireBase(Message.getHashMap(message));
     }
 
     /**

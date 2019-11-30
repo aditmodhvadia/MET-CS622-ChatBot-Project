@@ -5,7 +5,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
+import androidx.work.Constraints;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
+import com.fazemeright.chatbotmetcs622.workers.FireBaseSyncWorker;
+
+import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 

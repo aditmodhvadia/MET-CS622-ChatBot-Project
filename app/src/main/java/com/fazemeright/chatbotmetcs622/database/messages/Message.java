@@ -6,7 +6,9 @@ import androidx.room.PrimaryKey;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * POJO for a message
@@ -51,6 +53,17 @@ public class Message implements Serializable {
 
     public static Message newMessage(String msg, String sender, String receiver, long chatRoomId) {
         return new Message(0, msg, sender, receiver, chatRoomId, System.currentTimeMillis());
+    }
+
+    public static Map<String, Object> getHashMap(Message message) {
+        Map<String, Object> messageHashMap = new HashMap<>();
+        messageHashMap.put("mid", message.getMid());
+        messageHashMap.put("msg", message.getMsg());
+        messageHashMap.put("sender", message.getSender());
+        messageHashMap.put("receiver", message.getReceiver());
+        messageHashMap.put("chatRoomId", message.getChatRoomId());
+        messageHashMap.put("timestamp", message.getTimestamp());
+        return messageHashMap;
     }
 
     public long getMid() {

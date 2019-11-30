@@ -19,9 +19,11 @@ import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
+import com.fazemeright.firebase_api_library.listeners.DBValueListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
@@ -212,17 +214,65 @@ public class MessageRepository {
         new ClearAllMessagesInChatRoomAsyncTask(database.messageDao()).execute(chatRoom);
     }
 
+    /**
+     * Call to logout user and clear all messages from Room
+     */
     public void logOutUser() {
         fireBaseApiManager.logOutUser();
         clearAllMessages();
     }
 
+    /**
+     * Call to clear all messages from Room
+     */
     private void clearAllMessages() {
         new ClearAllMessagesAsyncTask(database.messageDao()).execute();
     }
 
+    /**
+     * Add given list of messages to Room
+     *
+     * @param messages
+     */
     public void addMessages(List<Message> messages) {
         new AddAllMessagesAsyncTask(database.messageDao()).execute(messages);
+    }
+
+    /**
+     * Call to add the given message to FireStore
+     *
+     * @param messageHashMap given message converted into HashMap
+     */
+    public void addMessageToFireBase(Map<String, Object> messageHashMap) {
+        fireBaseApiManager.addMessageToUserDatabase(messageHashMap);
+    }
+
+    /**
+     * Call to sync messages from FireStore to Room for the logged in user
+     */
+    public void syncMessagesFromFireStoreToRoom() {
+        fireBaseApiManager.syncMessages(new DBValueListener<List<Map<String, Object>>>() {
+            @Override
+            public void onDataReceived(List<Map<String, Object>> data) {
+//                This code runs on the UI thread
+                List<Message> messages = new ArrayList<>();
+                for (Map<String, Object> object :
+                        data) {
+                    Timber.i(String.valueOf(object.get("mid")));
+                    Message newMessage = new Message((long) object.get("mid"), String.valueOf(object.get("msg")),
+                            String.valueOf(object.get("sender")), String.valueOf(object.get("receiver")),
+                            (long) object.get("chatRoomId"), (long) object.get("timestamp"));
+                    Timber.i(newMessage.toString());
+                    messages.add(newMessage);
+                }
+                addMessages(messages);
+            }
+
+            @Override
+            public void onCancelled(Error error) {
+
+            }
+        });
     }
 
     /**

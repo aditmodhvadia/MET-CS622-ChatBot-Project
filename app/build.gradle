@@ -47,6 +47,13 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:2.2.1"
     implementation "androidx.lifecycle:lifecycle-extensions:2.1.0"
 
+//    WorkManager Library
+    implementation ("androidx.work:work-runtime:2.2.0") {
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
+    implementation 'com.google.guava:guava:27.0.1-android'
+
+
 //    Networking libraries
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.amitshekhar.android:android-networking:1.0.2'

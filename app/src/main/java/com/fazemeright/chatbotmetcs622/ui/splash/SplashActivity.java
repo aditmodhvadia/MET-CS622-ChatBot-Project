@@ -7,11 +7,18 @@ import android.os.Handler;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.work.Constraints;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
+import com.fazemeright.chatbotmetcs622.workers.FireBaseSyncWorker;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
+
+import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
@@ -38,6 +45,18 @@ public class SplashActivity extends BaseActivity {
             @Override
             public void onTaskSuccessful() {
 //                user is logged in, open landing activity
+                Constraints constraints = new Constraints.Builder()
+                        .setRequiresCharging(true)
+                        .build();
+
+                PeriodicWorkRequest saveRequest =
+                        new PeriodicWorkRequest.Builder(FireBaseSyncWorker.class, 1, TimeUnit.DAYS)
+                                .setConstraints(constraints)
+                                .build();
+
+                WorkManager.getInstance(mContext)
+                        .enqueue(saveRequest);
+
                 Timber.i("Open Landing Activity");
                 openLandingActivity();
             }
