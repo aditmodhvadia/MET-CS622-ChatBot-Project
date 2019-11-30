@@ -1,6 +1,9 @@
 package com.fazemeright.chatbotmetcs622.database.messages;
 
 import androidx.room.Dao;
+import androidx.room.FtsOptions;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.fazemeright.chatbotmetcs622.database.BaseDao;
@@ -27,4 +30,7 @@ public interface MessageDao extends BaseDao<Message> {
 
     @Query("SELECT * FROM my_messages_table WHERE chatRoomId = :chatRoomId ORDER BY timestamp DESC LIMIT 1")
     Message getLatestMessage(long chatRoomId);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAllMessages(List<Message> order);
 }

@@ -34,7 +34,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void determineIfUserIsLoggedIn() {
-        apiManager.reloadUserAuthState(new OnTaskCompleteListener() {
+        fireBaseApiManager.reloadUserAuthState(new OnTaskCompleteListener() {
             @Override
             public void onTaskSuccessful() {
 //                user is logged in, open landing activity

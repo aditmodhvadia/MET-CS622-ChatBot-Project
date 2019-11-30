@@ -3,6 +3,9 @@ package com.fazemeright.chatbotmetcs622.repositories;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
+
+import androidx.core.content.ContextCompat;
 
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
@@ -15,6 +18,7 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
+import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +32,12 @@ public class MessageRepository {
     private static MessageRepository repository;
     private ChatBotDatabase database;
     private ApiManager apiManager;
+    private FireBaseApiManager fireBaseApiManager;
 
-    private MessageRepository(ChatBotDatabase database, ApiManager apiManager) {
+    private MessageRepository(ChatBotDatabase database, ApiManager apiManager, FireBaseApiManager fireBaseApiManager) {
         this.database = database;
         this.apiManager = apiManager;
+        this.fireBaseApiManager = fireBaseApiManager;
 //        messageList = this.database.messageDao().getAllMessages();
     }
 
@@ -47,8 +53,9 @@ public class MessageRepository {
 //                get instance of database
                 ChatBotDatabase database = ChatBotDatabase.getInstance(context);
                 ApiManager apiManager = ApiManager.getInstance();
+                FireBaseApiManager fireBaseApiManager = FireBaseApiManager.getInstance();
                 apiManager.init(NetworkManager.getInstance());
-                repository = new MessageRepository(database, apiManager);
+                repository = new MessageRepository(database, apiManager, fireBaseApiManager);
             }
         }
         return repository;
@@ -202,7 +209,20 @@ public class MessageRepository {
     }
 
     private void clearAllChatRoomMessagesFromRoom(ChatRoom chatRoom) {
-        new ClearAllMessagesAsyncTask(database.messageDao()).execute(chatRoom);
+        new ClearAllMessagesInChatRoomAsyncTask(database.messageDao()).execute(chatRoom);
+    }
+
+    public void logOutUser() {
+        fireBaseApiManager.logOutUser();
+        clearAllMessages();
+    }
+
+    private void clearAllMessages() {
+        new ClearAllMessagesAsyncTask(database.messageDao()).execute();
+    }
+
+    public void addMessages(List<Message> messages) {
+        new AddAllMessagesAsyncTask(database.messageDao()).execute(messages);
     }
 
     /**
@@ -225,7 +245,43 @@ public class MessageRepository {
     /**
      * Fetch all chat room  messages for the given ChatRoom through AsyncTask from Room
      */
-    private static class ClearAllMessagesAsyncTask extends AsyncTask<ChatRoom, Void, Void> {
+    private static class ClearAllMessagesInChatRoomAsyncTask extends AsyncTask<ChatRoom, Void, Void> {
+
+        private MessageDao mAsyncTaskDao;
+
+        ClearAllMessagesInChatRoomAsyncTask(MessageDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(ChatRoom... params) {
+            mAsyncTaskDao.clearChatRoomMessages(params[0].getId());
+            return null;
+        }
+    }
+
+    /**
+     * Fetch all messages through AsyncTask from Room
+     */
+    private static class AddAllMessagesAsyncTask extends AsyncTask<List<Message>, Void, Void> {
+
+        private MessageDao mAsyncTaskDao;
+
+        AddAllMessagesAsyncTask(MessageDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(List<Message>... lists) {
+            mAsyncTaskDao.insertAllMessages(lists[0]);
+            return null;
+        }
+    }
+
+    /**
+     * Fetch all messages through AsyncTask from Room
+     */
+    private static class ClearAllMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private MessageDao mAsyncTaskDao;
 
@@ -234,8 +290,8 @@ public class MessageRepository {
         }
 
         @Override
-        protected Void doInBackground(ChatRoom... params) {
-            mAsyncTaskDao.clearChatRoomMessages(params[0].getId());
+        protected Void doInBackground(Void... params) {
+            mAsyncTaskDao.clear();
             return null;
         }
     }

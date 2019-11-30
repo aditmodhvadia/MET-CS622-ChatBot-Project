@@ -100,10 +100,10 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
             return;
         }
 
-        apiManager.registerNewUserWithEmailPassword(email, password, new OnTaskCompleteListener() {
+        fireBaseApiManager.registerNewUserWithEmailPassword(email, password, new OnTaskCompleteListener() {
             @Override
             public void onTaskSuccessful() {
-                Timber.i("New user registered successfully %s", apiManager.getCurrentLoggedInUserEmail());
+                Timber.i("New user registered successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
                 btnRegister.setText(getString(R.string.registration_success_msg));
                 openLandingActivity();
             }

@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".ChatBotApp"
@@ -32,9 +33,7 @@
             android:name=".ui.registration.RegistrationActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <service
-            android:name=".intentservice.FireBaseIntentService"
-            android:exported="false" />
+        <service android:name=".intentservice.FireBaseIntentService" />
     </application>
 
 </manifest>

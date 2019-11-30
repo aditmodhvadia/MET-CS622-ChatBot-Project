@@ -1,6 +1,8 @@
 package com.fazemeright.chatbotmetcs622.ui.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -8,8 +10,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.fazemeright.chatbotmetcs622.R;
+import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
@@ -94,11 +98,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             return;
         }
 
-        apiManager.logInWithEmailAndPassword(email, password, new OnTaskCompleteListener() {
+        Timber.i("Login clicked");
+        fireBaseApiManager.logInWithEmailAndPassword(email, password, new OnTaskCompleteListener() {
             @Override
             public void onTaskSuccessful() {
-                Timber.i("User logged in successfully %s", apiManager.getCurrentLoggedInUserEmail());
+                Timber.i("User logged in successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
                 btnLogin.setText(getString(R.string.login_success_msg));
+                Intent intent = new Intent(mContext, FireBaseIntentService.class);
+                intent.putExtra(FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_SYNC_MESSAGES);
+//                ContextCompat.startForegroundService(LoginActivity.this, intent);
+//                ContextCompat.startForegroundService(mContext, intent);
+                ContextCompat.startForegroundService(mContext, intent);
                 openLandingActivity();
             }
 

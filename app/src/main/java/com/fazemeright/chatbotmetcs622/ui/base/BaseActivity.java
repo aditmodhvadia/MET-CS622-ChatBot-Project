@@ -19,14 +19,14 @@ import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 public abstract class BaseActivity extends AppCompatActivity {
 
     public Context mContext;
-    protected FireBaseApiManager apiManager;
+    protected FireBaseApiManager fireBaseApiManager;
     protected MessageRepository messageRepository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        apiManager = FireBaseApiManager.getInstance();
+        fireBaseApiManager = FireBaseApiManager.getInstance();
         messageRepository = MessageRepository.getInstance(mContext);
         setContentView(getLayoutResId());
     }
