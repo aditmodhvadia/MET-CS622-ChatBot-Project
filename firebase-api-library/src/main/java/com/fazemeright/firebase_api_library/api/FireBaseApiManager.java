@@ -1,7 +1,10 @@
 package com.fazemeright.firebase_api_library.api;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.fazemeright.firebase_api_library.listeners.DBValueListener;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -13,14 +16,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class FireBaseApiManager extends FireBaseApiWrapper {
 
+    private static final String TAG = "FireBaseApiManager";
     private static FireBaseApiManager apiManager;
 
     public static FireBaseApiManager getInstance() {
@@ -148,9 +157,46 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         return getCurrentUserEmail() != null;
     }
 
+    public void addMessageToUserDatabase(Map<String, Object> messageHashMap) {
+        db.collection(BaseUrl.USERS)
+                .document(getCurrentUserUid())
+                .collection(BaseUrl.MESSAGES)
+                .document(String.valueOf(messageHashMap.get("mid"))).set(messageHashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "onSuccess: Message written to database");
+                    }
+                });
+    }
+
+    public void syncMessages(final DBValueListener<List<Map<String, Object>>> listDBValueListener) {
+        db.collection(BaseUrl.USERS)
+                .document(getCurrentUserUid())
+                .collection(BaseUrl.MESSAGES)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<Map<String, Object>> hashMaps = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                hashMaps.add(document.getData());
+
+                            }
+                            listDBValueListener.onDataReceived(hashMaps);
+                        } else {
+                            Log.e(TAG, "onComplete: \"Error getting documents" + task.getException());
+                        }
+                    }
+                });
+    }
+
 
     public static class BaseUrl {
-        public static final String USERS = "users";
+        static final String USERS = "users";
+        static final String MESSAGES = "messages";
         // Declare the constants over here
     }
 

@@ -26,7 +26,7 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
     @Override
     public void initViews() {
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + apiManager.getCurrentLoggedInUserEmail());
+            getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + fireBaseApiManager.getCurrentLoggedInUserEmail());
         }
 
         rvChatRoomList = findViewById(R.id.rvChatRoomList);
@@ -72,7 +72,7 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
     }
 
     private void logoutUser() {
-        apiManager.logOutUser();
+        messageRepository.logOutUser();
     }
 
     @Override

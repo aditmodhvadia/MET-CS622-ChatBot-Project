@@ -1,8 +1,8 @@
 package com.fazemeright.firebase_api_library.listeners;
 
-public interface DBValueEventListener<T> {
+public interface DBValueListener<T> {
 
-    void onDataChange(T data);
+    void onDataReceived(T data);
 
     void onCancelled(Error error);
 }

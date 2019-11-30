@@ -32,6 +32,7 @@
             android:ems="10"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
+            android:text="unittesting@gmail.com"
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -62,6 +63,7 @@
             android:ems="10"
             android:imeOptions="actionNext"
             android:inputType="textPassword"
+            android:text="12345678"
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>

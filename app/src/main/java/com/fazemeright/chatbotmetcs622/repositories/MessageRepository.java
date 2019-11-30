@@ -1,11 +1,16 @@
 package com.fazemeright.chatbotmetcs622.repositories;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
+
+import androidx.core.content.ContextCompat;
 
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
+import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
@@ -13,9 +18,12 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
+import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
+import com.fazemeright.firebase_api_library.listeners.DBValueListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
@@ -26,10 +34,12 @@ public class MessageRepository {
     private static MessageRepository repository;
     private ChatBotDatabase database;
     private ApiManager apiManager;
+    private FireBaseApiManager fireBaseApiManager;
 
-    private MessageRepository(ChatBotDatabase database, ApiManager apiManager) {
+    private MessageRepository(ChatBotDatabase database, ApiManager apiManager, FireBaseApiManager fireBaseApiManager) {
         this.database = database;
         this.apiManager = apiManager;
+        this.fireBaseApiManager = fireBaseApiManager;
 //        messageList = this.database.messageDao().getAllMessages();
     }
 
@@ -45,8 +55,9 @@ public class MessageRepository {
 //                get instance of database
                 ChatBotDatabase database = ChatBotDatabase.getInstance(context);
                 ApiManager apiManager = ApiManager.getInstance();
+                FireBaseApiManager fireBaseApiManager = FireBaseApiManager.getInstance();
                 apiManager.init(NetworkManager.getInstance());
-                repository = new MessageRepository(database, apiManager);
+                repository = new MessageRepository(database, apiManager, fireBaseApiManager);
             }
         }
         return repository;
@@ -56,11 +67,17 @@ public class MessageRepository {
      * Call to insert given project into database with thread safety
      *
      * @param newMessage given project
+     * @return
      */
-    private void insertMessageInRoom(Message newMessage) {
+    private Message insertMessageInRoom(Message newMessage) {
 //        insert into Room using AsyncTask
         Timber.i("Insert message in Room called%s", newMessage.getMsg());
-        new InsertAsyncTask(database.messageDao()).execute(newMessage);
+        try {
+            return new InsertAsyncTask(database.messageDao()).execute(newMessage).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return newMessage;
     }
 
     /**
@@ -142,16 +159,17 @@ public class MessageRepository {
      *
      * @param newMessage given new message
      */
-    public void newMessageSent(Context context, final Message newMessage, final OnMessageResponseReceivedListener listener) {
-        insertMessageInRoom(newMessage);
-
+    public void newMessageSent(final Context context, final Message newMessage, final OnMessageResponseReceivedListener listener) {
+        final Message roomLastMessage = insertMessageInRoom(newMessage);
+        insertMessageInFireBase(context, roomLastMessage);
         apiManager.queryDatabase(context, newMessage, new NetworkCallback<QueryResponseMessage>() {
             @Override
             public void onSuccess(NetResponse<QueryResponseMessage> response) {
                 Message queryResponseMessage = Message.newMessage(response.getResponse().getData().getResponseMsg(),
                         newMessage.getReceiver(), newMessage.getSender(), newMessage.getChatRoomId());
 
-                insertMessageInRoom(queryResponseMessage);
+                Message roomLastInsertedMessage = insertMessageInRoom(queryResponseMessage);
+                insertMessageInFireBase(context, roomLastInsertedMessage);
                 listener.onMessageResponseReceived(queryResponseMessage);
             }
 
@@ -162,6 +180,19 @@ public class MessageRepository {
         });
 
 //        TODO: Finish the remaining cart
+    }
+
+    /**
+     * Call to insert the given new message to FireStore database
+     *
+     * @param context    context
+     * @param newMessage given new message
+     */
+    private void insertMessageInFireBase(Context context, Message newMessage) {
+        Intent intent = new Intent(context, FireBaseIntentService.class);
+        intent.putExtra(FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_ADD_MESSAGE);
+        intent.putExtra(FireBaseIntentService.MESSAGE, newMessage);
+        context.startService(intent);
     }
 
     public ArrayList<Message> getAllMessages() {
@@ -180,7 +211,68 @@ public class MessageRepository {
     }
 
     private void clearAllChatRoomMessagesFromRoom(ChatRoom chatRoom) {
-        new ClearAllMessagesAsyncTask(database.messageDao()).execute(chatRoom);
+        new ClearAllMessagesInChatRoomAsyncTask(database.messageDao()).execute(chatRoom);
+    }
+
+    /**
+     * Call to logout user and clear all messages from Room
+     */
+    public void logOutUser() {
+        fireBaseApiManager.logOutUser();
+        clearAllMessages();
+    }
+
+    /**
+     * Call to clear all messages from Room
+     */
+    private void clearAllMessages() {
+        new ClearAllMessagesAsyncTask(database.messageDao()).execute();
+    }
+
+    /**
+     * Add given list of messages to Room
+     *
+     * @param messages
+     */
+    public void addMessages(List<Message> messages) {
+        new AddAllMessagesAsyncTask(database.messageDao()).execute(messages);
+    }
+
+    /**
+     * Call to add the given message to FireStore
+     *
+     * @param messageHashMap given message converted into HashMap
+     */
+    public void addMessageToFireBase(Map<String, Object> messageHashMap) {
+        fireBaseApiManager.addMessageToUserDatabase(messageHashMap);
+    }
+
+    /**
+     * Call to sync messages from FireStore to Room for the logged in user
+     */
+    public void syncMessagesFromFireStoreToRoom() {
+        fireBaseApiManager.syncMessages(new DBValueListener<List<Map<String, Object>>>() {
+            @Override
+            public void onDataReceived(List<Map<String, Object>> data) {
+//                This code runs on the UI thread
+                List<Message> messages = new ArrayList<>();
+                for (Map<String, Object> object :
+                        data) {
+                    Timber.i(String.valueOf(object.get("mid")));
+                    Message newMessage = new Message((long) object.get("mid"), String.valueOf(object.get("msg")),
+                            String.valueOf(object.get("sender")), String.valueOf(object.get("receiver")),
+                            (long) object.get("chatRoomId"), (long) object.get("timestamp"));
+                    Timber.i(newMessage.toString());
+                    messages.add(newMessage);
+                }
+                addMessages(messages);
+            }
+
+            @Override
+            public void onCancelled(Error error) {
+
+            }
+        });
     }
 
     /**
@@ -203,7 +295,43 @@ public class MessageRepository {
     /**
      * Fetch all chat room  messages for the given ChatRoom through AsyncTask from Room
      */
-    private static class ClearAllMessagesAsyncTask extends AsyncTask<ChatRoom, Void, Void> {
+    private static class ClearAllMessagesInChatRoomAsyncTask extends AsyncTask<ChatRoom, Void, Void> {
+
+        private MessageDao mAsyncTaskDao;
+
+        ClearAllMessagesInChatRoomAsyncTask(MessageDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(ChatRoom... params) {
+            mAsyncTaskDao.clearChatRoomMessages(params[0].getId());
+            return null;
+        }
+    }
+
+    /**
+     * Fetch all messages through AsyncTask from Room
+     */
+    private static class AddAllMessagesAsyncTask extends AsyncTask<List<Message>, Void, Void> {
+
+        private MessageDao mAsyncTaskDao;
+
+        AddAllMessagesAsyncTask(MessageDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(List<Message>... lists) {
+            mAsyncTaskDao.insertAllMessages(lists[0]);
+            return null;
+        }
+    }
+
+    /**
+     * Fetch all messages through AsyncTask from Room
+     */
+    private static class ClearAllMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private MessageDao mAsyncTaskDao;
 
@@ -212,8 +340,8 @@ public class MessageRepository {
         }
 
         @Override
-        protected Void doInBackground(ChatRoom... params) {
-            mAsyncTaskDao.clearChatRoomMessages(params[0].getId());
+        protected Void doInBackground(Void... params) {
+            mAsyncTaskDao.clear();
             return null;
         }
     }
@@ -257,7 +385,7 @@ public class MessageRepository {
     /**
      * AsyncTask which makes insert operation thread safe and does not block the main thread for a long time
      */
-    private static class InsertAsyncTask extends AsyncTask<Message, Void, Void> {
+    private static class InsertAsyncTask extends AsyncTask<Message, Void, Message> {
 
         private MessageDao mAsyncTaskDao;
 
@@ -266,10 +394,10 @@ public class MessageRepository {
         }
 
         @Override
-        protected Void doInBackground(final Message... params) {
+        protected Message doInBackground(final Message... params) {
             mAsyncTaskDao.insert(params[0]);
             Timber.i("Inside AsyncTask to insert message in Room %s", params[0].getMsg());
-            return null;
+            return mAsyncTaskDao.getLatestMessage(params[0].getChatRoomId());
         }
     }
 
