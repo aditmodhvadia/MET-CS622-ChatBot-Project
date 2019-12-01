@@ -22,8 +22,7 @@
             android:layout_width="@dimen/medium_img"
             android:layout_height="@dimen/medium_img"
             android:contentDescription="@string/chat_room_photo_cd"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:scaleType="fitCenter" />
     </androidx.cardview.widget.CardView>
     <!--    tools:src="@tools:sample/backgrounds/scenic"-->
 

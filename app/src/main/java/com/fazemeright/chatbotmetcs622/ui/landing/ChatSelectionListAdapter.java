@@ -3,6 +3,7 @@ package com.fazemeright.chatbotmetcs622.ui.landing;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -67,14 +68,18 @@ public class ChatSelectionListAdapter extends ListAdapter<ChatRoom, ChatSelectio
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvChatRoomName;
+        ImageView ivChatRoom;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvChatRoomName = itemView.findViewById(R.id.tvChatRoomName);
+            ivChatRoom = itemView.findViewById(R.id.ivChatRoom);
         }
 
         public void bind(ChatRoom item) {
             tvChatRoomName.setText(item.getName());
+
+            ivChatRoom.setBackgroundResource(item.getLogoId());
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

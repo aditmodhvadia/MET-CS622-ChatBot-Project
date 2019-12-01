@@ -41,10 +41,10 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
 
     private ArrayList<ChatRoom> getChatRoomList() {
         ArrayList<ChatRoom> chatRooms = new ArrayList<>();
-        chatRooms.add(new ChatRoom(ChatRoom.BRUTE_FORCE_ID, ChatRoom.BRUTE_FORCE));
-        chatRooms.add(new ChatRoom(ChatRoom.LUCENE_ID, ChatRoom.LUCENE));
-        chatRooms.add(new ChatRoom(ChatRoom.MONGO_DB_ID, ChatRoom.MONGO_DB));
-        chatRooms.add(new ChatRoom(ChatRoom.MY_SQL_ID, ChatRoom.MY_SQL));
+        chatRooms.add(new ChatRoom(ChatRoom.BRUTE_FORCE_ID, ChatRoom.BRUTE_FORCE, R.drawable.brute_force_logo));
+        chatRooms.add(new ChatRoom(ChatRoom.LUCENE_ID, ChatRoom.LUCENE, R.drawable.lucene_logo));
+        chatRooms.add(new ChatRoom(ChatRoom.MONGO_DB_ID, ChatRoom.MONGO_DB, R.drawable.mongodb_logo));
+        chatRooms.add(new ChatRoom(ChatRoom.MY_SQL_ID, ChatRoom.MY_SQL, R.drawable.mysql_logo));
         return chatRooms;
     }
 
