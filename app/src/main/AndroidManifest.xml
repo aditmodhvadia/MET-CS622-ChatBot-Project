@@ -34,6 +34,9 @@
             android:windowSoftInputMode="adjustResize" />
 
         <service android:name=".intentservice.FireBaseIntentService" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
