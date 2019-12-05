@@ -32,7 +32,7 @@
             android:ems="10"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
-            android:text="unittesting@gmail.com"
+            android:text="abc@gmail.com"
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -70,6 +70,7 @@
 
     <Button
         android:id="@+id/btnLogin"
+        style="@style/StandardButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/regular_margin"

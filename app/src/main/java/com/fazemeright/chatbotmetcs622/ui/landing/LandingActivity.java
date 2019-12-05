@@ -14,6 +14,7 @@ import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
+import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
 
 import java.util.ArrayList;
 
@@ -59,15 +60,15 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
         switch (item.getItemId()) {
             case R.id.action_logout:
                 logoutUser();
-                openLoginActivity();
+                openRegistrationActivity();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void openLoginActivity() {
-        startActivity(new Intent(LandingActivity.this, LoginActivity.class));
+    private void openRegistrationActivity() {
+        startActivity(new Intent(LandingActivity.this, RegistrationActivity.class));
         finish();
     }
 
@@ -87,7 +88,6 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
 
     @Override
     public void onChatRoomClicked(ChatRoom chatRoom) {
-//        TODO: Add chatroom object to intent before sending it as well
         Intent intent = new Intent(LandingActivity.this, ChatActivity.class);
         intent.putExtra(SELECTED_CHAT_ROOM, chatRoom);
         startActivity(intent);

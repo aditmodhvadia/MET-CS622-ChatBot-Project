@@ -10,4 +10,10 @@
 
         <item name="android:windowDisablePreview">true</item>
     </style>
+
+    <style name="StandardButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_round_primary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>
