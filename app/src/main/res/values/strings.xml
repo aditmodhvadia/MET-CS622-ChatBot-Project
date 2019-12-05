@@ -25,4 +25,8 @@
     <string name="clear_action">Clear</string>
     <string name="no_internet_connection_available">No internet available</string>
     <string name="chat_bot">Chat Bot</string>
+    <string name="last_name">Last Name</string>
+    <string name="first_name">First Name</string>
+    <string name="incorrect_first_name">Please enter your first name</string>
+    <string name="incorrect_last_name">Please enter your last name</string>
 </resources>
