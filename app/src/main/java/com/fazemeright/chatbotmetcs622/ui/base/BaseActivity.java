@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
@@ -38,6 +39,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         setListeners();
     }
 
+    /**
+     * Call to hide soft keyboard
+     *
+     * @param activity
+     */
     public void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -48,6 +54,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    public void showKeyBoard(EditText yourEditText) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(yourEditText, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 

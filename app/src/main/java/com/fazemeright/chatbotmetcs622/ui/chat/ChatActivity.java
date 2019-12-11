@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -18,8 +19,11 @@ import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
@@ -29,6 +33,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     private EditText etMsg;
     private ImageView ivSendMsg;
     private ChatRoom chatRoom;
+    private ChipGroup dataFilterChipGroup;
 
     @Override
     public void initViews() {
@@ -36,6 +41,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         etMsg = findViewById(R.id.etMsg);
         ivSendMsg = findViewById(R.id.ivSendMsg);
         rvChatList = findViewById(R.id.rvChatList);
+        dataFilterChipGroup = findViewById(R.id.dataFilterChipGroup);
 
         if (getIntent() != null) {
             chatRoom = (ChatRoom) getIntent().getSerializableExtra(LandingActivity.SELECTED_CHAT_ROOM);
@@ -45,6 +51,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
+
+        String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
+        setupFilterKeywords(dataFilters);
 
         rvChatList.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
@@ -58,6 +67,46 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         rvChatList.setAdapter(adapter);
 //        Show user the most recent messages, hence scroll to the top
         rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
+    }
+
+    /**
+     * Use to setup chips for the given list of data filter for device usage
+     *
+     * @param dataFilters given array of data filter
+     */
+    private void setupFilterKeywords(String[] dataFilters) {
+//        remove all views from ChipGroup if any
+        dataFilterChipGroup.removeAllViews();
+        if (dataFilters != null) {
+            for (final String dataFilter :
+                    dataFilters) {
+//                create new chip and apply attributes
+                Chip chip = new Chip(Objects.requireNonNull(mContext)) {{
+                    setText(dataFilter);    // set text
+                    setClickable(true);
+                    setCloseIconVisible(false); // no need for close icon in our scenario
+                    setCheckable(true); // set checkable to be true, hence allow check changes
+                }};
+                dataFilterChipGroup.addView(chip);  // add chip to ChipGroup
+                chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            etMsg.requestFocus();
+                            etMsg.setText(buttonView.getText().toString());
+                            etMsg.setSelection(buttonView.getText().toString().length());
+                            showKeyBoard(etMsg);
+                        }
+                    }
+                });
+
+            }
+//            show ChipGroup if list is not empty
+            dataFilterChipGroup.setVisibility(View.VISIBLE);
+        } else {
+//            hide ChipGroup if list is empty
+            dataFilterChipGroup.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
