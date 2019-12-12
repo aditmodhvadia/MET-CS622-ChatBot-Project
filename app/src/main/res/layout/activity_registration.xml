@@ -17,7 +17,7 @@
         android:layout_marginTop="@dimen/regular_margin"
         android:hint="@string/email_address"
         android:textColorHint="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayout2"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayoutFirstName"
         app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalEnd"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guidelineVerticalStart"
@@ -32,6 +32,61 @@
             android:ems="10"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
+            android:textColor="@android:color/black"
+            android:textColorHint="@android:color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutFirstName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/regular_margin"
+        android:hint="@string/first_name"
+        android:textColorHint="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayoutLastName"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalEnd"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guidelineVerticalStart"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout">
+
+        <EditText
+            android:id="@+id/etFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:textColor="@android:color/black"
+            android:textColorHint="@android:color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutLastName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/regular_margin"
+        android:hint="@string/last_name"
+        android:textColorHint="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout2"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalEnd"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guidelineVerticalStart"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutFirstName">
+
+        <EditText
+            android:id="@+id/etLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="text"
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -51,7 +106,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalEnd"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guidelineVerticalStart"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutLastName"
         app:passwordToggleEnabled="true"
         app:passwordToggleTint="@android:color/black">
 
@@ -96,6 +151,7 @@
 
     <Button
         android:id="@+id/btnRegister"
+        style="@style/StandardButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/regular_margin"

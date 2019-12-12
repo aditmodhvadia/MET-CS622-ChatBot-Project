@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -44,15 +45,15 @@ abstract class FireBaseApiWrapper implements FireBaseApiWrapperInterface {
 
     @Override
     public String getCurrentUserEmail() {
-        return FirebaseAuth.getInstance().getCurrentUser() != null
-                ? FirebaseAuth.getInstance().getCurrentUser().getEmail() : null;
+        return getCurrentUser() != null
+                ? getCurrentUser().getEmail() : null;
     }
 
     @Override
     public void sendEmailVerification(ActionCodeSettings actionCodeSettings,
                                       OnCompleteListener<Void> onCompleteListener, OnFailureListener onFailureListener) {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification(actionCodeSettings)
+        if (getCurrentUser() != null) {
+            getCurrentUser().sendEmailVerification(actionCodeSettings)
                     .addOnCompleteListener(onCompleteListener)
                     .addOnFailureListener(onFailureListener);
         } else {
@@ -69,14 +70,14 @@ abstract class FireBaseApiWrapper implements FireBaseApiWrapperInterface {
 
     @Override
     public boolean isUserVerified() {
-        return FirebaseAuth.getInstance().getCurrentUser() != null &&
-                FirebaseAuth.getInstance().getCurrentUser().isEmailVerified();
+        return getCurrentUser() != null &&
+                getCurrentUser().isEmailVerified();
     }
 
     @Override
     public void reloadCurrentUserAuthState(final OnSuccessListener<Void> onSuccessListener, final OnFailureListener onFailureListener) {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            FirebaseAuth.getInstance().getCurrentUser().reload()
+        if (getCurrentUser() != null) {
+            getCurrentUser().reload()
                     .addOnSuccessListener(onSuccessListener)
                     .addOnFailureListener(onFailureListener);
         } else {
@@ -96,5 +97,14 @@ abstract class FireBaseApiWrapper implements FireBaseApiWrapperInterface {
                 onTaskCompleteListener.onTaskFailed(e);
             }
         });
+    }
+
+    /**
+     * Call to get current logged in user
+     *
+     * @return current logged in user
+     */
+    protected FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
     }
 }

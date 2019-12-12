@@ -91,7 +91,7 @@ public class Message implements Serializable {
     }
 
     public String getFormattedTime() {
-        String pattern = "HH:mm a";
+        String pattern = "MM/dd HH:mm a";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.US);
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(timestamp);

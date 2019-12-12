@@ -23,10 +23,15 @@ public class ChatRoom implements Serializable {
      * Name of the chat room
      */
     private String name;
+    /**
+     * Id of resource file associated with the ChatRoom
+     */
+    private int logoId;
 
-    public ChatRoom(int id, String name) {
+    public ChatRoom(int id, String name, int logoId) {
         this.id = id;
         this.name = name;
+        this.logoId = logoId;
     }
 
     public long getId() {
@@ -35,5 +40,9 @@ public class ChatRoom implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public int getLogoId() {
+        return logoId;
     }
 }

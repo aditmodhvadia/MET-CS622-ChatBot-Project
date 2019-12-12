@@ -97,11 +97,11 @@ public class FireBaseIntentService extends IntentService {
      * Call to sync messages from FireStore to Room for the logged in user
      */
     private void syncMessages() {
-        try {
+        /*try {
             Thread.sleep(5000); //  intentionally kept delay to show in presentation TODO: Remove afterwards
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
         messageRepository.syncMessagesFromFireStoreToRoom();
     }
 

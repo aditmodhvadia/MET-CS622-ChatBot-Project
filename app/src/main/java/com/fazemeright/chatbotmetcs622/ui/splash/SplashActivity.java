@@ -5,6 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.work.Constraints;
@@ -24,12 +26,17 @@ import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {
 
+    private TextView tvAppVersion, tvAppTitle;
+
     @Override
     public void initViews() {
         hideSystemUI();
-        TextView tvAppVersion = findViewById(R.id.tvAppVersion);
+        tvAppVersion = findViewById(R.id.tvAppVersion);
+        tvAppTitle = findViewById(R.id.tvAppTitle);
 
         tvAppVersion.setText(getAppVersion());
+
+        fadeInViews();
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -37,7 +44,13 @@ public class SplashActivity extends BaseActivity {
             public void run() {
                 determineIfUserIsLoggedIn();
             }
-        }, 300);
+        }, 800);
+    }
+
+    private void fadeInViews() {
+        Animation aniFade = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+        tvAppTitle.startAnimation(aniFade);
+        tvAppVersion.startAnimation(aniFade);
     }
 
     private void determineIfUserIsLoggedIn() {
@@ -81,6 +94,10 @@ public class SplashActivity extends BaseActivity {
      * Call to open RegistrationActivity from the current activity
      */
     private void openRegistrationActivity() {
+        Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        tvAppVersion.startAnimation(animFadeOut);
+        tvAppTitle.startAnimation(animFadeOut);
+
         startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
         finish();
     }
@@ -89,6 +106,10 @@ public class SplashActivity extends BaseActivity {
      * Open LandingActivity and finish this one
      */
     private void openLandingActivity() {
+        Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        tvAppVersion.startAnimation(animFadeOut);
+        tvAppTitle.startAnimation(animFadeOut);
+
         startActivity(new Intent(SplashActivity.this, LandingActivity.class));
         finish();
     }

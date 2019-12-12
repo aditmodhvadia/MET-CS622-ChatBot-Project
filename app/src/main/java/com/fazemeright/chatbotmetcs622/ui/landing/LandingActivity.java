@@ -14,6 +14,7 @@ import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
+import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,11 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
     @Override
     public void initViews() {
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + fireBaseApiManager.getCurrentLoggedInUserEmail());
+            String firstName = fireBaseApiManager.getCurrentUserFirstName();
+            if (firstName == null) {
+                firstName = "Adit";
+            }
+            getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + firstName);
         }
 
         rvChatRoomList = findViewById(R.id.rvChatRoomList);
@@ -41,10 +46,10 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
 
     private ArrayList<ChatRoom> getChatRoomList() {
         ArrayList<ChatRoom> chatRooms = new ArrayList<>();
-        chatRooms.add(new ChatRoom(ChatRoom.BRUTE_FORCE_ID, ChatRoom.BRUTE_FORCE));
-        chatRooms.add(new ChatRoom(ChatRoom.LUCENE_ID, ChatRoom.LUCENE));
-        chatRooms.add(new ChatRoom(ChatRoom.MONGO_DB_ID, ChatRoom.MONGO_DB));
-        chatRooms.add(new ChatRoom(ChatRoom.MY_SQL_ID, ChatRoom.MY_SQL));
+        chatRooms.add(new ChatRoom(ChatRoom.BRUTE_FORCE_ID, ChatRoom.BRUTE_FORCE, R.drawable.brute_force_logo));
+        chatRooms.add(new ChatRoom(ChatRoom.LUCENE_ID, ChatRoom.LUCENE, R.drawable.lucene_logo));
+        chatRooms.add(new ChatRoom(ChatRoom.MONGO_DB_ID, ChatRoom.MONGO_DB, R.drawable.mongodb_logo));
+        chatRooms.add(new ChatRoom(ChatRoom.MY_SQL_ID, ChatRoom.MY_SQL, R.drawable.mysql_logo));
         return chatRooms;
     }
 
@@ -59,15 +64,15 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
         switch (item.getItemId()) {
             case R.id.action_logout:
                 logoutUser();
-                openLoginActivity();
+                openRegistrationActivity();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void openLoginActivity() {
-        startActivity(new Intent(LandingActivity.this, LoginActivity.class));
+    private void openRegistrationActivity() {
+        startActivity(new Intent(LandingActivity.this, RegistrationActivity.class));
         finish();
     }
 
@@ -87,7 +92,6 @@ public class LandingActivity extends BaseActivity implements ChatSelectionListAd
 
     @Override
     public void onChatRoomClicked(ChatRoom chatRoom) {
-//        TODO: Add chatroom object to intent before sending it as well
         Intent intent = new Intent(LandingActivity.this, ChatActivity.class);
         intent.putExtra(SELECTED_CHAT_ROOM, chatRoom);
         startActivity(intent);

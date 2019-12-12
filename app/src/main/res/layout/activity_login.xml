@@ -32,7 +32,7 @@
             android:ems="10"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
-            android:text="unittesting@gmail.com"
+            android:text="mackj1@bu.edu"
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -63,13 +63,14 @@
             android:ems="10"
             android:imeOptions="actionNext"
             android:inputType="textPassword"
-            android:text="12345678"
+            android:text="OmegaPsiPhi@1911"
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnLogin"
+        style="@style/StandardButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/regular_margin"

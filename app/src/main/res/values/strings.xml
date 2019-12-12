@@ -24,4 +24,19 @@
     <string name="type_msg_hint">Type a message</string>
     <string name="clear_action">Clear</string>
     <string name="no_internet_connection_available">No internet available</string>
+    <string name="chat_bot">Chat Bot</string>
+    <string name="last_name">Last Name</string>
+    <string name="first_name">First Name</string>
+    <string name="incorrect_first_name">Please enter your first name</string>
+    <string name="incorrect_last_name">Please enter your last name</string>
+
+
+    <!--    using regex to extract number from the strings, hence keep a number in it, default value will be 1 day otherwise-->
+    <string-array name="query_sample_selection">
+        <item>Did I run on </item>
+        <item>How many steps did I take on </item>
+        <item>Did I receive heart rate notifications on </item>
+        <item>Did I receive heart rate notifications on </item>
+    </string-array>
+
 </resources>

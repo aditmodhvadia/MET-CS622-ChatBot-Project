@@ -17,7 +17,7 @@ import timber.log.Timber;
 
 public class RegistrationActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText userEmailEditText, userPasswordEditText, userConPasswordEditText;
+    private EditText userEmailEditText, userPasswordEditText, userConPasswordEditText, etFirstName, etLastName;
     private TextView tvHaveAccount;
     private Button btnRegister;
 
@@ -29,6 +29,8 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
         }
 
         userEmailEditText = findViewById(R.id.userLoginEmailEditText);
+        etFirstName = findViewById(R.id.etFirstName);
+        etLastName = findViewById(R.id.etLastName);
         userPasswordEditText = findViewById(R.id.userPasswordEditText);
         userConPasswordEditText = findViewById(R.id.userConPasswordEditText);
         tvHaveAccount = findViewById(R.id.tvHaveAccount);
@@ -54,12 +56,13 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
                 openLoginActivity();
                 break;
             case R.id.btnRegister:
-//                TODO: Disable and re-enable the button after performing registration and validation
                 disableButton(btnRegister);
                 String email = userEmailEditText.getText().toString();
+                String firstName = etFirstName.getText().toString();
+                String lastName = etLastName.getText().toString();
                 String password = userPasswordEditText.getText().toString();
                 String conPassword = userConPasswordEditText.getText().toString();
-                performRegistration(email, password, conPassword);
+                performRegistration(email, firstName, lastName, password, conPassword);
                 enableButton(btnRegister);
                 break;
         }
@@ -76,13 +79,27 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
      * Call to perform validation on the input parameters and then perform registration
      *
      * @param email       user email address
+     * @param firstName   first name of user
+     * @param lastName    last name of user
      * @param password    user selected password
      * @param conPassword user selected confirmation password
      */
-    private void performRegistration(final String email, final String password, String conPassword) {
+    private void performRegistration(final String email, String firstName, String lastName, final String password, String conPassword) {
         if (!AppUtils.isValidEmail(email)) {
             userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
             userEmailEditText.requestFocus();
+            return;
+        }
+
+        if (!AppUtils.isValidName(firstName)) {
+            etFirstName.setError(mContext.getString(R.string.incorrect_first_name));
+            etFirstName.requestFocus();
+            return;
+        }
+
+        if (!AppUtils.isValidName(lastName)) {
+            etLastName.setError(mContext.getString(R.string.incorrect_last_name));
+            etLastName.requestFocus();
             return;
         }
 
@@ -100,7 +117,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
             return;
         }
 
-        fireBaseApiManager.registerNewUserWithEmailPassword(email, password, new OnTaskCompleteListener() {
+        fireBaseApiManager.registerNewUserWithEmailPassword(email, password, firstName, lastName, new OnTaskCompleteListener() {
             @Override
             public void onTaskSuccessful() {
                 Timber.i("New user registered successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
