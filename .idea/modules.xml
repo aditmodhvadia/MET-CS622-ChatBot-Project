@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ChatBot MET CS622.iml" filepath="$PROJECT_DIR$/ChatBot MET CS622.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" filepath="$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ChatBot MET CS622.iml" filepath="$PROJECT_DIR$/ChatBot MET CS622.iml" group="ChatBot MET CS622" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="ChatBot MET CS622/app" />
+      <module fileurl="file://$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" filepath="$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" group="ChatBot MET CS622/firebase-api-library" />
     </modules>
   </component>
 </project>

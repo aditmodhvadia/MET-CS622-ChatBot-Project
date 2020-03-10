@@ -13,21 +13,26 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.fazemeright.chatbotmetcs622.network.ApiManager;
+import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 
 public abstract class BaseFragment extends Fragment {
 
     public Context mContext;
-    public FireBaseApiManager apiManager;
+    public FireBaseApiManager fireBaseApiManager;
     protected MessageRepository messageRepository;
+    protected ApiManager apiManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-        apiManager = FireBaseApiManager.getInstance();
+        fireBaseApiManager = FireBaseApiManager.getInstance();
         messageRepository = MessageRepository.getInstance(mContext);
+        apiManager = ApiManager.getInstance();
+        apiManager.init(NetworkManager.getInstance());
     }
 
     @Nullable

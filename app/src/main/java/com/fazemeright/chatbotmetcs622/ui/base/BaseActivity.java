@@ -14,6 +14,8 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fazemeright.chatbotmetcs622.network.ApiManager;
+import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 
@@ -22,6 +24,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public Context mContext;
     protected FireBaseApiManager fireBaseApiManager;
     protected MessageRepository messageRepository;
+    protected ApiManager apiManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,6 +32,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         mContext = this;
         fireBaseApiManager = FireBaseApiManager.getInstance();
         messageRepository = MessageRepository.getInstance(mContext);
+        apiManager = ApiManager.getInstance();
+        apiManager.init(NetworkManager.getInstance());
         setContentView(getLayoutResId());
     }
 
