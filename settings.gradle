@@ -1,0 +1,2 @@
+include ':app', ':firebase-api-library'
+rootProject.name='ChatBot MET CS622'
