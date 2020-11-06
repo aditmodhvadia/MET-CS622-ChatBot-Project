@@ -1,5 +1,5 @@
 # MET-CS622-ChatBot-Project (Chat Bot)
-An Android chat bot for MET CS622 final Project which queries smartwatch database to give user insights on their activity.
+An Android chat bot for MET CS622 final Project which queries smartwatch database to give user insights over their activity.
 
 ## Getting Started
 
