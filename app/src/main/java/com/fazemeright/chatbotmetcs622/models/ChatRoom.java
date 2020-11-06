@@ -1,6 +1,7 @@
 package com.fazemeright.chatbotmetcs622.models;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * POJO to hold Chat room
@@ -44,5 +45,20 @@ public class ChatRoom implements Serializable {
 
     public int getLogoId() {
         return logoId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChatRoom chatRoom = (ChatRoom) o;
+        return id == chatRoom.id &&
+                logoId == chatRoom.logoId &&
+                name.equals(chatRoom.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, logoId);
     }
 }
