@@ -83,7 +83,7 @@ public class ApiManager {
     /**
      * DatabaseUrl module Api sub url
      */
-    class DatabaseUrl {
+    static class DatabaseUrl {
         final static String MONGO_DB = "/mongodb";
         final static String LUCENE = "/lucene";
         final static String MY_SQL = "/mysql";
@@ -91,9 +91,22 @@ public class ApiManager {
 
     }
 
-    class BaseUrl {
-        final static String BASE_URL = "http://192.168.43.28:8080";
+    /**
+     * baseURL model for all the BASE URL addresses
+     */
+    public static class BaseUrl {
+        static String BASE_URL = "http://192.168.43.28:8080";     //  Update the url as per your local ip address
         final static String BASE_APP_NAME = "/MET_CS622_ChatBot_Backend_war_exploded";
-        final static String BASE_HI = "/hi";
+
+        /**
+         * Set the local IP address or the base url address for the server where the database back end is hosted.
+         * Also include the port.
+         *
+         * @param hostAddress ip address
+         */
+        public static void setLocalIP(String hostAddress) {
+            BASE_URL = hostAddress;
+        }
+
     }
 }
