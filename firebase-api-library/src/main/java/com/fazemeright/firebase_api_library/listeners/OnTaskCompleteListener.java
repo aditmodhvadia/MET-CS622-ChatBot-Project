@@ -2,9 +2,9 @@ package com.fazemeright.firebase_api_library.listeners;
 
 public interface OnTaskCompleteListener {
 
-    void onTaskSuccessful();
+  void onTaskSuccessful();
 
-    void onTaskCompleteButFailed(String errMsg);
+  void onTaskCompleteButFailed(String errMsg);
 
-    void onTaskFailed(Exception e);
+  void onTaskFailed(Exception e);
 }

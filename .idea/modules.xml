@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ChatBot MET CS622.iml" filepath="$PROJECT_DIR$/ChatBot MET CS622.iml" group="ChatBot MET CS622" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ChatBot_MET_CS622.iml" filepath="$PROJECT_DIR$/.idea/modules/ChatBot_MET_CS622.iml" group="ChatBot_MET_CS622" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="ChatBot MET CS622/app" />
-      <module fileurl="file://$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" filepath="$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" group="ChatBot MET CS622/firebase-api-library" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ChatBot_MET_CS622.iml" filepath="$PROJECT_DIR$/.idea/modules/ChatBot_MET_CS622.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ChatBot_MET_CS622.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ChatBot_MET_CS622.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/firebase-api-library/ChatBot_MET_CS622.firebase-api-library.iml" filepath="$PROJECT_DIR$/.idea/modules/firebase-api-library/ChatBot_MET_CS622.firebase-api-library.iml" />
     </modules>
   </component>
 </project>

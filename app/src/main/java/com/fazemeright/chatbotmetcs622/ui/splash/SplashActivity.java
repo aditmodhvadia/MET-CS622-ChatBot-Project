@@ -26,124 +26,118 @@ import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {
 
-    private TextView tvAppVersion, tvAppTitle;
+  private TextView tvAppVersion, tvAppTitle;
 
-    @Override
-    public void initViews() {
-        hideSystemUI();
-        tvAppVersion = findViewById(R.id.tvAppVersion);
-        tvAppTitle = findViewById(R.id.tvAppTitle);
+  @Override
+  public void initViews() {
+    hideSystemUI();
+    tvAppVersion = findViewById(R.id.tvAppVersion);
+    tvAppTitle = findViewById(R.id.tvAppTitle);
 
-        tvAppVersion.setText(getAppVersion());
+    tvAppVersion.setText(getAppVersion());
 
-        fadeInViews();
+    fadeInViews();
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                determineIfUserIsLoggedIn();
-            }
-        }, 800);
-    }
+    final Handler handler = new Handler();
+    handler.postDelayed(
+        new Runnable() {
+          @Override
+          public void run() {
+            determineIfUserIsLoggedIn();
+          }
+        },
+        800);
+  }
 
-    private void fadeInViews() {
-        Animation aniFade = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-        tvAppTitle.startAnimation(aniFade);
-        tvAppVersion.startAnimation(aniFade);
-    }
+  private void fadeInViews() {
+    Animation aniFade = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+    tvAppTitle.startAnimation(aniFade);
+    tvAppVersion.startAnimation(aniFade);
+  }
 
-    private void determineIfUserIsLoggedIn() {
-        fireBaseApiManager.reloadUserAuthState(new OnTaskCompleteListener() {
-            @Override
-            public void onTaskSuccessful() {
-//                user is logged in, open landing activity
-                Constraints constraints = new Constraints.Builder()
-                        .setRequiresCharging(true)
-                        .build();
+  private void determineIfUserIsLoggedIn() {
+    fireBaseApiManager.reloadUserAuthState(
+        new OnTaskCompleteListener() {
+          @Override
+          public void onTaskSuccessful() {
+            //                user is logged in, open landing activity
+            Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
 
-                PeriodicWorkRequest saveRequest =
-                        new PeriodicWorkRequest.Builder(FireBaseSyncWorker.class, 1, TimeUnit.DAYS)
-                                .setConstraints(constraints)
-                                .build();
+            PeriodicWorkRequest saveRequest =
+                new PeriodicWorkRequest.Builder(FireBaseSyncWorker.class, 1, TimeUnit.DAYS)
+                    .setConstraints(constraints)
+                    .build();
 
-                WorkManager.getInstance(mContext)
-                        .enqueue(saveRequest);
+            WorkManager.getInstance(mContext).enqueue(saveRequest);
 
-                Timber.i("Open Landing Activity");
-                openLandingActivity();
-            }
+            Timber.i("Open Landing Activity");
+            openLandingActivity();
+          }
 
-            @Override
-            public void onTaskCompleteButFailed(String errMsg) {
-                //  user not logged in, open registration activity
-                Timber.i("Open Registration Activity");
-                openRegistrationActivity();
-            }
+          @Override
+          public void onTaskCompleteButFailed(String errMsg) {
+            //  user not logged in, open registration activity
+            Timber.i("Open Registration Activity");
+            openRegistrationActivity();
+          }
 
-            @Override
-            public void onTaskFailed(Exception e) {
-                //  user not logged in or could not perform check, open registration activity
-                Timber.i("Open Registration Activity");
-                openRegistrationActivity();
-            }
+          @Override
+          public void onTaskFailed(Exception e) {
+            //  user not logged in or could not perform check, open registration activity
+            Timber.i("Open Registration Activity");
+            openRegistrationActivity();
+          }
         });
+  }
+
+  /** Call to open RegistrationActivity from the current activity */
+  private void openRegistrationActivity() {
+    Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+    tvAppVersion.startAnimation(animFadeOut);
+    tvAppTitle.startAnimation(animFadeOut);
+
+    startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
+    finish();
+  }
+
+  /** Open LandingActivity and finish this one */
+  private void openLandingActivity() {
+    Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+    tvAppVersion.startAnimation(animFadeOut);
+    tvAppTitle.startAnimation(animFadeOut);
+
+    startActivity(new Intent(SplashActivity.this, LandingActivity.class));
+    finish();
+  }
+
+  /**
+   * Call to get the version of the Application
+   *
+   * @return version name of the application
+   */
+  private String getAppVersion() {
+    PackageInfo pInfo;
+    try {
+      pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+      return pInfo.versionName;
+    } catch (PackageManager.NameNotFoundException e) {
+      return "beta-testing";
     }
+  }
 
-    /**
-     * Call to open RegistrationActivity from the current activity
-     */
-    private void openRegistrationActivity() {
-        Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
-        tvAppVersion.startAnimation(animFadeOut);
-        tvAppTitle.startAnimation(animFadeOut);
+  /** Makes the screen layout to cover the full display of the device */
+  private void hideSystemUI() {
+    getWindow()
+        .setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+  }
 
-        startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
-        finish();
-    }
+  @Override
+  public void setListeners() {}
 
-    /**
-     * Open LandingActivity and finish this one
-     */
-    private void openLandingActivity() {
-        Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
-        tvAppVersion.startAnimation(animFadeOut);
-        tvAppTitle.startAnimation(animFadeOut);
-
-        startActivity(new Intent(SplashActivity.this, LandingActivity.class));
-        finish();
-    }
-
-    /**
-     * Call to get the version of the Application
-     *
-     * @return version name of the application
-     */
-    private String getAppVersion() {
-        PackageInfo pInfo;
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            return pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            return "beta-testing";
-        }
-    }
-
-    /**
-     * Makes the screen layout to cover the full display of the device
-     */
-    private void hideSystemUI() {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-    }
-
-    @Override
-    public void setListeners() {
-
-    }
-
-    @Override
-    public int getLayoutResId() {
-        return R.layout.activity_splash;
-    }
+  @Override
+  public int getLayoutResId() {
+    return R.layout.activity_splash;
+  }
 }
