@@ -7,31 +7,31 @@ package com.fazemeright.chatbotmetcs622.network.models;
  */
 public class NetCompoundRes<T> {
 
-    private boolean isSuccess;
-    private NetResponse<T> netResponse;
-    private NetError netError;
+  private boolean isSuccess;
+  private NetResponse<T> netResponse;
+  private NetError netError;
 
-    public void setSuccess(boolean success) {
-        isSuccess = success;
-    }
+  public void setSuccess(boolean success) {
+    isSuccess = success;
+  }
 
-    public void setNetResponse(NetResponse<T> netResponse) {
-        this.netResponse = netResponse;
-    }
+  public void setNetResponse(NetResponse<T> netResponse) {
+    this.netResponse = netResponse;
+  }
 
-    public void setNetError(NetError netError) {
-        this.netError = netError;
-    }
+  public void setNetError(NetError netError) {
+    this.netError = netError;
+  }
 
-    public boolean isSuccess() {
-        return isSuccess;
-    }
+  public boolean isSuccess() {
+    return isSuccess;
+  }
 
-    public NetResponse<T> getNetResponse() {
-        return netResponse;
-    }
+  public NetResponse<T> getNetResponse() {
+    return netResponse;
+  }
 
-    public NetError getNetError() {
-        return netError;
-    }
+  public NetError getNetError() {
+    return netError;
+  }
 }

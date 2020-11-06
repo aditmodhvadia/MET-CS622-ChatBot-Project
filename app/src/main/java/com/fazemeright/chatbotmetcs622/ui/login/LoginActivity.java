@@ -23,121 +23,122 @@ import timber.log.Timber;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText userEmailEditText, userPasswordEditText;
-    private TextView tvDontHaveAccount;
-    private Button btnLogin;
+  private EditText userEmailEditText, userPasswordEditText;
+  private TextView tvDontHaveAccount;
+  private Button btnLogin;
 
-    @Override
-    public void initViews() {
-//        set title for activity
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.login_title));
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-
-        userEmailEditText = findViewById(R.id.userLoginEmailEditText);
-        userPasswordEditText = findViewById(R.id.userPasswordEditText);
-        tvDontHaveAccount = findViewById(R.id.tvDontHaveAccount);
-        btnLogin = findViewById(R.id.btnLogin);
+  @Override
+  public void initViews() {
+    //        set title for activity
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setTitle(getString(R.string.login_title));
+      getSupportActionBar().setHomeButtonEnabled(true);
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
+    userEmailEditText = findViewById(R.id.userLoginEmailEditText);
+    userPasswordEditText = findViewById(R.id.userPasswordEditText);
+    tvDontHaveAccount = findViewById(R.id.tvDontHaveAccount);
+    btnLogin = findViewById(R.id.btnLogin);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    if (item.getItemId() == android.R.id.home) {
+      finish();
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public void setListeners() {
+    btnLogin.setOnClickListener(this);
+    tvDontHaveAccount.setOnClickListener(this);
+  }
+
+  @Override
+  public int getLayoutResId() {
+    return R.layout.activity_login;
+  }
+
+  @Override
+  public void onClick(View v) {
+    switch (v.getId()) {
+      case R.id.tvDontHaveAccount:
+        openRegistrationActivity();
+        break;
+      case R.id.btnLogin:
+        //                TODO: Disable and re-enable the button after performing registration and
+        // validation
+        disableButton(btnLogin);
+        String email = userEmailEditText.getText().toString();
+        String password = userPasswordEditText.getText().toString();
+        performLogin(email, password);
+        enableButton(btnLogin);
+        break;
+    }
+  }
+
+  /**
+   * Perform login with the given credentials
+   *
+   * @param email user email address
+   * @param password user password
+   */
+  private void performLogin(String email, String password) {
+    if (!AppUtils.isValidEmail(email)) {
+      userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
+      userEmailEditText.requestFocus();
+      return;
     }
 
-    @Override
-    public void setListeners() {
-        btnLogin.setOnClickListener(this);
-        tvDontHaveAccount.setOnClickListener(this);
+    if (!AppUtils.isValidPassword(password)) {
+      userPasswordEditText.setError(mContext.getString(R.string.incorrect_pass_err_msg));
+      userPasswordEditText.requestFocus();
+      return;
     }
 
-    @Override
-    public int getLayoutResId() {
-        return R.layout.activity_login;
-    }
+    Timber.i("Login clicked");
+    fireBaseApiManager.logInWithEmailAndPassword(
+        email,
+        password,
+        new OnTaskCompleteListener() {
+          @Override
+          public void onTaskSuccessful() {
+            Timber.i(
+                "User logged in successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
+            btnLogin.setText(getString(R.string.login_success_msg));
+            Intent intent = new Intent(mContext, FireBaseIntentService.class);
+            intent.putExtra(
+                FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_SYNC_MESSAGES);
+            //                ContextCompat.startForegroundService(LoginActivity.this, intent);
+            //                ContextCompat.startForegroundService(mContext, intent);
+            ContextCompat.startForegroundService(mContext, intent);
+            openLandingActivity();
+          }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tvDontHaveAccount:
-                openRegistrationActivity();
-                break;
-            case R.id.btnLogin:
-//                TODO: Disable and re-enable the button after performing registration and validation
-                disableButton(btnLogin);
-                String email = userEmailEditText.getText().toString();
-                String password = userPasswordEditText.getText().toString();
-                performLogin(email, password);
-                enableButton(btnLogin);
-                break;
-        }
-    }
+          @Override
+          public void onTaskCompleteButFailed(String errMsg) {
+            Timber.e(errMsg);
+            //                TODO: Show error to user
+          }
 
-    /**
-     * Perform login with the given credentials
-     *
-     * @param email    user email address
-     * @param password user password
-     */
-    private void performLogin(String email, String password) {
-        if (!AppUtils.isValidEmail(email)) {
-            userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
-            userEmailEditText.requestFocus();
-            return;
-        }
-
-        if (!AppUtils.isValidPassword(password)) {
-            userPasswordEditText.setError(mContext.getString(R.string.incorrect_pass_err_msg));
-            userPasswordEditText.requestFocus();
-            return;
-        }
-
-        Timber.i("Login clicked");
-        fireBaseApiManager.logInWithEmailAndPassword(email, password, new OnTaskCompleteListener() {
-            @Override
-            public void onTaskSuccessful() {
-                Timber.i("User logged in successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
-                btnLogin.setText(getString(R.string.login_success_msg));
-                Intent intent = new Intent(mContext, FireBaseIntentService.class);
-                intent.putExtra(FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_SYNC_MESSAGES);
-//                ContextCompat.startForegroundService(LoginActivity.this, intent);
-//                ContextCompat.startForegroundService(mContext, intent);
-                ContextCompat.startForegroundService(mContext, intent);
-                openLandingActivity();
-            }
-
-            @Override
-            public void onTaskCompleteButFailed(String errMsg) {
-                Timber.e(errMsg);
-//                TODO: Show error to user
-            }
-
-            @Override
-            public void onTaskFailed(Exception e) {
-                Timber.e(e);
-//                TODO: Show error to user
-            }
+          @Override
+          public void onTaskFailed(Exception e) {
+            Timber.e(e);
+            //                TODO: Show error to user
+          }
         });
-    }
+  }
 
-    /**
-     * Open LandingActivity and finish this one
-     */
-    private void openLandingActivity() {
-        startActivity(new Intent(LoginActivity.this, LandingActivity.class));
-        finishAffinity();
-    }
+  /** Open LandingActivity and finish this one */
+  private void openLandingActivity() {
+    startActivity(new Intent(LoginActivity.this, LandingActivity.class));
+    finishAffinity();
+  }
 
-    /**
-     * Open Registration Activity
-     */
-    private void openRegistrationActivity() {
-        finish();
-    }
+  /** Open Registration Activity */
+  private void openRegistrationActivity() {
+    finish();
+  }
 }

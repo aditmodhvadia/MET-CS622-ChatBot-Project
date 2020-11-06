@@ -17,134 +17,144 @@ import timber.log.Timber;
 
 public class RegistrationActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText userEmailEditText, userPasswordEditText, userConPasswordEditText, etFirstName, etLastName;
-    private TextView tvHaveAccount;
-    private Button btnRegister;
+  private EditText userEmailEditText,
+      userPasswordEditText,
+      userConPasswordEditText,
+      etFirstName,
+      etLastName;
+  private TextView tvHaveAccount;
+  private Button btnRegister;
 
-    @Override
-    public void initViews() {
-//        set title for activity
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.registration));
-        }
-
-        userEmailEditText = findViewById(R.id.userLoginEmailEditText);
-        etFirstName = findViewById(R.id.etFirstName);
-        etLastName = findViewById(R.id.etLastName);
-        userPasswordEditText = findViewById(R.id.userPasswordEditText);
-        userConPasswordEditText = findViewById(R.id.userConPasswordEditText);
-        tvHaveAccount = findViewById(R.id.tvHaveAccount);
-        btnRegister = findViewById(R.id.btnRegister);
-
+  @Override
+  public void initViews() {
+    //        set title for activity
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setTitle(getString(R.string.registration));
     }
 
-    @Override
-    public void setListeners() {
-        btnRegister.setOnClickListener(this);
-        tvHaveAccount.setOnClickListener(this);
+    userEmailEditText = findViewById(R.id.userLoginEmailEditText);
+    etFirstName = findViewById(R.id.etFirstName);
+    etLastName = findViewById(R.id.etLastName);
+    userPasswordEditText = findViewById(R.id.userPasswordEditText);
+    userConPasswordEditText = findViewById(R.id.userConPasswordEditText);
+    tvHaveAccount = findViewById(R.id.tvHaveAccount);
+    btnRegister = findViewById(R.id.btnRegister);
+  }
+
+  @Override
+  public void setListeners() {
+    btnRegister.setOnClickListener(this);
+    tvHaveAccount.setOnClickListener(this);
+  }
+
+  @Override
+  public int getLayoutResId() {
+    return R.layout.activity_registration;
+  }
+
+  @Override
+  public void onClick(View v) {
+    switch (v.getId()) {
+      case R.id.tvHaveAccount:
+        openLoginActivity();
+        break;
+      case R.id.btnRegister:
+        disableButton(btnRegister);
+        String email = userEmailEditText.getText().toString();
+        String firstName = etFirstName.getText().toString();
+        String lastName = etLastName.getText().toString();
+        String password = userPasswordEditText.getText().toString();
+        String conPassword = userConPasswordEditText.getText().toString();
+        performRegistration(email, firstName, lastName, password, conPassword);
+        enableButton(btnRegister);
+        break;
+    }
+  }
+
+  /** Open Login Activity */
+  private void openLoginActivity() {
+    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+  }
+
+  /**
+   * Call to perform validation on the input parameters and then perform registration
+   *
+   * @param email user email address
+   * @param firstName first name of user
+   * @param lastName last name of user
+   * @param password user selected password
+   * @param conPassword user selected confirmation password
+   */
+  private void performRegistration(
+      final String email,
+      String firstName,
+      String lastName,
+      final String password,
+      String conPassword) {
+    if (!AppUtils.isValidEmail(email)) {
+      userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
+      userEmailEditText.requestFocus();
+      return;
     }
 
-    @Override
-    public int getLayoutResId() {
-        return R.layout.activity_registration;
+    if (!AppUtils.isValidName(firstName)) {
+      etFirstName.setError(mContext.getString(R.string.incorrect_first_name));
+      etFirstName.requestFocus();
+      return;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tvHaveAccount:
-                openLoginActivity();
-                break;
-            case R.id.btnRegister:
-                disableButton(btnRegister);
-                String email = userEmailEditText.getText().toString();
-                String firstName = etFirstName.getText().toString();
-                String lastName = etLastName.getText().toString();
-                String password = userPasswordEditText.getText().toString();
-                String conPassword = userConPasswordEditText.getText().toString();
-                performRegistration(email, firstName, lastName, password, conPassword);
-                enableButton(btnRegister);
-                break;
-        }
+    if (!AppUtils.isValidName(lastName)) {
+      etLastName.setError(mContext.getString(R.string.incorrect_last_name));
+      etLastName.requestFocus();
+      return;
     }
 
-    /**
-     * Open Login Activity
-     */
-    private void openLoginActivity() {
-        startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+    if (!AppUtils.isValidPassword(password)) {
+      userPasswordEditText.setError(mContext.getString(R.string.incorrect_pass_err_msg));
+      userPasswordEditText.requestFocus();
+      return;
     }
 
-    /**
-     * Call to perform validation on the input parameters and then perform registration
-     *
-     * @param email       user email address
-     * @param firstName   first name of user
-     * @param lastName    last name of user
-     * @param password    user selected password
-     * @param conPassword user selected confirmation password
-     */
-    private void performRegistration(final String email, String firstName, String lastName, final String password, String conPassword) {
-        if (!AppUtils.isValidEmail(email)) {
-            userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
-            userEmailEditText.requestFocus();
-            return;
-        }
+    if (!AppUtils.arePasswordsValid(password, conPassword)) {
+      userPasswordEditText.setError(mContext.getString(R.string.passwords_dont_match_err_msg));
+      userPasswordEditText.requestFocus();
+      userPasswordEditText.setText("");
+      userConPasswordEditText.setText("");
+      return;
+    }
 
-        if (!AppUtils.isValidName(firstName)) {
-            etFirstName.setError(mContext.getString(R.string.incorrect_first_name));
-            etFirstName.requestFocus();
-            return;
-        }
+    fireBaseApiManager.registerNewUserWithEmailPassword(
+        email,
+        password,
+        firstName,
+        lastName,
+        new OnTaskCompleteListener() {
+          @Override
+          public void onTaskSuccessful() {
+            Timber.i(
+                "New user registered successfully %s",
+                fireBaseApiManager.getCurrentLoggedInUserEmail());
+            btnRegister.setText(getString(R.string.registration_success_msg));
+            openLandingActivity();
+          }
 
-        if (!AppUtils.isValidName(lastName)) {
-            etLastName.setError(mContext.getString(R.string.incorrect_last_name));
-            etLastName.requestFocus();
-            return;
-        }
+          @Override
+          public void onTaskCompleteButFailed(String errMsg) {
+            Timber.e(errMsg);
+            //                TODO: Show error to user
+          }
 
-        if (!AppUtils.isValidPassword(password)) {
-            userPasswordEditText.setError(mContext.getString(R.string.incorrect_pass_err_msg));
-            userPasswordEditText.requestFocus();
-            return;
-        }
-
-        if (!AppUtils.arePasswordsValid(password, conPassword)) {
-            userPasswordEditText.setError(mContext.getString(R.string.passwords_dont_match_err_msg));
-            userPasswordEditText.requestFocus();
-            userPasswordEditText.setText("");
-            userConPasswordEditText.setText("");
-            return;
-        }
-
-        fireBaseApiManager.registerNewUserWithEmailPassword(email, password, firstName, lastName, new OnTaskCompleteListener() {
-            @Override
-            public void onTaskSuccessful() {
-                Timber.i("New user registered successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
-                btnRegister.setText(getString(R.string.registration_success_msg));
-                openLandingActivity();
-            }
-
-            @Override
-            public void onTaskCompleteButFailed(String errMsg) {
-                Timber.e(errMsg);
-//                TODO: Show error to user
-            }
-
-            @Override
-            public void onTaskFailed(Exception e) {
-                Timber.e(e);
-//                TODO: Show error to user
-            }
+          @Override
+          public void onTaskFailed(Exception e) {
+            Timber.e(e);
+            //                TODO: Show error to user
+          }
         });
+  }
 
-    }
-
-    /**
-     * Open LandingActivity and finish this one
-     */
-    private void openLandingActivity() {
-        startActivity(new Intent(RegistrationActivity.this, LandingActivity.class));
-        finish();
-    }
+  /** Open LandingActivity and finish this one */
+  private void openLandingActivity() {
+    startActivity(new Intent(RegistrationActivity.this, LandingActivity.class));
+    finish();
+  }
 }

@@ -8,20 +8,29 @@ import com.google.firebase.auth.AuthResult;
 
 public interface FireBaseApiWrapperInterface {
 
-    //    FireBase Auth functions
-    void signOutUser();
+  //    FireBase Auth functions
+  void signOutUser();
 
-    boolean isUserVerified();
+  boolean isUserVerified();
 
-    void createNewUserWithEmailPassword(String userEmail, String password, OnCompleteListener<AuthResult> onCompleteListener);
+  void createNewUserWithEmailPassword(
+      String userEmail, String password, OnCompleteListener<AuthResult> onCompleteListener);
 
-    void signInWithEmailAndPassword(String userEmail, String password, OnCompleteListener<AuthResult> onCompleteListener);
+  void signInWithEmailAndPassword(
+      String userEmail, String password, OnCompleteListener<AuthResult> onCompleteListener);
 
-    void sendEmailVerification(ActionCodeSettings actionCodeSettings, OnCompleteListener<Void> onCompleteListener, OnFailureListener onFailureListener);
+  void sendEmailVerification(
+      ActionCodeSettings actionCodeSettings,
+      OnCompleteListener<Void> onCompleteListener,
+      OnFailureListener onFailureListener);
 
-    String getCurrentUserEmail();
+  String getCurrentUserEmail();
 
-    void sendPasswordResetEmail(String userEmail, OnCompleteListener<Void> onCompleteListener, OnFailureListener onFailureListener);
+  void sendPasswordResetEmail(
+      String userEmail,
+      OnCompleteListener<Void> onCompleteListener,
+      OnFailureListener onFailureListener);
 
-    void reloadCurrentUserAuthState(OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener);
+  void reloadCurrentUserAuthState(
+      OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener);
 }
