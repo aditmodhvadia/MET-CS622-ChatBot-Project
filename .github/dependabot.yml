@@ -10,5 +10,7 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "develop"
-    reviewers: "aditmodhvadia"
-    assignees: "aditmodhvadia"
+    reviewers: 
+      - "aditmodhvadia"
+    assignees: 
+      - "aditmodhvadia"
