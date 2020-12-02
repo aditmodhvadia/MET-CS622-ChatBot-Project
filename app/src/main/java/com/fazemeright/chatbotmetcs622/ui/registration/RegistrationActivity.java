@@ -123,7 +123,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       return;
     }
 
-    fireBaseApiManager.registerNewUserWithEmailPassword(
+    mFireBaseApiManager.registerNewUserWithEmailPassword(
         email,
         password,
         firstName,
@@ -133,7 +133,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
           public void onTaskSuccessful() {
             Timber.i(
                 "New user registered successfully %s",
-                fireBaseApiManager.getCurrentLoggedInUserEmail());
+                mFireBaseApiManager.getCurrentLoggedInUserEmail());
             btnRegister.setText(getString(R.string.registration_success_msg));
             openLandingActivity();
           }

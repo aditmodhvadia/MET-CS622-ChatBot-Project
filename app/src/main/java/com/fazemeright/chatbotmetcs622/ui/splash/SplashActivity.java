@@ -56,7 +56,7 @@ public class SplashActivity extends BaseActivity {
   }
 
   private void determineIfUserIsLoggedIn() {
-    fireBaseApiManager.reloadUserAuthState(
+    mFireBaseApiManager.reloadUserAuthState(
         new OnTaskCompleteListener() {
           @Override
           public void onTaskSuccessful() {

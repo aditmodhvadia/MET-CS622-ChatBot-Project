@@ -13,7 +13,6 @@ import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity;
-import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class LandingActivity extends BaseActivity
   @Override
   public void initViews() {
     if (getSupportActionBar() != null) {
-      String firstName = fireBaseApiManager.getCurrentUserFirstName();
+      String firstName = mFireBaseApiManager.getCurrentUserFirstName();
       if (firstName == null) {
         firstName = "Adit";
       }
@@ -80,7 +79,7 @@ public class LandingActivity extends BaseActivity
   }
 
   private void logoutUser() {
-    messageRepository.logOutUser();
+    mMessageRepository.logOutUser();
   }
 
   @Override

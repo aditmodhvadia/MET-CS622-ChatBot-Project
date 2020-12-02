@@ -97,14 +97,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     Timber.i("Login clicked");
-    fireBaseApiManager.logInWithEmailAndPassword(
+    mFireBaseApiManager.logInWithEmailAndPassword(
         email,
         password,
         new OnTaskCompleteListener() {
           @Override
           public void onTaskSuccessful() {
             Timber.i(
-                "User logged in successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
+                "User logged in successfully %s", mFireBaseApiManager.getCurrentLoggedInUserEmail());
             btnLogin.setText(getString(R.string.login_success_msg));
             Intent intent = new Intent(mContext, FireBaseIntentService.class);
             intent.putExtra(

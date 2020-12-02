@@ -61,7 +61,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     linearLayoutManager.setStackFromEnd(true);
     rvChatList.setLayoutManager(linearLayoutManager);
 
-    ArrayList<Message> messages = messageRepository.getMessagesForChatRoom(chatRoom);
+    ArrayList<Message> messages = mMessageRepository.getMessagesForChatRoom(chatRoom);
     adapter = new ChatListAdapter(messages, mContext);
 
     rvChatList.setAdapter(adapter);
@@ -130,7 +130,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
    * @param chatRoom given ChatRoom
    */
   private void clearChatRoomMessagesClicked(ChatRoom chatRoom) {
-    messageRepository.clearAllChatRoomMessages(chatRoom);
+    mMessageRepository.clearAllChatRoomMessages(chatRoom);
     adapter.clearAllMessages();
   }
 
@@ -162,7 +162,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
     addMessageToAdapter(newMessage);
     //        send new message to repository
-    messageRepository.newMessageSent(
+    mMessageRepository.newMessageSent(
         mContext,
         newMessage,
         new MessageRepository.OnMessageResponseReceivedListener() {
