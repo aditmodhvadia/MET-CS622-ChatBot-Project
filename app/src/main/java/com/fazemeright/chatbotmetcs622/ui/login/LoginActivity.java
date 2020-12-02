@@ -22,25 +22,28 @@ import timber.log.Timber;
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
   private EditText userEmailEditText, userPasswordEditText;
-  private TextView tvDontHaveAccount;
+  private TextView tvDoNotHaveAccount;
   private Button btnLogin;
 
   @Override
   public void initViews() {
-    //        set title for activity
-    if (getSupportActionBar() != null) {
-      getSupportActionBar().setTitle(getString(R.string.login_title));
-      getSupportActionBar().setHomeButtonEnabled(true);
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
+      setUpSupportActionBar();
 
-    userEmailEditText = findViewById(R.id.userLoginEmailEditText);
+      userEmailEditText = findViewById(R.id.userLoginEmailEditText);
     userPasswordEditText = findViewById(R.id.userPasswordEditText);
-    tvDontHaveAccount = findViewById(R.id.tvDontHaveAccount);
+    tvDoNotHaveAccount = findViewById(R.id.tvDontHaveAccount);
     btnLogin = findViewById(R.id.btnLogin);
   }
 
-  @Override
+    private void setUpSupportActionBar() {
+        if (getSupportActionBar() != null) {
+          getSupportActionBar().setTitle(getString(R.string.login_title));
+          getSupportActionBar().setHomeButtonEnabled(true);
+          getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     if (item.getItemId() == android.R.id.home) {
       finish();
@@ -51,7 +54,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   @Override
   public void setListeners() {
     btnLogin.setOnClickListener(this);
-    tvDontHaveAccount.setOnClickListener(this);
+    tvDoNotHaveAccount.setOnClickListener(this);
   }
 
   @Override
@@ -61,20 +64,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
   @Override
   public void onClick(View v) {
-    switch (v.getId()) {
-      case R.id.tvDontHaveAccount:
-        openRegistrationActivity();
-        break;
-      case R.id.btnLogin:
-        //                TODO: Disable and re-enable the button after performing registration and
-        // validation
-        disableButton(btnLogin);
-        String email = userEmailEditText.getText().toString();
-        String password = userPasswordEditText.getText().toString();
-        performLogin(email, password);
-        enableButton(btnLogin);
-        break;
-    }
+      int clickedViewId = v.getId();
+      if (clickedViewId == R.id.tvDontHaveAccount) {
+          goToRegistrationActivity();
+      } else if (clickedViewId == R.id.btnLogin) {
+          disableButton(btnLogin);
+          performLogin(userEmailEditText.getText().toString().trim(), userPasswordEditText.getText().toString().trim());
+          enableButton(btnLogin);
+      }
   }
 
   /**
@@ -109,8 +106,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             Intent intent = new Intent(mContext, FireBaseIntentService.class);
             intent.putExtra(
                 FireBaseIntentService.Actions.ACTION, FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
-            //                ContextCompat.startForegroundService(LoginActivity.this, intent);
-            //                ContextCompat.startForegroundService(mContext, intent);
             ContextCompat.startForegroundService(mContext, intent);
             openLandingActivity();
           }
@@ -135,8 +130,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     finishAffinity();
   }
 
-  /** Open Registration Activity */
-  private void openRegistrationActivity() {
+  /** Go to Registration Activity */
+  private void goToRegistrationActivity() {
     finish();
   }
 }
