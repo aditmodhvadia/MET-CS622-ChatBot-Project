@@ -31,16 +31,15 @@ import timber.log.Timber;
 public class MessageRepository {
 
   private static MessageRepository repository;
-  private ChatBotDatabase database;
-  private ApiManager apiManager;
-  private FireBaseApiManager fireBaseApiManager;
+  private final ChatBotDatabase database;
+  private final ApiManager apiManager;
+  private final FireBaseApiManager fireBaseApiManager;
 
   private MessageRepository(
       ChatBotDatabase database, ApiManager apiManager, FireBaseApiManager fireBaseApiManager) {
     this.database = database;
     this.apiManager = apiManager;
     this.fireBaseApiManager = fireBaseApiManager;
-    //        messageList = this.database.messageDao().getAllMessages();
   }
 
   /**
@@ -52,22 +51,19 @@ public class MessageRepository {
   public static MessageRepository getInstance(Context context) {
     if (repository == null) {
       synchronized (MessageRepository.class) {
-        //                get instance of database
-        ChatBotDatabase database = ChatBotDatabase.getInstance(context);
         ApiManager apiManager = ApiManager.getInstance();
-        FireBaseApiManager fireBaseApiManager = FireBaseApiManager.getInstance();
         apiManager.init(NetworkManager.getInstance());
-        repository = new MessageRepository(database, apiManager, fireBaseApiManager);
+        repository = new MessageRepository(ChatBotDatabase.getInstance(context), apiManager, FireBaseApiManager.getInstance());
       }
     }
     return repository;
   }
 
   /**
-   * Call to insert given project into database with thread safety
+   * Call to insert given message into database with thread safety
    *
    * @param newMessage given project
-   * @return
+   * @return inserted message
    */
   private Message insertMessageInRoom(Message newMessage) {
     //        insert into Room using AsyncTask
@@ -93,22 +89,22 @@ public class MessageRepository {
   /**
    * Call to get Message with given Message ID
    *
-   * @param mid given Message ID
+   * @param messageId given Message ID
    * @return Message with given ID
    */
-  public Message getMessage(long mid) {
-    return fetchMessage(mid);
+  public Message getMessage(long messageId) {
+    return fetchMessage(messageId);
   }
 
   /**
    * Call to get Message with given Message ID with thread safety
    *
-   * @param pid given Message ID
+   * @param messageId given Message ID
    * @return Message with given ID
    */
-  private Message fetchMessage(long pid) {
+  private Message fetchMessage(long messageId) {
     try {
-      return new FetchMessageAsyncTask(database.messageDao()).execute(pid).get();
+      return new FetchMessageAsyncTask(database.messageDao()).execute(messageId).get();
     } catch (ExecutionException | InterruptedException e) {
       e.printStackTrace();
       return null;
@@ -119,7 +115,6 @@ public class MessageRepository {
    * Call to delete project with given project
    *
    * @param project given Message
-   * @return Deleted Message
    */
   public void deleteMessage(Message project) {
     deleteMessageFromRoom(project);
