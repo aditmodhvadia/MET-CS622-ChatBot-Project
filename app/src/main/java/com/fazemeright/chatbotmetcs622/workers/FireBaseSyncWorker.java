@@ -17,14 +17,17 @@ public class FireBaseSyncWorker extends Worker {
   @NonNull
   @Override
   public Result doWork() {
-    //        add all messages from Room to FireBase
-    MessageRepository messageRepository = MessageRepository.getInstance(getApplicationContext());
-    for (Message message : messageRepository.getAllMessages()) {
-      messageRepository.addMessageToFireBase(Message.getHashMap(message));
-    }
-    //        get all messages from FireBase to Room
-    messageRepository.syncMessagesFromFireStoreToRoom();
-
-    return Result.success();
+      syncMessagesWithCloudAndLocal();
+      return Result.success();
   }
+
+    /**
+     * Sync messages from local to cloud, and then from cloud to local
+     */
+    private void syncMessagesWithCloudAndLocal() {
+        final MessageRepository messageRepository = MessageRepository.getInstance(getApplicationContext());
+        messageRepository.addMessagesToFireBase(messageRepository.getAllMessages());
+
+        messageRepository.syncMessagesFromFireStoreToRoom();
+    }
 }

@@ -250,6 +250,17 @@ public class MessageRepository {
     fireBaseApiManager.addMessageToUserDatabase(messageHashMap);
   }
 
+  /**
+   * Call to add the given messages to FireStore
+   *
+   * @param messageList given messages list
+   */
+  public void addMessagesToFireBase(List<Message> messageList) {
+      for (Message message : messageList) {
+          this.addMessageToFireBase(Message.getHashMap(message));
+      }
+  }
+
   /** Call to sync messages from FireStore to Room for the logged in user */
   public void syncMessagesFromFireStoreToRoom() {
     fireBaseApiManager.syncMessages(
