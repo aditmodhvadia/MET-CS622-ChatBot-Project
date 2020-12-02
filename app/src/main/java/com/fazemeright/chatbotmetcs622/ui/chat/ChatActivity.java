@@ -22,6 +22,8 @@ import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -29,7 +31,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
   private RecyclerView rvChatList;
   private ChatListAdapter adapter;
-  private ArrayList<Message> messages;
   private EditText etMsg;
   private ImageView ivSendMsg;
   private ChatRoom chatRoom;
@@ -45,28 +46,36 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
     if (getIntent() != null) {
       chatRoom = (ChatRoom) getIntent().getSerializableExtra(LandingActivity.SELECTED_CHAT_ROOM);
-      if (getSupportActionBar() != null) {
-        getSupportActionBar().setTitle(chatRoom.getName());
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      }
+      setUpSupportActionBar();
     }
 
     String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
     setupFilterKeywords(dataFilters);
 
+    adapter = new ChatListAdapter(mMessageRepository.getMessagesForChatRoom(chatRoom), mContext);
+
+    rvChatList.setAdapter(adapter);
+    rvChatList.setLayoutManager(getLinearLayoutManager());
     rvChatList.setHasFixedSize(true);
+//    Show user the most recent messages, hence scroll to the top
+    rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
+  }
+
+    private void setUpSupportActionBar() {
+        if (getSupportActionBar() != null) {
+          getSupportActionBar().setHomeButtonEnabled(true);
+          getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+          if(chatRoom != null && chatRoom.getName() != null) {
+              getSupportActionBar().setTitle(chatRoom.getName());
+          }
+        }
+    }
+
+    private LinearLayoutManager getLinearLayoutManager() {
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
     linearLayoutManager.setReverseLayout(true);
     linearLayoutManager.setStackFromEnd(true);
-    rvChatList.setLayoutManager(linearLayoutManager);
-
-    ArrayList<Message> messages = mMessageRepository.getMessagesForChatRoom(chatRoom);
-    adapter = new ChatListAdapter(messages, mContext);
-
-    rvChatList.setAdapter(adapter);
-    //        Show user the most recent messages, hence scroll to the top
-    rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
+    return linearLayoutManager;
   }
 
   /**
@@ -77,41 +86,44 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
   private void setupFilterKeywords(String[] dataFilters) {
     //        remove all views from ChipGroup if any
     dataFilterChipGroup.removeAllViews();
-    if (dataFilters != null) {
-      for (final String dataFilter : dataFilters) {
-        //                create new chip and apply attributes
-        Chip chip =
-            new Chip(Objects.requireNonNull(mContext)) {
-              {
-                setText(dataFilter); // set text
-                setClickable(true);
-                setCloseIconVisible(false); // no need for close icon in our scenario
-                setCheckable(true); // set checkable to be true, hence allow check changes
-              }
-            };
-        dataFilterChipGroup.addView(chip); // add chip to ChipGroup
-        chip.setOnCheckedChangeListener(
-            new CompoundButton.OnCheckedChangeListener() {
-              @Override
-              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                  etMsg.requestFocus();
-                  etMsg.setText(buttonView.getText().toString());
-                  etMsg.setSelection(buttonView.getText().toString().length());
-                  showKeyBoard(etMsg);
+      if (dataFilters == null) {
+  //      hide ChipGroup if list is empty
+        dataFilterChipGroup.setVisibility(View.INVISIBLE);
+      } else {
+        for (final String dataFilter : dataFilters) {
+          //                create new chip and apply attributes
+            Chip chip = getChip(dataFilter);
+            dataFilterChipGroup.addView(chip); // add chip to ChipGroup
+          chip.setOnCheckedChangeListener(
+              new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                  if (isChecked) {
+                    etMsg.requestFocus();
+                    etMsg.setText(buttonView.getText().toString());
+                    etMsg.setSelection(buttonView.getText().toString().length());
+                    showKeyBoard(etMsg);
+                  }
                 }
-              }
-            });
+              });
+        }
+        dataFilterChipGroup.setVisibility(View.VISIBLE);
       }
-      //            show ChipGroup if list is not empty
-      dataFilterChipGroup.setVisibility(View.VISIBLE);
-    } else {
-      //            hide ChipGroup if list is empty
-      dataFilterChipGroup.setVisibility(View.INVISIBLE);
-    }
   }
 
-  @Override
+    @NotNull
+    private Chip getChip(final String dataFilter) {
+        return new Chip(Objects.requireNonNull(mContext)) {
+          {
+            setText(dataFilter);
+            setClickable(true);
+            setCloseIconVisible(false); // close icon not required
+            setCheckable(true); // allow check changes, hence switch between chips
+          }
+        };
+    }
+
+    @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
@@ -157,7 +169,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     if (TextUtils.isEmpty(msg)) {
       return;
     }
-    etMsg.setText("");
     Message newMessage =
         Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
     addMessageToAdapter(newMessage);
@@ -169,6 +180,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
           @Override
           public void onMessageResponseReceived(Message response) {
             addMessageToAdapter(response);
+            etMsg.setText("");
           }
 
           @Override
@@ -189,9 +201,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
   }
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.menu_chat, menu);
-    return super.onCreateOptionsMenu(menu);
-  }
+    @Override
+    public int getMenuId() {
+        return R.menu.menu_chat;
+    }
 }

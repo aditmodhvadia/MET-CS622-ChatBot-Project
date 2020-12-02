@@ -5,15 +5,18 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
@@ -118,5 +121,23 @@ public abstract class BaseActivity extends AppCompatActivity {
   @Override
   protected void onPause() {
     super.onPause();
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    @MenuRes int menuId = getMenuId();
+    if(menuId != 0) {
+      getMenuInflater().inflate(menuId, menu);
+    }
+    return super.onCreateOptionsMenu(menu);
+  }
+
+  /**
+   * Template method to get Menu Resource Id
+   *
+   * @return <code>0</code> if no menu item needed to inflate, else <code>override</code> by sub activity
+   */
+  public int getMenuId() {
+    return 0;
   }
 }
