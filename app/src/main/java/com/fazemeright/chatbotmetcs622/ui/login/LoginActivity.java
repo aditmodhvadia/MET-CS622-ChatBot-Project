@@ -1,8 +1,6 @@
 package com.fazemeright.chatbotmetcs622.ui.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -110,7 +108,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             btnLogin.setText(getString(R.string.login_success_msg));
             Intent intent = new Intent(mContext, FireBaseIntentService.class);
             intent.putExtra(
-                FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_SYNC_MESSAGES);
+                FireBaseIntentService.Actions.ACTION, FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
             //                ContextCompat.startForegroundService(LoginActivity.this, intent);
             //                ContextCompat.startForegroundService(mContext, intent);
             ContextCompat.startForegroundService(mContext, intent);
