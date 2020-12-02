@@ -21,18 +21,18 @@ import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 public abstract class BaseFragment extends Fragment {
 
   public Context mContext;
-  public FireBaseApiManager fireBaseApiManager;
-  protected MessageRepository messageRepository;
-  protected ApiManager apiManager;
+  public FireBaseApiManager mFireBaseApiManager;
+  protected MessageRepository mMessageRepository;
+  protected ApiManager mApiManager;
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = getActivity();
-    fireBaseApiManager = FireBaseApiManager.getInstance();
-    messageRepository = MessageRepository.getInstance(mContext);
-    apiManager = ApiManager.getInstance();
-    apiManager.init(NetworkManager.getInstance());
+    mFireBaseApiManager = FireBaseApiManager.getInstance();
+    mMessageRepository = MessageRepository.getInstance(mContext);
+    mApiManager = ApiManager.getInstance();
+    mApiManager.init(NetworkManager.getInstance());
   }
 
   @Nullable
@@ -50,15 +50,15 @@ public abstract class BaseFragment extends Fragment {
   /** To get layout resource id */
   public abstract @LayoutRes int getLayoutResId();
 
-  /** To initialize views of activity */
-  public abstract void initViews(View view);
+  /** Template method to initialize views of activity */
+  public void initViews(View view) {}
 
   /**
-   * To set listeners of view or callback
+   * Template method to set listeners of view or callback
    *
-   * @param view
+   * @param view view
    */
-  public abstract void setListeners(View view);
+  public void setListeners(View view) {}
 
   public boolean isNetworkConnected() {
     ConnectivityManager cm =

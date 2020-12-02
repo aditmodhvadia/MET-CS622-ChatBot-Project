@@ -89,10 +89,10 @@ public abstract class BaseActivity extends AppCompatActivity {
   }
 
   /** Template method to initialize views of activity */
-  public void initViews(){};
+  public void initViews(){}
 
   /** Template method to set listeners of view or callback */
-  public void setListeners(){};
+  public void setListeners(){}
 
   /** To get layout resource id */
   public abstract int getLayoutResId();
