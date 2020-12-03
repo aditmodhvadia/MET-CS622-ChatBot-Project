@@ -5,15 +5,18 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
@@ -22,18 +25,18 @@ import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 public abstract class BaseActivity extends AppCompatActivity {
 
   public Context mContext;
-  protected FireBaseApiManager fireBaseApiManager;
-  protected MessageRepository messageRepository;
-  protected ApiManager apiManager;
+  protected FireBaseApiManager mFireBaseApiManager;
+  protected MessageRepository mMessageRepository;
+  protected ApiManager mApiManager;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = this;
-    fireBaseApiManager = FireBaseApiManager.getInstance();
-    messageRepository = MessageRepository.getInstance(mContext);
-    apiManager = ApiManager.getInstance();
-    apiManager.init(NetworkManager.getInstance());
+    mFireBaseApiManager = FireBaseApiManager.getInstance();
+    mMessageRepository = MessageRepository.getInstance(mContext);
+    mApiManager = ApiManager.getInstance();
+    mApiManager.init(NetworkManager.getInstance());
     setContentView(getLayoutResId());
   }
 
@@ -47,7 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity {
   /**
    * Call to hide soft keyboard
    *
-   * @param activity
+   * @param activity calling activity
    */
   public void hideKeyboard(Activity activity) {
     InputMethodManager imm =
@@ -63,10 +66,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
   }
 
-  public void showKeyBoard(EditText yourEditText) {
+  public void showKeyBoard(View view) {
     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     if (imm != null) {
-      imm.showSoftInput(yourEditText, InputMethodManager.SHOW_IMPLICIT);
+      imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
   }
 
@@ -88,11 +91,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     button.setEnabled(true);
   }
 
-  /** To initialize views of activity */
-  public abstract void initViews();
+  /** Template method to initialize views of activity */
+  public void initViews(){}
 
-  /** To set listeners of view or callback */
-  public abstract void setListeners();
+  /** Template method to set listeners of view or callback */
+  public void setListeners(){}
 
   /** To get layout resource id */
   public abstract int getLayoutResId();
@@ -118,5 +121,23 @@ public abstract class BaseActivity extends AppCompatActivity {
   @Override
   protected void onPause() {
     super.onPause();
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    @MenuRes int menuId = getMenuId();
+    if(menuId != 0) {
+      getMenuInflater().inflate(menuId, menu);
+    }
+    return super.onCreateOptionsMenu(menu);
+  }
+
+  /**
+   * Template method to get Menu Resource Id
+   *
+   * @return <code>0</code> if no menu item needed to inflate, else <code>override</code> by sub activity
+   */
+  public int getMenuId() {
+    return 0;
   }
 }

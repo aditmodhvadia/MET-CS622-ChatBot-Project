@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class ChatSelectionListAdapter
     extends ListAdapter<ChatRoom, ChatSelectionListAdapter.ViewHolder> {
 
-  private ChatListInteractionListener listener;
+  private final ChatListInteractionListener listener;
 
   protected ChatSelectionListAdapter(ChatListInteractionListener listener) {
     super(new ChatRoomDiffCallBack());
@@ -84,12 +84,7 @@ public class ChatSelectionListAdapter
       ivChatRoom.setBackgroundResource(item.getLogoId());
 
       itemView.setOnClickListener(
-          new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              listener.onChatRoomClicked(getItem(getAdapterPosition()));
-            }
-          });
+              v -> listener.onChatRoomClicked(getItem(getAdapterPosition())));
     }
   }
 }

@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import androidx.annotation.AnimRes;
 import androidx.work.Constraints;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -36,41 +37,17 @@ public class SplashActivity extends BaseActivity {
 
     tvAppVersion.setText(getAppVersion());
 
-    fadeInViews();
+      startAnimationOnViews(R.anim.fade_in);
 
-    final Handler handler = new Handler();
-    handler.postDelayed(
-        new Runnable() {
-          @Override
-          public void run() {
-            determineIfUserIsLoggedIn();
-          }
-        },
-        800);
-  }
-
-  private void fadeInViews() {
-    Animation aniFade = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-    tvAppTitle.startAnimation(aniFade);
-    tvAppVersion.startAnimation(aniFade);
+      new Handler().postDelayed(this::determineIfUserIsLoggedIn, 800);
   }
 
   private void determineIfUserIsLoggedIn() {
-    fireBaseApiManager.reloadUserAuthState(
+    mFireBaseApiManager.reloadUserAuthState(
         new OnTaskCompleteListener() {
           @Override
           public void onTaskSuccessful() {
-            //                user is logged in, open landing activity
-            Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
-
-            PeriodicWorkRequest saveRequest =
-                new PeriodicWorkRequest.Builder(FireBaseSyncWorker.class, 1, TimeUnit.DAYS)
-                    .setConstraints(constraints)
-                    .build();
-
-            WorkManager.getInstance(mContext).enqueue(saveRequest);
-
-            Timber.i("Open Landing Activity");
+            setUpWorkManagerRequest();
             openLandingActivity();
           }
 
@@ -90,21 +67,33 @@ public class SplashActivity extends BaseActivity {
         });
   }
 
+  private void setUpWorkManagerRequest() {
+    Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
+    PeriodicWorkRequest saveRequest =
+        new PeriodicWorkRequest.Builder(FireBaseSyncWorker.class, 1, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .build();
+
+    WorkManager.getInstance(mContext).enqueue(saveRequest);
+  }
+
   /** Call to open RegistrationActivity from the current activity */
   private void openRegistrationActivity() {
-    Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
-    tvAppVersion.startAnimation(animFadeOut);
-    tvAppTitle.startAnimation(animFadeOut);
+    startAnimationOnViews(R.anim.fade_out);
 
     startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
     finish();
   }
 
-  /** Open LandingActivity and finish this one */
-  private void openLandingActivity() {
-    Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+  private void startAnimationOnViews(@AnimRes int animationId) {
+    Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), animationId);
     tvAppVersion.startAnimation(animFadeOut);
     tvAppTitle.startAnimation(animFadeOut);
+  }
+
+  /** Open LandingActivity and finish this one */
+  private void openLandingActivity() {
+    startAnimationOnViews(R.anim.fade_out);
 
     startActivity(new Intent(SplashActivity.this, LandingActivity.class));
     finish();
@@ -132,9 +121,6 @@ public class SplashActivity extends BaseActivity {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
   }
-
-  @Override
-  public void setListeners() {}
 
   @Override
   public int getLayoutResId() {
