@@ -12,23 +12,27 @@ import com.fazemeright.chatbotmetcs622.network.models.request.MessageQueryReques
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ApiManager {
 
   private static ApiManager apiManager = null;
   private NetworkManager networkManager;
 
   public static ApiManager getInstance() {
-    if (apiManager == null) {
-      apiManager = new ApiManager();
+    synchronized (ApiManager.class) {
+      if (apiManager == null) {
+        apiManager = new ApiManager();
+      }
+      return apiManager;
     }
-    return apiManager;
   }
 
   /**
    * Initialize base url,alias key and {@link NetworkWrapper} from application side, so that no need
    * to pass base url in every user related network call.
    *
-   * @param networkManager
+   * @param networkManager network manager
    */
   public void init(NetworkManager networkManager) {
     this.networkManager = networkManager;
@@ -45,22 +49,8 @@ public class ApiManager {
       Context context,
       Message newMessage,
       final NetworkCallback<QueryResponseMessage> networkCallback) {
-    String serverEndPoint;
-    switch ((int) newMessage.getChatRoomId()) {
-      case ChatRoom.BRUTE_FORCE_ID:
-        serverEndPoint = DatabaseUrl.BRUTE_FORCE;
-        break;
-      case ChatRoom.LUCENE_ID:
-        serverEndPoint = DatabaseUrl.LUCENE;
-        break;
-      case ChatRoom.MONGO_DB_ID:
-        serverEndPoint = DatabaseUrl.MONGO_DB;
-        break;
-      default:
-        serverEndPoint = DatabaseUrl.MY_SQL;
-        break;
-    }
-    String url = BaseUrl.BASE_URL.concat(BaseUrl.BASE_APP_NAME).concat(serverEndPoint);
+      String url = BaseUrl.BASE_URL.concat(BaseUrl.BASE_APP_NAME)
+              .concat(getServerEndPoint((int) newMessage.getChatRoomId()));
 
     MessageQueryRequestModel messageQuery = new MessageQueryRequestModel(newMessage.getMsg());
 
@@ -84,7 +74,27 @@ public class ApiManager {
         });
   }
 
-  /** DatabaseUrl module Api sub url */
+    @NotNull
+    private String getServerEndPoint(int chatRoomId) {
+        String serverEndPoint;
+        switch (chatRoomId) {
+          case ChatRoom.BRUTE_FORCE_ID:
+            serverEndPoint = DatabaseUrl.BRUTE_FORCE;
+            break;
+          case ChatRoom.LUCENE_ID:
+            serverEndPoint = DatabaseUrl.LUCENE;
+            break;
+          case ChatRoom.MONGO_DB_ID:
+            serverEndPoint = DatabaseUrl.MONGO_DB;
+            break;
+          default:
+            serverEndPoint = DatabaseUrl.MY_SQL;
+            break;
+        }
+        return serverEndPoint;
+    }
+
+    /** DatabaseUrl module Api sub url */
   static class DatabaseUrl {
     static final String MONGO_DB = "/mongodb";
     static final String LUCENE = "/lucene";
