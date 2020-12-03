@@ -56,10 +56,10 @@ public class SplashActivity extends BaseActivity {
   }
 
   private void determineIfUserIsLoggedIn() {
-    fireBaseApiManager.reloadUserAuthState(
-        new OnTaskCompleteListener() {
+    messageRepository.getUserAuthentication().reloadCurrentUserAuthState(
+        new OnTaskCompleteListener<Void>() {
           @Override
-          public void onTaskSuccessful() {
+          public void onTaskSuccessful(Void result) {
             //                user is logged in, open landing activity
             Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
 
@@ -72,10 +72,11 @@ public class SplashActivity extends BaseActivity {
 
             Timber.i("Open Landing Activity");
             openLandingActivity();
+
           }
 
           @Override
-          public void onTaskCompleteButFailed(String errMsg) {
+          public void onTaskCompleteButFailed(Void result) {
             //  user not logged in, open registration activity
             Timber.i("Open Registration Activity");
             openRegistrationActivity();
@@ -90,7 +91,9 @@ public class SplashActivity extends BaseActivity {
         });
   }
 
-  /** Call to open RegistrationActivity from the current activity */
+  /**
+   * Call to open RegistrationActivity from the current activity
+   */
   private void openRegistrationActivity() {
     Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
     tvAppVersion.startAnimation(animFadeOut);
@@ -100,7 +103,9 @@ public class SplashActivity extends BaseActivity {
     finish();
   }
 
-  /** Open LandingActivity and finish this one */
+  /**
+   * Open LandingActivity and finish this one
+   */
   private void openLandingActivity() {
     Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
     tvAppVersion.startAnimation(animFadeOut);
@@ -125,7 +130,9 @@ public class SplashActivity extends BaseActivity {
     }
   }
 
-  /** Makes the screen layout to cover the full display of the device */
+  /**
+   * Makes the screen layout to cover the full display of the device
+   */
   private void hideSystemUI() {
     getWindow()
         .setFlags(
@@ -134,7 +141,8 @@ public class SplashActivity extends BaseActivity {
   }
 
   @Override
-  public void setListeners() {}
+  public void setListeners() {
+  }
 
   @Override
   public int getLayoutResId() {

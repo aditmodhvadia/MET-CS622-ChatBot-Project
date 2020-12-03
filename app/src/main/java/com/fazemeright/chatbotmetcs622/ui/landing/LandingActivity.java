@@ -28,10 +28,8 @@ public class LandingActivity extends BaseActivity
   @Override
   public void initViews() {
     if (getSupportActionBar() != null) {
-      String firstName = fireBaseApiManager.getCurrentUserFirstName();
-      if (firstName == null) {
-        firstName = "Adit";
-      }
+      String firstName = messageRepository.getUserAuthentication().getUserName() != null ?
+          messageRepository.getUserAuthentication().getUserName() : "Adit";
       getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + firstName);
     }
 
@@ -84,7 +82,8 @@ public class LandingActivity extends BaseActivity
   }
 
   @Override
-  public void setListeners() {}
+  public void setListeners() {
+  }
 
   @Override
   public int getLayoutResId() {

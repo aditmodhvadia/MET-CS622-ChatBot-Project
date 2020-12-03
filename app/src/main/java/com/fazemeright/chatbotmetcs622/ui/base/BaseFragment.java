@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
-import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
+import com.fazemeright.firebase_api_library.api.firebase.FireBaseApiManager;
 
 public abstract class BaseFragment extends Fragment {
 

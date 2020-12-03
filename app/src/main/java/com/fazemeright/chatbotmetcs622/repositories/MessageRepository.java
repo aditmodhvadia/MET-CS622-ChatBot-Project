@@ -3,9 +3,6 @@ package com.fazemeright.chatbotmetcs622.repositories;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
-
-import androidx.core.content.ContextCompat;
 
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
@@ -18,7 +15,9 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
-import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
+import com.fazemeright.firebase_api_library.api.UserAuthentication;
+import com.fazemeright.firebase_api_library.api.firebase.FireBaseApiManager;
+import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
 import com.fazemeright.firebase_api_library.listeners.DBValueListener;
 
 import java.util.ArrayList;
@@ -34,12 +33,15 @@ public class MessageRepository {
   private ChatBotDatabase database;
   private ApiManager apiManager;
   private FireBaseApiManager fireBaseApiManager;
+  private UserAuthentication userAuthentication;
 
   private MessageRepository(
-      ChatBotDatabase database, ApiManager apiManager, FireBaseApiManager fireBaseApiManager) {
+      ChatBotDatabase database, ApiManager apiManager, FireBaseApiManager fireBaseApiManager,
+      UserAuthentication userAuthentication) {
     this.database = database;
     this.apiManager = apiManager;
     this.fireBaseApiManager = fireBaseApiManager;
+    this.userAuthentication = userAuthentication;
     //        messageList = this.database.messageDao().getAllMessages();
   }
 
@@ -56,11 +58,17 @@ public class MessageRepository {
         ChatBotDatabase database = ChatBotDatabase.getInstance(context);
         ApiManager apiManager = ApiManager.getInstance();
         FireBaseApiManager fireBaseApiManager = FireBaseApiManager.getInstance();
+        UserAuthentication userAuthentication = FireBaseUserAuthentication.getInstance();
         apiManager.init(NetworkManager.getInstance());
-        repository = new MessageRepository(database, apiManager, fireBaseApiManager);
+        repository =
+            new MessageRepository(database, apiManager, fireBaseApiManager, userAuthentication);
       }
     }
     return repository;
+  }
+
+  public UserAuthentication getUserAuthentication() {
+    return userAuthentication;
   }
 
   /**
@@ -194,7 +202,7 @@ public class MessageRepository {
   /**
    * Call to insert the given new message to FireStore database
    *
-   * @param context context
+   * @param context    context
    * @param newMessage given new message
    */
   private void insertMessageInFireBase(Context context, Message newMessage) {
@@ -221,13 +229,17 @@ public class MessageRepository {
     new ClearAllMessagesInChatRoomAsyncTask(database.messageDao()).execute(chatRoom);
   }
 
-  /** Call to logout user and clear all messages from Room */
+  /**
+   * Call to logout user and clear all messages from Room
+   */
   public void logOutUser() {
-    fireBaseApiManager.logOutUser();
+    userAuthentication.signOutUser();
     clearAllMessages();
   }
 
-  /** Call to clear all messages from Room */
+  /**
+   * Call to clear all messages from Room
+   */
   private void clearAllMessages() {
     new ClearAllMessagesAsyncTask(database.messageDao()).execute();
   }
@@ -250,7 +262,9 @@ public class MessageRepository {
     fireBaseApiManager.addMessageToUserDatabase(messageHashMap);
   }
 
-  /** Call to sync messages from FireStore to Room for the logged in user */
+  /**
+   * Call to sync messages from FireStore to Room for the logged in user
+   */
   public void syncMessagesFromFireStoreToRoom() {
     fireBaseApiManager.syncMessages(
         new DBValueListener<List<Map<String, Object>>>() {
@@ -275,11 +289,14 @@ public class MessageRepository {
           }
 
           @Override
-          public void onCancelled(Error error) {}
+          public void onCancelled(Error error) {
+          }
         });
   }
 
-  /** Fetch all chat room messages for the given ChatRoom through AsyncTask from Room */
+  /**
+   * Fetch all chat room messages for the given ChatRoom through AsyncTask from Room
+   */
   private static class FetchChatRoomMessagesAsyncTask
       extends AsyncTask<ChatRoom, Void, List<Message>> {
 
@@ -295,7 +312,9 @@ public class MessageRepository {
     }
   }
 
-  /** Fetch all chat room messages for the given ChatRoom through AsyncTask from Room */
+  /**
+   * Fetch all chat room messages for the given ChatRoom through AsyncTask from Room
+   */
   private static class ClearAllMessagesInChatRoomAsyncTask extends AsyncTask<ChatRoom, Void, Void> {
 
     private MessageDao mAsyncTaskDao;
@@ -311,7 +330,9 @@ public class MessageRepository {
     }
   }
 
-  /** Fetch all messages through AsyncTask from Room */
+  /**
+   * Fetch all messages through AsyncTask from Room
+   */
   private static class AddAllMessagesAsyncTask extends AsyncTask<List<Message>, Void, Void> {
 
     private MessageDao mAsyncTaskDao;
@@ -327,7 +348,9 @@ public class MessageRepository {
     }
   }
 
-  /** Fetch all messages through AsyncTask from Room */
+  /**
+   * Fetch all messages through AsyncTask from Room
+   */
   private static class ClearAllMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private MessageDao mAsyncTaskDao;
@@ -343,7 +366,9 @@ public class MessageRepository {
     }
   }
 
-  /** Call to get favorite projects from Room through AsyncTask */
+  /**
+   * Call to get favorite projects from Room through AsyncTask
+   */
   private static class DeleteMessageAsyncTask extends AsyncTask<Message, Void, Message> {
 
     private MessageDao dao;
@@ -359,7 +384,9 @@ public class MessageRepository {
     }
   }
 
-  /** Fetch a specific project for the given Message ID through AsyncTask */
+  /**
+   * Fetch a specific project for the given Message ID through AsyncTask
+   */
   private static class FetchMessageAsyncTask extends AsyncTask<Long, Void, Message> {
 
     private MessageDao mAsyncTaskDao;

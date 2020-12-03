@@ -1,4 +1,4 @@
-package com.fazemeright.firebase_api_library.api;
+package com.fazemeright.firebase_api_library.api.firebase;
 
 import androidx.annotation.NonNull;
 
@@ -15,14 +15,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Map;
 
-/** Keep this as a Singleton Class */
+/**
+ * Keep this as a Singleton Class
+ */
 abstract class FireBaseApiWrapper implements FireBaseApiWrapperInterface {
 
   //    private static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
   FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-  /** Signs out user */
+  /**
+   * Signs out user
+   */
   @Override
   public void signOutUser() {
     FirebaseAuth.getInstance().signOut();
@@ -98,13 +102,13 @@ abstract class FireBaseApiWrapper implements FireBaseApiWrapperInterface {
   void writeToFireStoreDocument(
       DocumentReference dr,
       Map<String, Object> map,
-      final OnTaskCompleteListener onTaskCompleteListener) {
+      final OnTaskCompleteListener<Void> onTaskCompleteListener) {
     dr.set(map)
         .addOnSuccessListener(
             new OnSuccessListener<Void>() {
               @Override
               public void onSuccess(Void aVoid) {
-                onTaskCompleteListener.onTaskSuccessful();
+                onTaskCompleteListener.onTaskSuccessful(aVoid);
               }
             })
         .addOnFailureListener(

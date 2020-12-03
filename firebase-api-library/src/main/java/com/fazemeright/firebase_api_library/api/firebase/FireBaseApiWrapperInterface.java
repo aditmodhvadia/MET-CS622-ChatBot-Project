@@ -1,4 +1,4 @@
-package com.fazemeright.firebase_api_library.api;
+package com.fazemeright.firebase_api_library.api.firebase;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

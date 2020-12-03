@@ -1,4 +1,4 @@
-package com.fazemeright.firebase_api_library.api;
+package com.fazemeright.firebase_api_library.api.firebase;
 
 import android.util.Log;
 
@@ -18,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -41,7 +40,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
     return apiManager;
   }
 
-  public void logOutUser() {
+  private void logOutUser() {
     //        todo: log analytics event
     signOutUser();
   }
@@ -51,7 +50,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
    *
    * @return boolean value for user email verification
    */
-  public boolean isUserEmailVerified() {
+  private boolean isUserEmailVerified() {
     return isUserVerified();
   }
 
@@ -60,7 +59,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
       String password,
       final String firstName,
       final String lastName,
-      final OnTaskCompleteListener onTaskCompleteListener) {
+      final OnTaskCompleteListener<Void> onTaskCompleteListener) {
     createNewUserWithEmailPassword(
         userEmail,
         password,
@@ -80,22 +79,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
               writeToFireStoreDocument(
                   dr,
                   userProfile,
-                  new OnTaskCompleteListener() {
-                    @Override
-                    public void onTaskSuccessful() {
-                      onTaskCompleteListener.onTaskSuccessful();
-                    }
-
-                    @Override
-                    public void onTaskCompleteButFailed(String errMsg) {
-                      onTaskCompleteListener.onTaskCompleteButFailed(errMsg);
-                    }
-
-                    @Override
-                    public void onTaskFailed(Exception e) {
-                      onTaskCompleteListener.onTaskFailed(e);
-                    }
-                  });
+                  onTaskCompleteListener);
 
               FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -125,10 +109,11 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
     return Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
   }
 
-  public void logInWithEmailAndPassword(
+  @Deprecated
+  private void logInWithEmailAndPassword(
       @NonNull String userEmail,
       @NonNull String password,
-      final OnTaskCompleteListener onCompleteListener) {
+      final OnTaskCompleteListener<AuthResult> onCompleteListener) {
     signInWithEmailAndPassword(
         userEmail,
         password,
@@ -136,7 +121,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
           @Override
           public void onComplete(@NonNull Task<AuthResult> task) {
             if (task.isSuccessful()) {
-              onCompleteListener.onTaskSuccessful();
+              onCompleteListener.onTaskSuccessful(task.getResult());
             } else {
               onTaskFailed(task.getException(), onCompleteListener);
             }
@@ -144,11 +129,12 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         });
   }
 
-  public String getCurrentLoggedInUserEmail() {
+  private String getCurrentLoggedInUserEmail() {
     return getCurrentUserEmail();
   }
 
-  public void sendPasswordResetEmail(
+  /*@Deprecated
+  private void sendPasswordResetEmail(
       String userEmail, final OnTaskCompleteListener onTaskCompleteListener) {
     sendPasswordResetEmail(
         userEmail,
@@ -168,7 +154,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
             onTaskCompleteListener.onTaskFailed(e);
           }
         });
-  }
+  }*/
 
   private void onTaskFailed(Exception exception, OnTaskCompleteListener onTaskCompleteListener) {
     if (exception instanceof FirebaseNetworkException) {
@@ -182,12 +168,14 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
     }
   }
 
-  public void reloadUserAuthState(final OnTaskCompleteListener onTaskCompleteListener) {
+  @Deprecated
+  private void reloadUserAuthState(
+      final OnTaskCompleteListener<Void> onTaskCompleteListener) {
     reloadCurrentUserAuthState(
         new OnSuccessListener<Void>() {
           @Override
           public void onSuccess(Void aVoid) {
-            onTaskCompleteListener.onTaskSuccessful();
+            onTaskCompleteListener.onTaskSuccessful(aVoid);
           }
         },
         new OnFailureListener() {
@@ -198,7 +186,8 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         });
   }
 
-  public boolean isUserLoggedIn() {
+  @Deprecated
+  private boolean isUserLoggedIn() {
     return getCurrentUserEmail() != null;
   }
 
@@ -240,7 +229,8 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
             });
   }
 
-  public String getCurrentUserFirstName() {
+  @Deprecated
+  private String getCurrentUserFirstName() {
     return getCurrentUser().getDisplayName();
   }
 

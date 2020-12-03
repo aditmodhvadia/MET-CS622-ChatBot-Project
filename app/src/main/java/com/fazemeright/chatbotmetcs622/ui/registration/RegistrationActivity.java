@@ -71,7 +71,9 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
     }
   }
 
-  /** Open Login Activity */
+  /**
+   * Open Login Activity
+   */
   private void openLoginActivity() {
     startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
   }
@@ -79,10 +81,10 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
   /**
    * Call to perform validation on the input parameters and then perform registration
    *
-   * @param email user email address
-   * @param firstName first name of user
-   * @param lastName last name of user
-   * @param password user selected password
+   * @param email       user email address
+   * @param firstName   first name of user
+   * @param lastName    last name of user
+   * @param password    user selected password
    * @param conPassword user selected confirmation password
    */
   private void performRegistration(
@@ -128,20 +130,19 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
         password,
         firstName,
         lastName,
-        new OnTaskCompleteListener() {
+        new OnTaskCompleteListener<Void>() {
           @Override
-          public void onTaskSuccessful() {
+          public void onTaskSuccessful(Void result) {
             Timber.i(
                 "New user registered successfully %s",
-                fireBaseApiManager.getCurrentLoggedInUserEmail());
+                messageRepository.getUserAuthentication().getCurrentUserEmail());
             btnRegister.setText(getString(R.string.registration_success_msg));
             openLandingActivity();
           }
 
           @Override
-          public void onTaskCompleteButFailed(String errMsg) {
-            Timber.e(errMsg);
-            //                TODO: Show error to user
+          public void onTaskCompleteButFailed(Void result) {
+
           }
 
           @Override
@@ -152,7 +153,9 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
         });
   }
 
-  /** Open LandingActivity and finish this one */
+  /**
+   * Open LandingActivity and finish this one
+   */
   private void openLandingActivity() {
     startActivity(new Intent(RegistrationActivity.this, LandingActivity.class));
     finish();

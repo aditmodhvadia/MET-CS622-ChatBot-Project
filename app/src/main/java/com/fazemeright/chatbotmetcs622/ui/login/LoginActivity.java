@@ -17,6 +17,7 @@ import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
+import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 
 import timber.log.Timber;
@@ -82,7 +83,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   /**
    * Perform login with the given credentials
    *
-   * @param email user email address
+   * @param email    user email address
    * @param password user password
    */
   private void performLogin(String email, String password) {
@@ -99,14 +100,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     Timber.i("Login clicked");
-    fireBaseApiManager.logInWithEmailAndPassword(
+    messageRepository.getUserAuthentication().signInWithEmailAndPassword(
         email,
         password,
-        new OnTaskCompleteListener() {
+        new OnTaskCompleteListener<UserAuthResult>() {
           @Override
-          public void onTaskSuccessful() {
+          public void onTaskSuccessful(UserAuthResult result) {
             Timber.i(
-                "User logged in successfully %s", fireBaseApiManager.getCurrentLoggedInUserEmail());
+                "User logged in successfully %s",
+                messageRepository.getUserAuthentication().getCurrentUserEmail());
             btnLogin.setText(getString(R.string.login_success_msg));
             Intent intent = new Intent(mContext, FireBaseIntentService.class);
             intent.putExtra(
@@ -118,26 +120,28 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
           }
 
           @Override
-          public void onTaskCompleteButFailed(String errMsg) {
-            Timber.e(errMsg);
-            //                TODO: Show error to user
+          public void onTaskCompleteButFailed(UserAuthResult result) {
+            Timber.e(result.getErrorMsg());
           }
 
           @Override
           public void onTaskFailed(Exception e) {
             Timber.e(e);
-            //                TODO: Show error to user
           }
         });
   }
 
-  /** Open LandingActivity and finish this one */
+  /**
+   * Open LandingActivity and finish this one
+   */
   private void openLandingActivity() {
     startActivity(new Intent(LoginActivity.this, LandingActivity.class));
     finishAffinity();
   }
 
-  /** Open Registration Activity */
+  /**
+   * Open Registration Activity
+   */
   private void openRegistrationActivity() {
     finish();
   }

@@ -15,13 +15,7 @@ import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
-import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
-import com.fazemeright.firebase_api_library.listeners.DBValueListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fazemeright.firebase_api_library.api.firebase.FireBaseApiManager;
 
 import timber.log.Timber;
 
