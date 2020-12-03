@@ -17,7 +17,7 @@ public class QueryResponseMessage {
     this.data = data;
   }
 
-  public class Data {
+  public static class Data {
 
     @SerializedName("responseMsg")
     @Expose
