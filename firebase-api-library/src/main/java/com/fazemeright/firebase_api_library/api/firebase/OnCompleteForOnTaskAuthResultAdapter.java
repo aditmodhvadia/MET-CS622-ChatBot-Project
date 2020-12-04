@@ -7,6 +7,7 @@ import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import java.util.Objects;
 
 public class OnCompleteForOnTaskAuthResultAdapter implements OnCompleteListener<AuthResult> {
   private final OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener;
@@ -28,25 +29,26 @@ public class OnCompleteForOnTaskAuthResultAdapter implements OnCompleteListener<
           .onTaskCompleteButFailed(new UserAuthResultAdapterForAuthResult(task.getResult()));
     }
   }
-}
 
-class UserAuthResultAdapterForAuthResult implements UserAuthResult {
-  private final AuthResult authResult;
+  private static class UserAuthResultAdapterForAuthResult implements UserAuthResult {
+    private final AuthResult authResult;
 
-  UserAuthResultAdapterForAuthResult(AuthResult authResult) {
-    this.authResult = authResult;
-  }
+    UserAuthResultAdapterForAuthResult(AuthResult authResult) {
+      this.authResult = authResult;
+    }
 
-  @Nullable
-  @Override
-  public String getUser() {
-    return this.authResult.getUser().getDisplayName();
-  }
+    @Nullable
+    @Override
+    public String getUser() {
+      return Objects.requireNonNull(this.authResult.getUser()).getDisplayName();
+    }
 
-  @Nullable
-  @Override
-  public String getErrorMsg() {
+    @Nullable
+    @Override
+    public String getErrorMsg() {
 //    TODO: Parse error here
-    return "Some error occurred, Change this later";
+      return "Some error occurred, Change this later";
+    }
   }
+
 }

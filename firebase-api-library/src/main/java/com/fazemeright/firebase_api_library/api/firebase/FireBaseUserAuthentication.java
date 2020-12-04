@@ -16,9 +16,10 @@ import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import java.util.Objects;
 
 public class FireBaseUserAuthentication implements UserAuthentication {
-  private final String TAG = this.getClass().getSimpleName();
+  private final String TAG = FireBaseUserAuthentication.class.getSimpleName();
   private static FireBaseUserAuthentication mInstance;
 
   public synchronized static FireBaseUserAuthentication getInstance() {
@@ -95,7 +96,7 @@ public class FireBaseUserAuthentication implements UserAuthentication {
   @Nullable
   @Override
   public String getUserName() {
-    return getCurrentUser().getDisplayName();
+    return Objects.requireNonNull(getCurrentUser()).getDisplayName();
   }
 
   @Nullable
@@ -146,6 +147,5 @@ public class FireBaseUserAuthentication implements UserAuthentication {
       return getCurrentUser().getUid();
     }
     return null;
-
   }
 }
