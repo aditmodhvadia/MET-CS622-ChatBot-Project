@@ -15,16 +15,22 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
+import com.fazemeright.firebase_api_library.api.DatabaseStore;
+import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.api.UserAuthentication;
-import com.fazemeright.firebase_api_library.api.firebase.FireBaseApiManager;
+import com.fazemeright.firebase_api_library.api.firebase.FireBaseDatabaseStore;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
 import com.fazemeright.firebase_api_library.listeners.DBValueListener;
 
+import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import javax.annotation.Nullable;
 import timber.log.Timber;
 
 public class MessageRepository {
@@ -32,16 +38,18 @@ public class MessageRepository {
   private static MessageRepository repository;
   private ChatBotDatabase database;
   private ApiManager apiManager;
-  private FireBaseApiManager fireBaseApiManager;
-  private UserAuthentication userAuthentication;
+  //  private FireBaseApiManager fireBaseApiManager;
+  private final UserAuthentication userAuthentication;
+  private final DatabaseStore databaseStore;
 
   private MessageRepository(
-      ChatBotDatabase database, ApiManager apiManager, FireBaseApiManager fireBaseApiManager,
-      UserAuthentication userAuthentication) {
+      ChatBotDatabase database, ApiManager apiManager,
+      UserAuthentication userAuthentication, DatabaseStore databaseStore) {
     this.database = database;
     this.apiManager = apiManager;
-    this.fireBaseApiManager = fireBaseApiManager;
+//    this.fireBaseApiManager = fireBaseApiManager;
     this.userAuthentication = userAuthentication;
+    this.databaseStore = databaseStore;
     //        messageList = this.database.messageDao().getAllMessages();
   }
 
@@ -54,28 +62,33 @@ public class MessageRepository {
   public static MessageRepository getInstance(Context context) {
     if (repository == null) {
       synchronized (MessageRepository.class) {
-        //                get instance of database
         ChatBotDatabase database = ChatBotDatabase.getInstance(context);
         ApiManager apiManager = ApiManager.getInstance();
-        FireBaseApiManager fireBaseApiManager = FireBaseApiManager.getInstance();
+//        FireBaseApiManager fireBaseApiManager = FireBaseApiManager.getInstance();
         UserAuthentication userAuthentication = FireBaseUserAuthentication.getInstance();
+        DatabaseStore databaseStore = FireBaseDatabaseStore.getInstance();
         apiManager.init(NetworkManager.getInstance());
         repository =
-            new MessageRepository(database, apiManager, fireBaseApiManager, userAuthentication);
+            new MessageRepository(database, apiManager, userAuthentication,
+                databaseStore);
       }
     }
     return repository;
   }
 
   public UserAuthentication getUserAuthentication() {
-    return userAuthentication;
+    return this.userAuthentication;
+  }
+
+  public DatabaseStore getDatabaseStore() {
+    return this.databaseStore;
   }
 
   /**
    * Call to insert given project into database with thread safety
    *
    * @param newMessage given project
-   * @return
+   * @return inserted message
    */
   private Message insertMessageInRoom(Message newMessage) {
     //        insert into Room using AsyncTask
@@ -86,6 +99,36 @@ public class MessageRepository {
       e.printStackTrace();
     }
     return newMessage;
+  }
+
+  public void createNewUserAndStoreDetails(final String userEmail,
+                                           final String password,
+                                           final String firstName,
+                                           final String lastName,
+                                           @Nullable
+                                           final OnTaskCompleteListener<Void> onTaskCompleteListener) {
+    userAuthentication.createNewUserWithEmailPassword(userEmail, password,
+        new OnTaskCompleteListener<UserAuthResult>() {
+          @Override
+          public void onTaskSuccessful(UserAuthResult result) {
+            Map<String, Object> userProfile = new HashMap<>();
+            userProfile.put("emailAddress", userEmail);
+            userProfile.put("firstName", firstName);
+            userProfile.put("lastName", lastName);
+            databaseStore.storeUserData(
+                Objects.requireNonNull(userAuthentication.getCurrentUserUid()), userProfile);
+          }
+
+          @Override
+          public void onTaskCompleteButFailed(UserAuthResult result) {
+
+          }
+
+          @Override
+          public void onTaskFailed(Exception e) {
+
+          }
+        });
   }
 
   /**

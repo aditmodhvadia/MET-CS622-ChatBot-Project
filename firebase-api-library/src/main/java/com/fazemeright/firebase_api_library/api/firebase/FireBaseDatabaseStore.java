@@ -1,5 +1,6 @@
 package com.fazemeright.firebase_api_library.api.firebase;
 
+import androidx.annotation.NonNull;
 import com.fazemeright.firebase_api_library.api.DatabaseStore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -17,14 +18,25 @@ public class FireBaseDatabaseStore implements DatabaseStore {
   }
 
   @Override
-  public void writeData(String path, Map<String, Object> data) {
+  public void storeUserData(@NonNull String uid, @NonNull Map<String, Object> userData) {
+    writeData(BaseUrl.USERS + "/" + uid, userData);
+  }
+
+  @Override
+  public void writeData(@NonNull String path, @NonNull Map<String, Object> data) {
     DocumentReference documentReference = FirebaseFirestore.getInstance().document(path);
     documentReference.set(data);
   }
 
   @Override
-  public void updateData(String path, Map<String, Object> data) {
+  public void updateData(@NonNull String path, @NonNull Map<String, Object> data) {
     DocumentReference documentReference = FirebaseFirestore.getInstance().document(path);
     documentReference.update(data);
+  }
+
+  public static class BaseUrl {
+    static final String USERS = "users";
+    static final String MESSAGES = "messages";
+    // Declare the constants over here
   }
 }

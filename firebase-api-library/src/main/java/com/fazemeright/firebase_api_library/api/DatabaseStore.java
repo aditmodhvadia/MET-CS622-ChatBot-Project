@@ -1,10 +1,13 @@
 package com.fazemeright.firebase_api_library.api;
 
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public interface DatabaseStore {
 
-  void writeData(String path, Map<String, Object> data);
+  void storeUserData(@Nonnull String uid, @Nonnull Map<String, Object> userData);
 
-  void updateData(String path, Map<String, Object> data);
+  void writeData(@Nonnull String path, @Nonnull Map<String, Object> data);
+
+  void updateData(@Nonnull String path, @Nonnull Map<String, Object> data);
 }

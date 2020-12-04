@@ -33,12 +33,12 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
   private static final String TAG = "FireBaseApiManager";
   private static FireBaseApiManager apiManager;
 
-  public static FireBaseApiManager getInstance() {
+  /*public static FireBaseApiManager getInstance() {
     if (apiManager == null) {
       apiManager = new FireBaseApiManager();
     }
     return apiManager;
-  }
+  }*/
 
   private void logOutUser() {
     //        todo: log analytics event
@@ -73,7 +73,7 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
               userProfile.put("lastName", lastName);
               DocumentReference dr =
                   FirebaseFirestore.getInstance()
-                      .collection(BaseUrl.USERS)
+                      .collection(FireBaseDatabaseStore.BaseUrl.USERS)
                       .document(getCurrentUserUid());
 
               writeToFireStoreDocument(
@@ -192,9 +192,9 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
   }
 
   public void addMessageToUserDatabase(Map<String, Object> messageHashMap) {
-    db.collection(BaseUrl.USERS)
+    db.collection(FireBaseDatabaseStore.BaseUrl.USERS)
         .document(getCurrentUserUid())
-        .collection(BaseUrl.MESSAGES)
+        .collection(FireBaseDatabaseStore.BaseUrl.MESSAGES)
         .document(String.valueOf(messageHashMap.get("mid")))
         .set(messageHashMap)
         .addOnSuccessListener(
@@ -207,9 +207,9 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
   }
 
   public void syncMessages(final DBValueListener<List<Map<String, Object>>> listDBValueListener) {
-    db.collection(BaseUrl.USERS)
+    db.collection(FireBaseDatabaseStore.BaseUrl.USERS)
         .document(getCurrentUserUid())
-        .collection(BaseUrl.MESSAGES)
+        .collection(FireBaseDatabaseStore.BaseUrl.MESSAGES)
         .get()
         .addOnCompleteListener(
             new OnCompleteListener<QuerySnapshot>() {
@@ -234,9 +234,4 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
     return getCurrentUser().getDisplayName();
   }
 
-  public static class BaseUrl {
-    static final String USERS = "users";
-    static final String MESSAGES = "messages";
-    // Declare the constants over here
-  }
 }
