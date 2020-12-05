@@ -302,7 +302,7 @@ public class MessageRepository {
    * @param messageHashMap given message converted into HashMap
    */
   public void addMessageToFireBase(Map<String, Object> messageHashMap) {
-    fireBaseApiManager.addMessageToUserDatabase(messageHashMap);
+    this.databaseStore.storeMessage(messageHashMap, this.userAuthentication.getCurrentUserUid());
   }
 
   /**
