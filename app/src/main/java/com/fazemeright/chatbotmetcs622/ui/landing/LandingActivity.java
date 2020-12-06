@@ -3,19 +3,15 @@ package com.fazemeright.chatbotmetcs622.ui.landing;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity;
-import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
-
 import java.util.ArrayList;
 
 public class LandingActivity extends BaseActivity
@@ -34,13 +30,17 @@ public class LandingActivity extends BaseActivity
     }
 
     rvChatRoomList = findViewById(R.id.rvChatRoomList);
+    adapter = new ChatSelectionListAdapter(this);
+
+    setUpRecyclerView();
+  }
+
+  private void setUpRecyclerView() {
     rvChatRoomList.setHasFixedSize(true);
     rvChatRoomList.setLayoutManager(new LinearLayoutManager(mContext));
     rvChatRoomList.addItemDecoration(
         new DividerItemDecoration(rvChatRoomList.getContext(), LinearLayoutManager.VERTICAL));
-    adapter = new ChatSelectionListAdapter(this);
     rvChatRoomList.setAdapter(adapter);
-
     adapter.submitDataList(getChatRoomList());
   }
 
@@ -62,11 +62,10 @@ public class LandingActivity extends BaseActivity
 
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.action_logout:
-        logoutUser();
-        openRegistrationActivity();
-        return true;
+    if (item.getItemId() == R.id.action_logout) {
+      logoutUser();
+      openRegistrationActivity();
+      return true;
     }
 
     return super.onOptionsItemSelected(item);

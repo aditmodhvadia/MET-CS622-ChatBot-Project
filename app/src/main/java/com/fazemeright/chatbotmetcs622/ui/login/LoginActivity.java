@@ -1,17 +1,13 @@
 package com.fazemeright.chatbotmetcs622.ui.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
@@ -19,28 +15,30 @@ import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
-
 import timber.log.Timber;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
   private EditText userEmailEditText, userPasswordEditText;
-  private TextView tvDontHaveAccount;
+  private TextView tvDoNotHaveAccount;
   private Button btnLogin;
 
   @Override
   public void initViews() {
-    //        set title for activity
+    setUpSupportActionBar();
+
+    userEmailEditText = findViewById(R.id.userLoginEmailEditText);
+    userPasswordEditText = findViewById(R.id.userPasswordEditText);
+    tvDoNotHaveAccount = findViewById(R.id.tvDontHaveAccount);
+    btnLogin = findViewById(R.id.btnLogin);
+  }
+
+  private void setUpSupportActionBar() {
     if (getSupportActionBar() != null) {
       getSupportActionBar().setTitle(getString(R.string.login_title));
       getSupportActionBar().setHomeButtonEnabled(true);
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-    userEmailEditText = findViewById(R.id.userLoginEmailEditText);
-    userPasswordEditText = findViewById(R.id.userPasswordEditText);
-    tvDontHaveAccount = findViewById(R.id.tvDontHaveAccount);
-    btnLogin = findViewById(R.id.btnLogin);
   }
 
   @Override
@@ -54,7 +52,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   @Override
   public void setListeners() {
     btnLogin.setOnClickListener(this);
-    tvDontHaveAccount.setOnClickListener(this);
+    tvDoNotHaveAccount.setOnClickListener(this);
   }
 
   @Override
@@ -64,19 +62,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
   @Override
   public void onClick(View v) {
-    switch (v.getId()) {
-      case R.id.tvDontHaveAccount:
-        openRegistrationActivity();
-        break;
-      case R.id.btnLogin:
-        //                TODO: Disable and re-enable the button after performing registration and
-        // validation
-        disableButton(btnLogin);
-        String email = userEmailEditText.getText().toString();
-        String password = userPasswordEditText.getText().toString();
-        performLogin(email, password);
-        enableButton(btnLogin);
-        break;
+    int clickedViewId = v.getId();
+    if (clickedViewId == R.id.tvDontHaveAccount) {
+      goToRegistrationActivity();
+    } else if (clickedViewId == R.id.btnLogin) {
+      disableButton(btnLogin);
+      performLogin(userEmailEditText.getText().toString().trim(),
+          userPasswordEditText.getText().toString().trim());
+      enableButton(btnLogin);
     }
   }
 
@@ -112,9 +105,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             btnLogin.setText(getString(R.string.login_success_msg));
             Intent intent = new Intent(mContext, FireBaseIntentService.class);
             intent.putExtra(
-                FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_SYNC_MESSAGES);
-            //                ContextCompat.startForegroundService(LoginActivity.this, intent);
-            //                ContextCompat.startForegroundService(mContext, intent);
+                FireBaseIntentService.Actions.ACTION,
+                FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
             ContextCompat.startForegroundService(mContext, intent);
             openLandingActivity();
           }
@@ -140,9 +132,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   }
 
   /**
-   * Open Registration Activity
+   * Go to Registration Activity
    */
-  private void openRegistrationActivity() {
+  private void goToRegistrationActivity() {
     finish();
   }
 }

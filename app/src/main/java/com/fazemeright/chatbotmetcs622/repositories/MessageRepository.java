@@ -77,7 +77,7 @@ public class MessageRepository {
   }
 
   /**
-   * Call to insert given project into database with thread safety
+   * Call to insert given message into database with thread safety
    *
    * @param newMessage given project
    * @return inserted message
@@ -137,22 +137,22 @@ public class MessageRepository {
   /**
    * Call to get Message with given Message ID
    *
-   * @param mid given Message ID
+   * @param messageId given Message ID
    * @return Message with given ID
    */
-  public Message getMessage(long mid) {
-    return fetchMessage(mid);
+  public Message getMessage(long messageId) {
+    return fetchMessage(messageId);
   }
 
   /**
    * Call to get Message with given Message ID with thread safety
    *
-   * @param pid given Message ID
+   * @param messageId given Message ID
    * @return Message with given ID
    */
-  private Message fetchMessage(long pid) {
+  private Message fetchMessage(long messageId) {
     try {
-      return new FetchMessageAsyncTask(database.messageDao()).execute(pid).get();
+      return new FetchMessageAsyncTask(database.messageDao()).execute(messageId).get();
     } catch (ExecutionException | InterruptedException e) {
       e.printStackTrace();
       return null;
@@ -163,7 +163,6 @@ public class MessageRepository {
    * Call to delete project with given project
    *
    * @param project given Message
-   * @return Deleted Message
    */
   public void deleteMessage(Message project) {
     deleteMessageFromRoom(project);
@@ -243,7 +242,8 @@ public class MessageRepository {
    */
   private void insertMessageInFireBase(Context context, Message newMessage) {
     Intent intent = new Intent(context, FireBaseIntentService.class);
-    intent.putExtra(FireBaseIntentService.ACTION, FireBaseIntentService.ACTION_ADD_MESSAGE);
+    intent.putExtra(FireBaseIntentService.Actions.ACTION,
+        FireBaseIntentService.Actions.ACTION_ADD_MESSAGE);
     intent.putExtra(FireBaseIntentService.MESSAGE, newMessage);
     context.startService(intent);
   }
@@ -297,6 +297,17 @@ public class MessageRepository {
   public void addMessageToFireBase(Map<String, Object> messageHashMap) {
     this.onlineDatabaseStore
         .storeMessage(messageHashMap, this.userAuthentication.getCurrentUserUid());
+  }
+
+  /**
+   * Call to add the given messages to FireStore
+   *
+   * @param messageList given messages list
+   */
+  public void addMessagesToFireBase(List<Message> messageList) {
+    for (Message message : messageList) {
+      this.addMessageToFireBase(Message.getHashMap(message));
+    }
   }
 
   /**

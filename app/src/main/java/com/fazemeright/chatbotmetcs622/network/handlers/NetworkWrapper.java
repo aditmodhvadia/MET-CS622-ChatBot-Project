@@ -24,7 +24,7 @@ public interface NetworkWrapper {
   <T> void makeGetRequest(
       Context context,
       String url,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       String tag,
       NetworkCallback<T> networkCallback);
 
@@ -40,7 +40,7 @@ public interface NetworkWrapper {
   <T> void makePostRequest(
       Context context,
       String url,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       NetworkCallback<T> networkCallback);
@@ -59,7 +59,7 @@ public interface NetworkWrapper {
       Context context,
       String url,
       Object dataObject,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       String tag,
       NetworkCallback<T> networkCallback);
 
@@ -77,7 +77,7 @@ public interface NetworkWrapper {
       Context context,
       String url,
       String data,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       String tag,
       NetworkCallback<T> networkCallback);
 
@@ -93,7 +93,7 @@ public interface NetworkWrapper {
    *     isSuccess() to find whether response contains error or not
    */
   <T> NetCompoundRes<T> makePostRequestSync(
-      Context context, String url, Object dataObject, TypeToken typeToken, String tag);
+      Context context, String url, Object dataObject, TypeToken<T> typeToken, String tag);
 
   /**
    * API POST method Request with header
@@ -110,7 +110,7 @@ public interface NetworkWrapper {
       Context context,
       String url,
       Object dataObject,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       NetworkCallback<T> networkCallback);
@@ -128,7 +128,7 @@ public interface NetworkWrapper {
   <T> void makeDeleteRequestHeader(
       Context context,
       String url /*, Object dataObject*/,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       NetworkCallback<T> networkCallback);
@@ -146,7 +146,7 @@ public interface NetworkWrapper {
   <T> void makeGetRequestHeader(
       Context context,
       String url,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       NetworkCallback<T> networkCallback);
@@ -167,7 +167,7 @@ public interface NetworkWrapper {
       Context context,
       String url,
       Object dataObject,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       NetworkCallback<T> networkCallback);

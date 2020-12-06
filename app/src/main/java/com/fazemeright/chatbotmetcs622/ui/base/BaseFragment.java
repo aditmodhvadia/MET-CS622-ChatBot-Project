@@ -49,18 +49,18 @@ public abstract class BaseFragment extends Fragment {
   int getLayoutResId();
 
   /**
-   * To initialize views of activity
-   *
-   * @param view inflated layout
+   * Template method to initialize views of activity
    */
-  public abstract void initViews(View view);
+  public void initViews(View view) {
+  }
 
   /**
-   * To set listeners of view or callback
+   * Template method to set listeners of view or callback
    *
-   * @param view inflated layout
+   * @param view view
    */
-  public abstract void setListeners(View view);
+  public void setListeners(View view) {
+  }
 
   public boolean isNetworkConnected() {
     ConnectivityManager cm =

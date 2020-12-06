@@ -17,12 +17,6 @@ import timber.log.Timber;
 
 public class FireBaseIntentService extends IntentService {
 
-  public static final String ACTION_ADD_MESSAGE = "AddMessage";
-  public static final String ACTION_SYNC_MESSAGES = "SyncMessages";
-  /**
-   * Use to send data with intent
-   */
-  public static final String ACTION = "IntentAction";
   public static final String MESSAGE = "Message";
   public static final String RESULT_RECEIVER = "ResultReceiver";
   /**
@@ -47,32 +41,34 @@ public class FireBaseIntentService extends IntentService {
     super.onCreate();
     Timber.i("onCreate");
     database = ChatBotDatabase.getInstance(getApplicationContext());
+    getWakeLock();
+    showForegroundServiceNotification();
+  }
+
+  private void getWakeLock() {
     PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     if (powerManager != null) {
       wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ChatBot:WakeLockTag");
-      wakeLock.acquire(60 * 1000); //  acquire CPU
+      wakeLock.acquire(60000); //  acquire CPU
       Timber.i("onCreate: Wake Lock acquired");
     }
-    showForegroundServiceNotification("Chat Bot", "Syncing Messages...");
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    Timber.i("onDestroy");
     wakeLock.release();
-    Timber.i("onDestroy: Wake Lock released");
   }
 
   @Override
   protected void onHandleIntent(@Nullable Intent intent) {
     Timber.d("onHandleIntent");
     if (intent != null) {
-      switch (intent.getStringExtra(ACTION)) {
-        case ACTION_ADD_MESSAGE:
+      switch (intent.getStringExtra(Actions.ACTION)) {
+        case Actions.ACTION_ADD_MESSAGE:
           addMessageToFireStore((Message) intent.getSerializableExtra(MESSAGE));
           break;
-        case ACTION_SYNC_MESSAGES:
+        case Actions.ACTION_SYNC_MESSAGES:
           syncMessages();
           break;
       }
@@ -83,11 +79,6 @@ public class FireBaseIntentService extends IntentService {
    * Call to sync messages from FireStore to Room for the logged in user
    */
   private void syncMessages() {
-    /*try {
-        Thread.sleep(5000); //  intentionally kept delay to show in presentation TODO: Remove afterwards
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }*/
     messageRepository.syncMessagesFromFireStoreToRoom();
   }
 
@@ -103,18 +94,13 @@ public class FireBaseIntentService extends IntentService {
   /**
    * Call to display foreground running notification to notify user of a background operation
    * running
-   *
-   * @param title title to display in notification
-   * @param text  text to display in notification
    */
-  private void showForegroundServiceNotification(String title, String text) {
-    Timber.i("Show notification called");
+  private void showForegroundServiceNotification() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
       Notification notification =
           new NotificationCompat.Builder(this, ChatBotApp.CHANNEL_ID)
-              .setContentTitle(title)
-              .setContentText(text)
+              .setContentTitle("Chat Bot")
+              .setContentText("Syncing Messages...")
               .setSmallIcon(R.drawable.ic_launcher_foreground)
               .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
               .build();
@@ -127,5 +113,14 @@ public class FireBaseIntentService extends IntentService {
   public void onStart(@Nullable Intent intent, int startId) {
     super.onStart(intent, startId);
     messageRepository = MessageRepository.getInstance(getApplicationContext());
+  }
+
+  public static class Actions {
+    public static final String ACTION_ADD_MESSAGE = "AddMessage";
+    public static final String ACTION_SYNC_MESSAGES = "SyncMessages";
+    /**
+     * Use to send data with intent
+     */
+    public static final String ACTION = "IntentAction";
   }
 }

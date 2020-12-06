@@ -59,7 +59,7 @@ public class NetworkManager implements NetworkWrapper {
    * Initializing at the very first time Set Request Timeout Enabling network logging
    *
    * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
-   * @param context
+   * @param context context
    */
   public void init(Context context, int requestTimeOut) {
     initSecureClient(context, requestTimeOut);
@@ -79,7 +79,7 @@ public class NetworkManager implements NetworkWrapper {
   public <T> void makeGetRequest(
       Context context,
       String url,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       String tag,
       final NetworkCallback<T> networkCallback) {
     if (CoreUtils.isValidUrl(url)) {
@@ -95,7 +95,7 @@ public class NetworkManager implements NetworkWrapper {
                   @Override
                   public void onResponse(T response) {
                     Timber.i("onResponse :: %s", CoreUtils.getStringFromObject(response));
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -118,7 +118,7 @@ public class NetworkManager implements NetworkWrapper {
   public <T> void makePostRequest(
       Context context,
       String url,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       final NetworkCallback<T> networkCallback) {
@@ -135,7 +135,7 @@ public class NetworkManager implements NetworkWrapper {
                 new ParsedRequestListener<T>() {
                   @Override
                   public void onResponse(T response) {
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -157,7 +157,7 @@ public class NetworkManager implements NetworkWrapper {
   public <T> void makeGetRequestHeader(
       Context context,
       String url,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       final NetworkCallback<T> networkCallback) {
@@ -175,7 +175,7 @@ public class NetworkManager implements NetworkWrapper {
                   @Override
                   public void onResponse(T response) {
                     Timber.i("onResponse :: %s", CoreUtils.getStringFromObject(response));
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -199,7 +199,7 @@ public class NetworkManager implements NetworkWrapper {
       Context context,
       String url,
       final Object dataObject,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       final NetworkCallback<T> networkCallback) {
@@ -222,7 +222,7 @@ public class NetworkManager implements NetworkWrapper {
                   public void onResponse(T response) {
                     // LogUtils.getInstance().printLog(TAG, "onResponse :: "
                     // + CoreUtils.getStringFromObject(response));
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -248,7 +248,7 @@ public class NetworkManager implements NetworkWrapper {
       Context context,
       String url,
       final Object dataObject,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       String tag,
       final NetworkCallback<T> networkCallback) {
     if (CoreUtils.isValidUrl(url)) {
@@ -270,7 +270,7 @@ public class NetworkManager implements NetworkWrapper {
                   public void onResponse(T response) {
                     // LogUtils.getInstance().printLog(TAG, "onResponse :: "
                     // + CoreUtils.getStringFromObject(response));
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -296,13 +296,13 @@ public class NetworkManager implements NetworkWrapper {
       Context context,
       String url,
       String data,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       String tag,
       NetworkCallback<T> networkCallback) {}
 
   @Override
   public <T> NetCompoundRes<T> makePostRequestSync(
-      Context context, String url, Object dataObject, TypeToken typeToken, String tag) {
+      Context context, String url, Object dataObject, TypeToken<T> typeToken, String tag) {
     return null;
   }
 
@@ -311,7 +311,7 @@ public class NetworkManager implements NetworkWrapper {
       Context context,
       String url,
       final Object dataObject,
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       final NetworkCallback<T> networkCallback) {
@@ -335,7 +335,7 @@ public class NetworkManager implements NetworkWrapper {
                   public void onResponse(T response) {
                     // LogUtils.getInstance().printLog(TAG, "onResponse :: "
                     // + CoreUtils.getStringFromObject(response));
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -360,7 +360,7 @@ public class NetworkManager implements NetworkWrapper {
   public <T> void makeDeleteRequestHeader(
       Context context,
       String url, /*final Object dataObject,*/
-      TypeToken typeToken,
+      TypeToken<T> typeToken,
       HashMap<String, String> hashMapHeader,
       String tag,
       final NetworkCallback<T> networkCallback) {
@@ -384,7 +384,7 @@ public class NetworkManager implements NetworkWrapper {
                   public void onResponse(T response) {
                     // LogUtils.getInstance().printLog(TAG, "onResponse :: "
                     // + CoreUtils.getStringFromObject(response));
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -410,14 +410,14 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To use only for get id_token,access_token and refresh_token when login with Social
    *
-   * @param context
-   * @param url
-   * @param dataObject
-   * @param typeToken
-   * @param hashMapHeader
-   * @param tag
-   * @param networkCallback
-   * @param <T>
+   * @param context context
+   * @param url endpoint
+   * @param dataObject request data
+   * @param typeToken response type
+   * @param hashMapHeader header
+   * @param tag request tag
+   * @param networkCallback network callback
+   * @param <T> Type
    */
   @Override
   public <T> void makeCustomPostForSocialRequest(
@@ -449,7 +449,7 @@ public class NetworkManager implements NetworkWrapper {
                 new ParsedRequestListener<T>() {
                   @Override
                   public void onResponse(T response) {
-                    NetResponse netResponse = new NetResponse();
+                    NetResponse<T> netResponse = new NetResponse<>();
                     netResponse.setResponse(response);
                     networkCallback.onSuccess(netResponse);
                   }
@@ -471,8 +471,8 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To create class for error from network/api
    *
-   * @param anError
-   * @param requestObject
+   * @param anError network error
+   * @param requestObject request object
    */
   private NetError getNetError(ANError anError, @Nullable Object requestObject) {
     NetError netError = new NetError(anError.getMessage());
@@ -488,8 +488,8 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To create class for error from network/api
    *
-   * @param anError
-   * @param requestObject
+   * @param anError network error
+   * @param requestObject request object
    */
   private NetError getNetErrorConnectivityError(ANError anError, @Nullable Object requestObject) {
     NetError netError = new NetError(anError.getMessage());
@@ -505,8 +505,8 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To get Connectivity Error
    *
-   * @param context
-   * @return
+   * @param context context
+   * @return network error
    */
   private ANError getConnectivityError(Context context) {
     ANError anError = new ANError(context.getString(R.string.no_internet_connection_available));
@@ -518,8 +518,8 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To Print Request
    *
-   * @param url
-   * @param data
+   * @param url endpoint
+   * @param data data
    */
   private void printURLAndRequestParameters(String url, Object data) {
     Timber.i("url :: %s", url);
@@ -529,8 +529,8 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To get Invalid Url Error
    *
-   * @param url
-   * @return
+   * @param url url
+   * @return network error if occurred
    */
   private NetError getInvalidUrlError(String url) {
     NetError anError = new NetError("Invalid url: " + url);

@@ -25,10 +25,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
 
   @Override
   public void initViews() {
-    //        set title for activity
-    if (getSupportActionBar() != null) {
-      getSupportActionBar().setTitle(getString(R.string.registration));
-    }
+    setUpSupportActionBar();
 
     userEmailEditText = findViewById(R.id.userLoginEmailEditText);
     etFirstName = findViewById(R.id.etFirstName);
@@ -37,6 +34,12 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
     userConPasswordEditText = findViewById(R.id.userConPasswordEditText);
     tvHaveAccount = findViewById(R.id.tvHaveAccount);
     btnRegister = findViewById(R.id.btnRegister);
+  }
+
+  private void setUpSupportActionBar() {
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setTitle(getString(R.string.registration));
+    }
   }
 
   @Override
@@ -57,14 +60,18 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       openLoginActivity();
     } else if (id == R.id.btnRegister) {
       disableButton(btnRegister);
-      String email = userEmailEditText.getText().toString();
-      String firstName = etFirstName.getText().toString();
-      String lastName = etLastName.getText().toString();
-      String password = userPasswordEditText.getText().toString();
-      String conPassword = userConPasswordEditText.getText().toString();
-      performRegistration(email, firstName, lastName, password, conPassword);
+      registerUser();
       enableButton(btnRegister);
     }
+  }
+
+  private void registerUser() {
+    String email = userEmailEditText.getText().toString();
+    String firstName = etFirstName.getText().toString();
+    String lastName = etLastName.getText().toString();
+    String password = userPasswordEditText.getText().toString();
+    String conPassword = userConPasswordEditText.getText().toString();
+    performRegistration(email, firstName, lastName, password, conPassword);
   }
 
   /**
