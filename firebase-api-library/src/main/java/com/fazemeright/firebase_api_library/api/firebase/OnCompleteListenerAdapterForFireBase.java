@@ -28,9 +28,9 @@ public class OnCompleteListenerAdapterForFireBase implements
       for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
         data.add(documentSnapshot.getData());
       }
-      listener.onComplete(new Result<>(data));
+      listener.onComplete(Result.withData(data));
     } else {
-      listener.onComplete(new Result<>(task.getException()));
+      listener.onComplete(Result.exception(task.getException()));
     }
   }
 }

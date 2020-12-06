@@ -13,8 +13,6 @@ import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
-import com.fazemeright.firebase_api_library.api.UserAuthResult;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import timber.log.Timber;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
@@ -95,10 +93,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     Timber.i("Login clicked");
     messageRepository.getUserAuthentication().signInWithEmailAndPassword(
         email,
-        password,
-        new OnTaskCompleteListener<UserAuthResult>() {
-          @Override
-          public void onTaskSuccessful(UserAuthResult result) {
+        password, userAuthResult -> {
+          if (userAuthResult.isSuccessful()) {
             Timber.i(
                 "User logged in successfully %s",
                 messageRepository.getUserAuthentication().getCurrentUserEmail());
@@ -109,16 +105,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
             ContextCompat.startForegroundService(mContext, intent);
             openLandingActivity();
-          }
-
-          @Override
-          public void onTaskCompleteButFailed(UserAuthResult result) {
-            Timber.e(result.getErrorMsg());
-          }
-
-          @Override
-          public void onTaskFailed(Exception e) {
-            Timber.e(e);
+          } else {
+            Timber.e(userAuthResult.getException());
           }
         });
   }
