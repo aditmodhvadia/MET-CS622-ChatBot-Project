@@ -3,8 +3,6 @@ package com.fazemeright.firebase_api_library.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseUser;
 
 public interface UserAuthentication {
@@ -37,16 +35,14 @@ public interface UserAuthentication {
       OnCompleteListenerNew<UserAuthResult> onTaskCompleteListener);
 
   void sendEmailVerification(
-      @Nullable OnCompleteListener<Void> onCompleteListener,
-      @Nullable OnFailureListener onFailureListener);
+      @Nullable OnCompleteListenerNew<Void> onCompleteListener);
 
   @Nullable
   String getCurrentUserEmail();
 
   void sendPasswordResetEmail(
       @NonNull String userEmail,
-      @Nullable OnCompleteListener<Void> onCompleteListener,
-      @Nullable OnFailureListener onFailureListener);
+      @Nullable OnCompleteListenerNew<Void> onCompleteListener);
 
   void reloadCurrentUserAuthState(@Nullable OnCompleteListenerNew<Void> onTaskCompleteListener);
 
