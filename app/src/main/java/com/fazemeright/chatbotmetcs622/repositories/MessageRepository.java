@@ -317,6 +317,12 @@ public class MessageRepository {
     });
   }
 
+  public interface OnMessageResponseReceivedListener {
+    void onMessageResponseReceived(Message response);
+
+    void onNoResponseReceived(Error error);
+  }
+
   /**
    * Fetch all chat room messages for the given ChatRoom through AsyncTask from Room
    */
@@ -461,11 +467,5 @@ public class MessageRepository {
       mAsyncTaskDao.update(params[0]);
       return null;
     }
-  }
-
-  public interface OnMessageResponseReceivedListener {
-    void onMessageResponseReceived(Message response);
-
-    void onNoResponseReceived(Error error);
   }
 }
