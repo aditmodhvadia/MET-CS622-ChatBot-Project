@@ -1,11 +1,13 @@
 package com.fazemeright.firebase_api_library.api.firebase;
 
 import android.text.TextUtils;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import com.fazemeright.firebase_api_library.api.DatabaseStore;
+import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
@@ -48,6 +50,12 @@ public class FireBaseDatabaseStore implements DatabaseStore {
   @Override
   public void updateData(@NonNull String path, @NonNull Map<String, Object> data) {
     getDocumentReferenceFromPath(path).update(data);
+  }
+
+  @Override
+  public void getAllMessagesForUser(@Nonnull String currentUserUid,
+                                    OnCompleteListenerNew<List<HashMap<String, Object>>> messages) {
+
   }
 
   public static class BaseUrl {

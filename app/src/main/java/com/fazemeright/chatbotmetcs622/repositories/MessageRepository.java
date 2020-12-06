@@ -309,6 +309,9 @@ public class MessageRepository {
    * Call to sync messages from FireStore to Room for the logged in user
    */
   public void syncMessagesFromFireStoreToRoom() {
+    databaseStore.getAllMessagesForUser(userAuthentication.getCurrentUserUid(), result -> {
+      
+    });
     fireBaseApiManager.syncMessages(
         new DBValueListener<List<Map<String, Object>>>() {
           @Override
