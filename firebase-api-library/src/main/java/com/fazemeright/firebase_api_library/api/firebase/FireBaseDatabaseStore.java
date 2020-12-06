@@ -1,6 +1,5 @@
 package com.fazemeright.firebase_api_library.api.firebase;
 
-import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import com.fazemeright.firebase_api_library.api.DatabaseStore;
 import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
@@ -22,32 +21,35 @@ public class FireBaseDatabaseStore implements DatabaseStore {
     return mInstance;
   }
 
-  public String joinPath(String... args) {
-    return TextUtils.join("/", args);
-  }
+//  public String joinPath(String... args) {
+//    return TextUtils.join("/", args);
+//  }
 
   @Override
   public void storeUserData(@NonNull String uid, @NonNull Map<String, Object> userData) {
-    writeData(BaseUrl.USERS + "/" + uid, userData);
+    DocumentReference doc =
+        FirebaseFirestore.getInstance().collection(BaseUrl.USERS).document(uid);
+    writeData(doc, userData);
   }
 
   @Override
   public void storeMessage(@Nonnull Map<String, Object> messageHashMap,
                            String currentUserUid) {
-    writeData(joinPath(BaseUrl.USERS, currentUserUid, BaseUrl.MESSAGES,
-        String.valueOf(messageHashMap.get("mid"))), messageHashMap);
+    DocumentReference doc =
+        FirebaseFirestore.getInstance().collection(BaseUrl.USERS).document(currentUserUid)
+            .collection(BaseUrl.MESSAGES).document(String.valueOf(messageHashMap.get("mid")));
+    writeData(doc, messageHashMap);
   }
 
-  @Override
-  public void writeData(@NonNull String path, @NonNull Map<String, Object> data) {
-    getDocumentReferenceFromPath(path).set(data);
+  public void writeData(@NonNull DocumentReference documentReference,
+                        @NonNull Map<String, Object> data) {
+    documentReference.set(data);
   }
 
   public DocumentReference getDocumentReferenceFromPath(@NonNull String path) {
     return FirebaseFirestore.getInstance().document(path);
   }
 
-  @Override
   public void updateData(@NonNull String path, @NonNull Map<String, Object> data) {
     getDocumentReferenceFromPath(path).update(data);
   }

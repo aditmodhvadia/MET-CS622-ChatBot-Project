@@ -15,12 +15,6 @@ public interface DatabaseStore {
 
   void storeMessage(@Nonnull Map<String, Object> messageHashMap, String currentUserUid);
 
-  void writeData(@Nonnull String path, @Nonnull Map<String, Object> data);
-
-  void updateData(@Nonnull String path, @Nonnull Map<String, Object> data);
-
-  void readData();
-
   void getAllMessagesForUser(@Nonnull String currentUserUid,
                              OnCompleteListenerNew<List<HashMap<String, Object>>> messages);
 }
