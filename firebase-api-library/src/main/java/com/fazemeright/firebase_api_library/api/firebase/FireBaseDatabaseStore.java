@@ -1,11 +1,12 @@
 package com.fazemeright.firebase_api_library.api.firebase;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.fazemeright.firebase_api_library.api.DatabaseStore;
 import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -20,10 +21,6 @@ public class FireBaseDatabaseStore implements DatabaseStore {
     }
     return mInstance;
   }
-
-//  public String joinPath(String... args) {
-//    return TextUtils.join("/", args);
-//  }
 
   @Override
   public void storeUserData(@NonNull String uid, @NonNull Map<String, Object> userData) {
@@ -56,8 +53,19 @@ public class FireBaseDatabaseStore implements DatabaseStore {
 
   @Override
   public void getAllMessagesForUser(@Nonnull String currentUserUid,
-                                    OnCompleteListenerNew<List<HashMap<String, Object>>> messages) {
+                                    @Nullable
+                                        OnCompleteListenerNew<List<Map<String, Object>>> listener) {
+    CollectionReference collectionReference =
+        FirebaseFirestore.getInstance().collection(BaseUrl.USERS)
+            .document(currentUserUid)
+            .collection(BaseUrl.MESSAGES);
+    readData(collectionReference, listener);
+  }
 
+  private void readData(@Nonnull CollectionReference collectionReference,
+                        @Nullable OnCompleteListenerNew<List<Map<String, Object>>> listener) {
+    collectionReference.get()
+        .addOnCompleteListener(new OnCompleteListenerAdapterForFireBase(listener));
   }
 
   public static class BaseUrl {

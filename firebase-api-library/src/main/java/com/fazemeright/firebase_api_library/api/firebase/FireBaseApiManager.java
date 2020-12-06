@@ -212,19 +212,16 @@ public class FireBaseApiManager extends FireBaseApiWrapper {
         .collection(FireBaseDatabaseStore.BaseUrl.MESSAGES)
         .get()
         .addOnCompleteListener(
-            new OnCompleteListener<QuerySnapshot>() {
-              @Override
-              public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                  List<Map<String, Object>> hashMaps = new ArrayList<>();
-                  for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                    Log.d(TAG, document.getId() + " => " + document.getData());
-                    hashMaps.add(document.getData());
-                  }
-                  listDBValueListener.onDataReceived(hashMaps);
-                } else {
-                  Log.e(TAG, "onComplete: \"Error getting documents" + task.getException());
+            task -> {
+              if (task.isSuccessful()) {
+                List<Map<String, Object>> hashMaps = new ArrayList<>();
+                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                  Log.d(TAG, document.getId() + " => " + document.getData());
+                  hashMaps.add(document.getData());
                 }
+                listDBValueListener.onDataReceived(hashMaps);
+              } else {
+                Log.e(TAG, "onComplete: \"Error getting documents" + task.getException());
               }
             });
   }

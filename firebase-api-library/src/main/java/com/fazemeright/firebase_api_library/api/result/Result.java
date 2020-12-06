@@ -1,4 +1,4 @@
-package com.fazemeright.firebase_api_library.listeners;
+package com.fazemeright.firebase_api_library.api.result;
 
 import javax.annotation.Nullable;
 

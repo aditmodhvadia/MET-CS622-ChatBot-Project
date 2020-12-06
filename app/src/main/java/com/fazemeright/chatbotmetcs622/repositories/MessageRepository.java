@@ -20,7 +20,6 @@ import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.api.UserAuthentication;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseDatabaseStore;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
-import com.fazemeright.firebase_api_library.listeners.DBValueListener;
 
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import java.util.ArrayList;
@@ -36,21 +35,18 @@ import timber.log.Timber;
 public class MessageRepository {
 
   private static MessageRepository repository;
-  private ChatBotDatabase database;
-  private ApiManager apiManager;
-  //  private FireBaseApiManager fireBaseApiManager;
+  private final ChatBotDatabase database;
+  private final ApiManager apiManager;
   private final UserAuthentication userAuthentication;
-  private final DatabaseStore databaseStore;
+  private final DatabaseStore onlineDatabaseStore;
 
   private MessageRepository(
       ChatBotDatabase database, ApiManager apiManager,
-      UserAuthentication userAuthentication, DatabaseStore databaseStore) {
+      UserAuthentication userAuthentication, DatabaseStore onlineDatabaseStore) {
     this.database = database;
     this.apiManager = apiManager;
-//    this.fireBaseApiManager = fireBaseApiManager;
     this.userAuthentication = userAuthentication;
-    this.databaseStore = databaseStore;
-    //        messageList = this.database.messageDao().getAllMessages();
+    this.onlineDatabaseStore = onlineDatabaseStore;
   }
 
   /**
@@ -64,7 +60,6 @@ public class MessageRepository {
       synchronized (MessageRepository.class) {
         ChatBotDatabase database = ChatBotDatabase.getInstance(context);
         ApiManager apiManager = ApiManager.getInstance();
-//        FireBaseApiManager fireBaseApiManager = FireBaseApiManager.getInstance();
         UserAuthentication userAuthentication = FireBaseUserAuthentication.getInstance();
         DatabaseStore databaseStore = FireBaseDatabaseStore.getInstance();
         apiManager.init(NetworkManager.getInstance());
@@ -80,8 +75,8 @@ public class MessageRepository {
     return this.userAuthentication;
   }
 
-  public DatabaseStore getDatabaseStore() {
-    return this.databaseStore;
+  public DatabaseStore getOnlineDatabaseStore() {
+    return this.onlineDatabaseStore;
   }
 
   /**
@@ -115,7 +110,7 @@ public class MessageRepository {
             userProfile.put("emailAddress", userEmail);
             userProfile.put("firstName", firstName);
             userProfile.put("lastName", lastName);
-            databaseStore.storeUserData(
+            onlineDatabaseStore.storeUserData(
                 Objects.requireNonNull(userAuthentication.getCurrentUserUid()), userProfile);
           }
 
@@ -302,42 +297,24 @@ public class MessageRepository {
    * @param messageHashMap given message converted into HashMap
    */
   public void addMessageToFireBase(Map<String, Object> messageHashMap) {
-    this.databaseStore.storeMessage(messageHashMap, this.userAuthentication.getCurrentUserUid());
+    this.onlineDatabaseStore
+        .storeMessage(messageHashMap, this.userAuthentication.getCurrentUserUid());
   }
 
   /**
    * Call to sync messages from FireStore to Room for the logged in user
    */
   public void syncMessagesFromFireStoreToRoom() {
-    databaseStore.getAllMessagesForUser(userAuthentication.getCurrentUserUid(), result -> {
-      
+    onlineDatabaseStore.getAllMessagesForUser(userAuthentication.getCurrentUserUid(), result -> {
+      if (result.isSuccessful()) {
+        List<Message> messages = new ArrayList<>();
+        for (Map<String, Object> data : result.getData()) {
+          Timber.i(String.valueOf(data.get("mid")));
+          messages.add(Message.fromMap(data));
+        }
+        addMessages(messages);
+      }
     });
-    fireBaseApiManager.syncMessages(
-        new DBValueListener<List<Map<String, Object>>>() {
-          @Override
-          public void onDataReceived(List<Map<String, Object>> data) {
-            //                This code runs on the UI thread
-            List<Message> messages = new ArrayList<>();
-            for (Map<String, Object> object : data) {
-              Timber.i(String.valueOf(object.get("mid")));
-              Message newMessage =
-                  new Message(
-                      (long) object.get("mid"),
-                      String.valueOf(object.get("msg")),
-                      String.valueOf(object.get("sender")),
-                      String.valueOf(object.get("receiver")),
-                      (long) object.get("chatRoomId"),
-                      (long) object.get("timestamp"));
-              Timber.i(newMessage.toString());
-              messages.add(newMessage);
-            }
-            addMessages(messages);
-          }
-
-          @Override
-          public void onCancelled(Error error) {
-          }
-        });
   }
 
   /**
