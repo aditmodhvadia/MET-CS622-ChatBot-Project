@@ -7,21 +7,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
-import com.fazemeright.firebase_api_library.api.firebase.FireBaseApiManager;
 
 public abstract class BaseFragment extends Fragment {
 
   public Context mContext;
-  public FireBaseApiManager fireBaseApiManager;
   protected MessageRepository messageRepository;
   protected ApiManager apiManager;
 
@@ -29,7 +25,6 @@ public abstract class BaseFragment extends Fragment {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = getActivity();
-    fireBaseApiManager = FireBaseApiManager.getInstance();
     messageRepository = MessageRepository.getInstance(mContext);
     apiManager = ApiManager.getInstance();
     apiManager.init(NetworkManager.getInstance());
@@ -47,16 +42,23 @@ public abstract class BaseFragment extends Fragment {
     return view;
   }
 
-  /** To get layout resource id */
-  public abstract @LayoutRes int getLayoutResId();
+  /**
+   * To get layout resource id
+   */
+  public abstract @LayoutRes
+  int getLayoutResId();
 
-  /** To initialize views of activity */
+  /**
+   * To initialize views of activity
+   *
+   * @param view inflated layout
+   */
   public abstract void initViews(View view);
 
   /**
    * To set listeners of view or callback
    *
-   * @param view
+   * @param view inflated layout
    */
   public abstract void setListeners(View view);
 

@@ -3,7 +3,6 @@ package com.fazemeright.chatbotmetcs622.repositories;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
@@ -20,7 +19,6 @@ import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.api.UserAuthentication;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseDatabaseStore;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
-
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-
 import javax.annotation.Nullable;
 import timber.log.Timber;
 
@@ -112,16 +109,17 @@ public class MessageRepository {
             userProfile.put("lastName", lastName);
             onlineDatabaseStore.storeUserData(
                 Objects.requireNonNull(userAuthentication.getCurrentUserUid()), userProfile);
+            onTaskCompleteListener.onTaskSuccessful(null);
           }
 
           @Override
           public void onTaskCompleteButFailed(UserAuthResult result) {
-
+            onTaskCompleteListener.onTaskCompleteButFailed(null);
           }
 
           @Override
           public void onTaskFailed(Exception e) {
-
+            onTaskCompleteListener.onTaskFailed(e);
           }
         });
   }

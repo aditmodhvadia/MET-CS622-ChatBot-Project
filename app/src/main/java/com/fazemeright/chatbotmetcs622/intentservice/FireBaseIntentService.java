@@ -6,34 +6,31 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
 import com.fazemeright.chatbotmetcs622.ChatBotApp;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
-import com.fazemeright.firebase_api_library.api.firebase.FireBaseApiManager;
-
 import timber.log.Timber;
 
 public class FireBaseIntentService extends IntentService {
 
   public static final String ACTION_ADD_MESSAGE = "AddMessage";
   public static final String ACTION_SYNC_MESSAGES = "SyncMessages";
-  /** TAG for logs */
-  private static final String TAG = "FireBaseIntentService";
-  /** Use to send data with intent */
+  /**
+   * Use to send data with intent
+   */
   public static final String ACTION = "IntentAction";
-
   public static final String MESSAGE = "Message";
   public static final String RESULT_RECEIVER = "ResultReceiver";
-
+  /**
+   * TAG for logs
+   */
+  private static final String TAG = "FireBaseIntentService";
   protected ChatBotDatabase database;
   private PowerManager.WakeLock wakeLock;
-  private FireBaseApiManager fireBaseApiManager;
   private MessageRepository messageRepository;
 
   /**
@@ -82,7 +79,9 @@ public class FireBaseIntentService extends IntentService {
     }
   }
 
-  /** Call to sync messages from FireStore to Room for the logged in user */
+  /**
+   * Call to sync messages from FireStore to Room for the logged in user
+   */
   private void syncMessages() {
     /*try {
         Thread.sleep(5000); //  intentionally kept delay to show in presentation TODO: Remove afterwards
@@ -106,7 +105,7 @@ public class FireBaseIntentService extends IntentService {
    * running
    *
    * @param title title to display in notification
-   * @param text text to display in notification
+   * @param text  text to display in notification
    */
   private void showForegroundServiceNotification(String title, String text) {
     Timber.i("Show notification called");
@@ -127,7 +126,6 @@ public class FireBaseIntentService extends IntentService {
   @Override
   public void onStart(@Nullable Intent intent, int startId) {
     super.onStart(intent, startId);
-    fireBaseApiManager = FireBaseApiManager.getInstance();
     messageRepository = MessageRepository.getInstance(getApplicationContext());
   }
 }

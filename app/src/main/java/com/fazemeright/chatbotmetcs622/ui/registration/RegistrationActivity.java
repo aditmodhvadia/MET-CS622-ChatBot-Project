@@ -5,14 +5,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
+import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
-
 import timber.log.Timber;
 
 public class RegistrationActivity extends BaseActivity implements View.OnClickListener {
@@ -54,20 +52,18 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
 
   @Override
   public void onClick(View v) {
-    switch (v.getId()) {
-      case R.id.tvHaveAccount:
-        openLoginActivity();
-        break;
-      case R.id.btnRegister:
-        disableButton(btnRegister);
-        String email = userEmailEditText.getText().toString();
-        String firstName = etFirstName.getText().toString();
-        String lastName = etLastName.getText().toString();
-        String password = userPasswordEditText.getText().toString();
-        String conPassword = userConPasswordEditText.getText().toString();
-        performRegistration(email, firstName, lastName, password, conPassword);
-        enableButton(btnRegister);
-        break;
+    int id = v.getId();
+    if (id == R.id.tvHaveAccount) {
+      openLoginActivity();
+    } else if (id == R.id.btnRegister) {
+      disableButton(btnRegister);
+      String email = userEmailEditText.getText().toString();
+      String firstName = etFirstName.getText().toString();
+      String lastName = etLastName.getText().toString();
+      String password = userPasswordEditText.getText().toString();
+      String conPassword = userConPasswordEditText.getText().toString();
+      performRegistration(email, firstName, lastName, password, conPassword);
+      enableButton(btnRegister);
     }
   }
 
@@ -125,7 +121,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       return;
     }
 
-    fireBaseApiManager.registerNewUserWithEmailPassword(
+    messageRepository.createNewUserAndStoreDetails(
         email,
         password,
         firstName,

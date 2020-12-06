@@ -9,20 +9,16 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
-import com.fazemeright.firebase_api_library.api.firebase.FireBaseApiManager;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
   public Context mContext;
-  protected FireBaseApiManager fireBaseApiManager;
   protected MessageRepository messageRepository;
   protected ApiManager apiManager;
 
@@ -30,7 +26,6 @@ public abstract class BaseActivity extends AppCompatActivity {
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = this;
-    fireBaseApiManager = FireBaseApiManager.getInstance();
     messageRepository = MessageRepository.getInstance(mContext);
     apiManager = ApiManager.getInstance();
     apiManager.init(NetworkManager.getInstance());
@@ -47,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity {
   /**
    * Call to hide soft keyboard
    *
-   * @param activity
+   * @param activity calling activity
    */
   public void hideKeyboard(Activity activity) {
     InputMethodManager imm =
@@ -88,13 +83,19 @@ public abstract class BaseActivity extends AppCompatActivity {
     button.setEnabled(true);
   }
 
-  /** To initialize views of activity */
+  /**
+   * To initialize views of activity
+   */
   public abstract void initViews();
 
-  /** To set listeners of view or callback */
+  /**
+   * To set listeners of view or callback
+   */
   public abstract void setListeners();
 
-  /** To get layout resource id */
+  /**
+   * To get layout resource id
+   */
   public abstract int getLayoutResId();
 
   public boolean isNetworkConnected() {
