@@ -2,7 +2,7 @@ package com.fazemeright.firebase_api_library.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
+import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import com.google.firebase.auth.FirebaseUser;
 
 public interface UserAuthentication {
@@ -28,23 +28,23 @@ public interface UserAuthentication {
    */
   void createNewUserWithEmailPassword(
       @NonNull String userEmail, @NonNull String password,
-      @Nullable OnCompleteListenerNew<UserAuthResult> onTaskCompleteListener);
+      @Nullable OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener);
 
   void signInWithEmailAndPassword(
       @NonNull String userEmail, @NonNull String password, @Nullable
-      OnCompleteListenerNew<UserAuthResult> onTaskCompleteListener);
+      OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener);
 
   void sendEmailVerification(
-      @Nullable OnCompleteListenerNew<Void> onCompleteListener);
+      @Nullable OnTaskCompleteListener<Void> onCompleteListener);
 
   @Nullable
   String getCurrentUserEmail();
 
   void sendPasswordResetEmail(
       @NonNull String userEmail,
-      @Nullable OnCompleteListenerNew<Void> onCompleteListener);
+      @Nullable OnTaskCompleteListener<Void> onCompleteListener);
 
-  void reloadCurrentUserAuthState(@Nullable OnCompleteListenerNew<Void> onTaskCompleteListener);
+  void reloadCurrentUserAuthState(@Nullable OnTaskCompleteListener<Void> onTaskCompleteListener);
 
   @Nullable
   String getCurrentUserUid();

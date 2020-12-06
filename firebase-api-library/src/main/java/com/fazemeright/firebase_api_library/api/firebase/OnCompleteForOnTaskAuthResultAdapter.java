@@ -4,17 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
+import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import java.util.Objects;
 
 public class OnCompleteForOnTaskAuthResultAdapter implements OnCompleteListener<AuthResult> {
-  private final OnCompleteListenerNew<UserAuthResult> onTaskCompleteListener;
+  private final OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener;
 
   public OnCompleteForOnTaskAuthResultAdapter(
-      OnCompleteListenerNew<UserAuthResult> onTaskCompleteListener) {
+      OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener) {
     this.onTaskCompleteListener = onTaskCompleteListener;
   }
 

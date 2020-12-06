@@ -20,7 +20,7 @@ import com.fazemeright.firebase_api_library.api.UserAuthentication;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseDatabaseStore;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
 import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
+import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +99,7 @@ public class MessageRepository {
                                            final String firstName,
                                            final String lastName,
                                            @Nullable
-                                           final OnCompleteListenerNew<Void> onTaskCompleteListener) {
+                                           final OnTaskCompleteListener<Void> onTaskCompleteListener) {
     userAuthentication.createNewUserWithEmailPassword(userEmail, password, result -> {
       if (result.isSuccessful()) {
         Map<String, Object> userProfile = getMapFromUserDetails(userEmail, firstName, lastName);
