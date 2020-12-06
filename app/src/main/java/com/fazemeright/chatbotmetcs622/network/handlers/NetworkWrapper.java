@@ -1,10 +1,8 @@
 package com.fazemeright.chatbotmetcs622.network.handlers;
 
 import android.content.Context;
-
 import com.fazemeright.chatbotmetcs622.network.models.NetCompoundRes;
 import com.google.gson.reflect.TypeToken;
-
 import java.util.HashMap;
 
 /*
@@ -15,10 +13,10 @@ public interface NetworkWrapper {
   /**
    * API GET method Request
    *
-   * @param context App context
-   * @param url Request URL
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param tag request tag
+   * @param context         App context
+   * @param url             Request URL
+   * @param typeToken       {@link TypeToken} of the expected parsed object
+   * @param tag             request tag
    * @param networkCallback Network callback
    */
   <T> void makeGetRequest(
@@ -31,10 +29,10 @@ public interface NetworkWrapper {
   /**
    * API POST method Request
    *
-   * @param context App context
-   * @param url Request URL
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param tag request tag
+   * @param context         App context
+   * @param url             Request URL
+   * @param typeToken       {@link TypeToken} of the expected parsed object
+   * @param tag             request tag
    * @param networkCallback Network callback
    */
   <T> void makePostRequest(
@@ -48,11 +46,11 @@ public interface NetworkWrapper {
   /**
    * API POST method Request
    *
-   * @param context App context
-   * @param url Request URL
-   * @param dataObject Request body
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param tag request tag
+   * @param context         App context
+   * @param url             Request URL
+   * @param dataObject      Request body
+   * @param typeToken       {@link TypeToken} of the expected parsed object
+   * @param tag             request tag
    * @param networkCallback Network callback
    */
   <T> void makePostRequest(
@@ -66,11 +64,11 @@ public interface NetworkWrapper {
   /**
    * API POST method Request
    *
-   * @param context App context
-   * @param url Request URL
-   * @param data Request body
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param tag request tag
+   * @param context         App context
+   * @param url             Request URL
+   * @param data            Request body
+   * @param typeToken       {@link TypeToken} of the expected parsed object
+   * @param tag             request tag
    * @param networkCallback Network callback
    */
   <T> void makePostStringRequest(
@@ -84,13 +82,13 @@ public interface NetworkWrapper {
   /**
    * API sync POST method Request. Expect a response/error in {@link NetCompoundRes}
    *
-   * @param context App context
-   * @param url Request URL
+   * @param context    App context
+   * @param url        Request URL
    * @param dataObject Request body
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param tag request tag
+   * @param typeToken  {@link TypeToken} of the expected parsed object
+   * @param tag        request tag
    * @return Compound response ( It contains success / error ). First check it using method
-   *     isSuccess() to find whether response contains error or not
+   * isSuccess() to find whether response contains error or not
    */
   <T> NetCompoundRes<T> makePostRequestSync(
       Context context, String url, Object dataObject, TypeToken<T> typeToken, String tag);
@@ -98,12 +96,12 @@ public interface NetworkWrapper {
   /**
    * API POST method Request with header
    *
-   * @param context App context
-   * @param url Request URL
-   * @param dataObject Request body
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param hashMapHeader HashMap of request header
-   * @param tag request tag
+   * @param context         App context
+   * @param url             Request URL
+   * @param dataObject      Request body
+   * @param typeToken       {@link TypeToken} of the expected parsed object
+   * @param hashMapHeader   HashMap of request header
+   * @param tag             request tag
    * @param networkCallback Network callback
    */
   <T> void makePostRequestHeader(
@@ -118,11 +116,11 @@ public interface NetworkWrapper {
   /**
    * API POST method Request with header
    *
-   * @param context App context
-   * @param url Request URL
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param hashMapHeader HashMap of request header
-   * @param tag request tag
+   * @param context         App context
+   * @param url             Request URL
+   * @param typeToken       {@link TypeToken} of the expected parsed object
+   * @param hashMapHeader   HashMap of request header
+   * @param tag             request tag
    * @param networkCallback Network callback
    */
   <T> void makeDeleteRequestHeader(
@@ -136,11 +134,11 @@ public interface NetworkWrapper {
   /**
    * API Get method Request with header
    *
-   * @param context App context
-   * @param url Request URL
-   * @param typeToken {@link TypeToken} of the expected parsed object
-   * @param hashMapHeader HashMap of request header
-   * @param tag request tag
+   * @param context         App context
+   * @param url             Request URL
+   * @param typeToken       {@link TypeToken} of the expected parsed object
+   * @param hashMapHeader   HashMap of request header
+   * @param tag             request tag
    * @param networkCallback Network callback
    */
   <T> void makeGetRequestHeader(

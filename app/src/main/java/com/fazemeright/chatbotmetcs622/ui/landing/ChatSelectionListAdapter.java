@@ -5,15 +5,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
-
 import java.util.ArrayList;
 
 /**
@@ -84,7 +81,7 @@ public class ChatSelectionListAdapter
       ivChatRoom.setBackgroundResource(item.getLogoId());
 
       itemView.setOnClickListener(
-              v -> listener.onChatRoomClicked(getItem(getAdapterPosition())));
+          v -> listener.onChatRoomClicked(getItem(getAdapterPosition())));
     }
   }
 }

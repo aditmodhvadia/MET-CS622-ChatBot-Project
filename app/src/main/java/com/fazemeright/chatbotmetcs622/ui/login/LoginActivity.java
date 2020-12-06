@@ -6,17 +6,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
+import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
-
 import timber.log.Timber;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
@@ -27,23 +25,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
   @Override
   public void initViews() {
-      setUpSupportActionBar();
+    setUpSupportActionBar();
 
-      userEmailEditText = findViewById(R.id.userLoginEmailEditText);
+    userEmailEditText = findViewById(R.id.userLoginEmailEditText);
     userPasswordEditText = findViewById(R.id.userPasswordEditText);
     tvDoNotHaveAccount = findViewById(R.id.tvDontHaveAccount);
     btnLogin = findViewById(R.id.btnLogin);
   }
 
-    private void setUpSupportActionBar() {
-        if (getSupportActionBar() != null) {
-          getSupportActionBar().setTitle(getString(R.string.login_title));
-          getSupportActionBar().setHomeButtonEnabled(true);
-          getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+  private void setUpSupportActionBar() {
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setTitle(getString(R.string.login_title));
+      getSupportActionBar().setHomeButtonEnabled(true);
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+  }
 
-    @Override
+  @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     if (item.getItemId() == android.R.id.home) {
       finish();
@@ -64,20 +62,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
   @Override
   public void onClick(View v) {
-      int clickedViewId = v.getId();
-      if (clickedViewId == R.id.tvDontHaveAccount) {
-          goToRegistrationActivity();
-      } else if (clickedViewId == R.id.btnLogin) {
-          disableButton(btnLogin);
-          performLogin(userEmailEditText.getText().toString().trim(), userPasswordEditText.getText().toString().trim());
-          enableButton(btnLogin);
-      }
+    int clickedViewId = v.getId();
+    if (clickedViewId == R.id.tvDontHaveAccount) {
+      goToRegistrationActivity();
+    } else if (clickedViewId == R.id.btnLogin) {
+      disableButton(btnLogin);
+      performLogin(userEmailEditText.getText().toString().trim(),
+          userPasswordEditText.getText().toString().trim());
+      enableButton(btnLogin);
+    }
   }
 
   /**
    * Perform login with the given credentials
    *
-   * @param email user email address
+   * @param email    user email address
    * @param password user password
    */
   private void performLogin(String email, String password) {
@@ -94,43 +93,47 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     Timber.i("Login clicked");
-    mFireBaseApiManager.logInWithEmailAndPassword(
+    messageRepository.getUserAuthentication().signInWithEmailAndPassword(
         email,
         password,
-        new OnTaskCompleteListener() {
+        new OnTaskCompleteListener<UserAuthResult>() {
           @Override
-          public void onTaskSuccessful() {
+          public void onTaskSuccessful(UserAuthResult result) {
             Timber.i(
-                "User logged in successfully %s", mFireBaseApiManager.getCurrentLoggedInUserEmail());
+                "User logged in successfully %s",
+                messageRepository.getUserAuthentication().getCurrentUserEmail());
             btnLogin.setText(getString(R.string.login_success_msg));
             Intent intent = new Intent(mContext, FireBaseIntentService.class);
             intent.putExtra(
-                FireBaseIntentService.Actions.ACTION, FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
+                FireBaseIntentService.Actions.ACTION,
+                FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
             ContextCompat.startForegroundService(mContext, intent);
             openLandingActivity();
           }
 
           @Override
-          public void onTaskCompleteButFailed(String errMsg) {
-            Timber.e(errMsg);
-            //                TODO: Show error to user
+          public void onTaskCompleteButFailed(UserAuthResult result) {
+            Timber.e(result.getErrorMsg());
           }
 
           @Override
           public void onTaskFailed(Exception e) {
             Timber.e(e);
-            //                TODO: Show error to user
           }
         });
   }
 
-  /** Open LandingActivity and finish this one */
+  /**
+   * Open LandingActivity and finish this one
+   */
   private void openLandingActivity() {
     startActivity(new Intent(LoginActivity.this, LandingActivity.class));
     finishAffinity();
   }
 
-  /** Go to Registration Activity */
+  /**
+   * Go to Registration Activity
+   */
   private void goToRegistrationActivity() {
     finish();
   }

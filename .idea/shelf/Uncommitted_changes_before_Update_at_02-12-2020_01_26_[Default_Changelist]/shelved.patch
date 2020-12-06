@@ -1,0 +1,56 @@
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_1_7\" project-jdk-name=\"1.8\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/out\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision 525ed6254b44865eaeb6cb7762d1c3d7c159a92f)
++++ .idea/misc.xml	(date 1606888481767)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="1.8" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/out" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/compiler.xml	(date 1606888481791)
++++ .idea/compiler.xml	(date 1606888481791)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <bytecodeTargetLevel target="1.8" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectModuleManager\">\r\n    <modules>\r\n      <module fileurl=\"file://$PROJECT_DIR$/ChatBot MET CS622.iml\" filepath=\"$PROJECT_DIR$/ChatBot MET CS622.iml\" group=\"ChatBot MET CS622\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/app/app.iml\" filepath=\"$PROJECT_DIR$/app/app.iml\" group=\"ChatBot MET CS622/app\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml\" filepath=\"$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml\" group=\"ChatBot MET CS622/firebase-api-library\" />\r\n    </modules>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/modules.xml	(revision 525ed6254b44865eaeb6cb7762d1c3d7c159a92f)
++++ .idea/modules.xml	(date 1606890371389)
+@@ -2,9 +2,9 @@
+ <project version="4">
+   <component name="ProjectModuleManager">
+     <modules>
+-      <module fileurl="file://$PROJECT_DIR$/ChatBot MET CS622.iml" filepath="$PROJECT_DIR$/ChatBot MET CS622.iml" group="ChatBot MET CS622" />
+-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="ChatBot MET CS622/app" />
+-      <module fileurl="file://$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" filepath="$PROJECT_DIR$/firebase-api-library/firebase-api-library.iml" group="ChatBot MET CS622/firebase-api-library" />
++      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ChatBot_MET_CS622.iml" filepath="$PROJECT_DIR$/.idea/modules/ChatBot_MET_CS622.iml" />
++      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ChatBot_MET_CS622.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ChatBot_MET_CS622.app.iml" />
++      <module fileurl="file://$PROJECT_DIR$/.idea/modules/firebase-api-library/ChatBot_MET_CS622.firebase-api-library.iml" filepath="$PROJECT_DIR$/.idea/modules/firebase-api-library/ChatBot_MET_CS622.firebase-api-library.iml" />
+     </modules>
+   </component>
+ </project>
+\ No newline at end of file

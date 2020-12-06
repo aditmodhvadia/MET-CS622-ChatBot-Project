@@ -1,18 +1,15 @@
 package com.fazemeright.chatbotmetcs622.ui.chat;
 
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
@@ -21,11 +18,8 @@ import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
@@ -52,7 +46,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
     setupFilterKeywords(dataFilters);
 
-    adapter = new ChatListAdapter(mMessageRepository.getMessagesForChatRoom(chatRoom), mContext);
+    adapter = new ChatListAdapter(messageRepository.getMessagesForChatRoom(chatRoom), mContext);
 
     rvChatList.setAdapter(adapter);
     rvChatList.setLayoutManager(getLinearLayoutManager());
@@ -61,17 +55,17 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
   }
 
-    private void setUpSupportActionBar() {
-        if (getSupportActionBar() != null) {
-          getSupportActionBar().setHomeButtonEnabled(true);
-          getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-          if(chatRoom != null && chatRoom.getName() != null) {
-              getSupportActionBar().setTitle(chatRoom.getName());
-          }
-        }
+  private void setUpSupportActionBar() {
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setHomeButtonEnabled(true);
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      if (chatRoom != null && chatRoom.getName() != null) {
+        getSupportActionBar().setTitle(chatRoom.getName());
+      }
     }
+  }
 
-    private LinearLayoutManager getLinearLayoutManager() {
+  private LinearLayoutManager getLinearLayoutManager() {
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
     linearLayoutManager.setReverseLayout(true);
     linearLayoutManager.setStackFromEnd(true);
@@ -86,44 +80,44 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
   private void setupFilterKeywords(String[] dataFilters) {
     //        remove all views from ChipGroup if any
     dataFilterChipGroup.removeAllViews();
-      if (dataFilters == null) {
-  //      hide ChipGroup if list is empty
-        dataFilterChipGroup.setVisibility(View.INVISIBLE);
-      } else {
-        for (final String dataFilter : dataFilters) {
-          //                create new chip and apply attributes
-            Chip chip = getChip(dataFilter);
-            dataFilterChipGroup.addView(chip); // add chip to ChipGroup
-          chip.setOnCheckedChangeListener(
-              new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                  if (isChecked) {
-                    etMsg.requestFocus();
-                    etMsg.setText(buttonView.getText().toString());
-                    etMsg.setSelection(buttonView.getText().toString().length());
-                    showKeyBoard(etMsg);
-                  }
+    if (dataFilters == null) {
+      //      hide ChipGroup if list is empty
+      dataFilterChipGroup.setVisibility(View.INVISIBLE);
+    } else {
+      for (final String dataFilter : dataFilters) {
+        //                create new chip and apply attributes
+        Chip chip = getChip(dataFilter);
+        dataFilterChipGroup.addView(chip); // add chip to ChipGroup
+        chip.setOnCheckedChangeListener(
+            new CompoundButton.OnCheckedChangeListener() {
+              @Override
+              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                  etMsg.requestFocus();
+                  etMsg.setText(buttonView.getText().toString());
+                  etMsg.setSelection(buttonView.getText().toString().length());
+                  showKeyBoard(etMsg);
                 }
-              });
-        }
-        dataFilterChipGroup.setVisibility(View.VISIBLE);
+              }
+            });
       }
+      dataFilterChipGroup.setVisibility(View.VISIBLE);
+    }
   }
 
-    @NotNull
-    private Chip getChip(final String dataFilter) {
-        return new Chip(Objects.requireNonNull(mContext)) {
-          {
-            setText(dataFilter);
-            setClickable(true);
-            setCloseIconVisible(false); // close icon not required
-            setCheckable(true); // allow check changes, hence switch between chips
-          }
-        };
-    }
+  @NotNull
+  private Chip getChip(final String dataFilter) {
+    return new Chip(Objects.requireNonNull(mContext)) {
+      {
+        setText(dataFilter);
+        setClickable(true);
+        setCloseIconVisible(false); // close icon not required
+        setCheckable(true); // allow check changes, hence switch between chips
+      }
+    };
+  }
 
-    @Override
+  @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
@@ -142,7 +136,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
    * @param chatRoom given ChatRoom
    */
   private void clearChatRoomMessagesClicked(ChatRoom chatRoom) {
-    mMessageRepository.clearAllChatRoomMessages(chatRoom);
+    messageRepository.clearAllChatRoomMessages(chatRoom);
     adapter.clearAllMessages();
   }
 
@@ -163,7 +157,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     }
   }
 
-  /** User clicked send message. Show new message to user and pass it to repository */
+  /**
+   * User clicked send message. Show new message to user and pass it to repository
+   */
   private void sendMessageClicked() {
     String msg = etMsg.getText().toString().trim();
     if (TextUtils.isEmpty(msg)) {
@@ -173,7 +169,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
     addMessageToAdapter(newMessage);
     //        send new message to repository
-    mMessageRepository.newMessageSent(
+    messageRepository.newMessageSent(
         mContext,
         newMessage,
         new MessageRepository.OnMessageResponseReceivedListener() {
@@ -201,8 +197,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
   }
 
-    @Override
-    public int getMenuId() {
-        return R.menu.menu_chat;
-    }
+  @Override
+  public int getMenuId() {
+    return R.menu.menu_chat;
+  }
 }

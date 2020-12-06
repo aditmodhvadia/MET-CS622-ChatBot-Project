@@ -1,8 +1,8 @@
 package com.fazemeright.chatbotmetcs622.database.messages;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,22 +10,36 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/** POJO for a message */
+/**
+ * POJO for a message
+ */
 @Entity(tableName = "my_messages_table")
 public class Message implements Serializable {
   public static final String SENDER_USER = "User";
-  /** mid of message */
+  /**
+   * mid of message
+   */
   @PrimaryKey(autoGenerate = true)
   private long mid;
-  /** text of message */
+  /**
+   * text of message
+   */
   private String msg;
-  /** sender of the message */
+  /**
+   * sender of the message
+   */
   private String sender;
-  /** receiver of the message */
+  /**
+   * receiver of the message
+   */
   private String receiver;
-  /** mid of the chat room where message was sent */
+  /**
+   * mid of the chat room where message was sent
+   */
   private long chatRoomId;
-  /** timestamp of the message */
+  /**
+   * timestamp of the message
+   */
   private long timestamp;
 
   public Message(
@@ -51,6 +65,17 @@ public class Message implements Serializable {
     messageHashMap.put("chatRoomId", message.getChatRoomId());
     messageHashMap.put("timestamp", message.getTimestamp());
     return messageHashMap;
+  }
+
+  @NonNull
+  public static Message fromMap(Map<String, Object> object) {
+    return new Message(
+        (long) object.get("mid"),
+        String.valueOf(object.get("msg")),
+        String.valueOf(object.get("sender")),
+        String.valueOf(object.get("receiver")),
+        (long) object.get("chatRoomId"),
+        (long) object.get("timestamp"));
   }
 
   public long getMid() {

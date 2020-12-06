@@ -5,14 +5,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
+import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
-
 import timber.log.Timber;
 
 public class RegistrationActivity extends BaseActivity implements View.OnClickListener {
@@ -76,7 +74,9 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
     performRegistration(email, firstName, lastName, password, conPassword);
   }
 
-  /** Open Login Activity */
+  /**
+   * Open Login Activity
+   */
   private void openLoginActivity() {
     startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
   }
@@ -84,10 +84,10 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
   /**
    * Call to perform validation on the input parameters and then perform registration
    *
-   * @param email user email address
-   * @param firstName first name of user
-   * @param lastName last name of user
-   * @param password user selected password
+   * @param email       user email address
+   * @param firstName   first name of user
+   * @param lastName    last name of user
+   * @param password    user selected password
    * @param conPassword user selected confirmation password
    */
   private void performRegistration(
@@ -128,25 +128,24 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       return;
     }
 
-    mFireBaseApiManager.registerNewUserWithEmailPassword(
+    messageRepository.createNewUserAndStoreDetails(
         email,
         password,
         firstName,
         lastName,
-        new OnTaskCompleteListener() {
+        new OnTaskCompleteListener<Void>() {
           @Override
-          public void onTaskSuccessful() {
+          public void onTaskSuccessful(Void result) {
             Timber.i(
                 "New user registered successfully %s",
-                mFireBaseApiManager.getCurrentLoggedInUserEmail());
+                messageRepository.getUserAuthentication().getCurrentUserEmail());
             btnRegister.setText(getString(R.string.registration_success_msg));
             openLandingActivity();
           }
 
           @Override
-          public void onTaskCompleteButFailed(String errMsg) {
-            Timber.e(errMsg);
-            //                TODO: Show error to user
+          public void onTaskCompleteButFailed(Void result) {
+
           }
 
           @Override
@@ -157,7 +156,9 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
         });
   }
 
-  /** Open LandingActivity and finish this one */
+  /**
+   * Open LandingActivity and finish this one
+   */
   private void openLandingActivity() {
     startActivity(new Intent(RegistrationActivity.this, LandingActivity.class));
     finish();

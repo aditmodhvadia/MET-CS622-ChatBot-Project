@@ -1,7 +1,6 @@
 package com.fazemeright.chatbotmetcs622.network.models;
 
 import android.text.TextUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

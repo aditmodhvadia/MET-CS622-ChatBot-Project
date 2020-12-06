@@ -8,21 +8,17 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
-
 import androidx.annotation.AnimRes;
 import androidx.work.Constraints;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-
-import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
+import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
 import com.fazemeright.chatbotmetcs622.workers.FireBaseSyncWorker;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
-
 import java.util.concurrent.TimeUnit;
-
 import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {
@@ -37,22 +33,22 @@ public class SplashActivity extends BaseActivity {
 
     tvAppVersion.setText(getAppVersion());
 
-      startAnimationOnViews(R.anim.fade_in);
+    startAnimationOnViews(R.anim.fade_in);
 
-      new Handler().postDelayed(this::determineIfUserIsLoggedIn, 800);
+    new Handler().postDelayed(this::determineIfUserIsLoggedIn, 800);
   }
 
   private void determineIfUserIsLoggedIn() {
-    mFireBaseApiManager.reloadUserAuthState(
-        new OnTaskCompleteListener() {
+    messageRepository.getUserAuthentication().reloadCurrentUserAuthState(
+        new OnTaskCompleteListener<Void>() {
           @Override
-          public void onTaskSuccessful() {
+          public void onTaskSuccessful(Void result) {
             setUpWorkManagerRequest();
             openLandingActivity();
           }
 
           @Override
-          public void onTaskCompleteButFailed(String errMsg) {
+          public void onTaskCompleteButFailed(Void result) {
             //  user not logged in, open registration activity
             Timber.i("Open Registration Activity");
             openRegistrationActivity();
@@ -77,7 +73,9 @@ public class SplashActivity extends BaseActivity {
     WorkManager.getInstance(mContext).enqueue(saveRequest);
   }
 
-  /** Call to open RegistrationActivity from the current activity */
+  /**
+   * Call to open RegistrationActivity from the current activity
+   */
   private void openRegistrationActivity() {
     startAnimationOnViews(R.anim.fade_out);
 
@@ -91,7 +89,9 @@ public class SplashActivity extends BaseActivity {
     tvAppTitle.startAnimation(animFadeOut);
   }
 
-  /** Open LandingActivity and finish this one */
+  /**
+   * Open LandingActivity and finish this one
+   */
   private void openLandingActivity() {
     startAnimationOnViews(R.anim.fade_out);
 
@@ -114,12 +114,18 @@ public class SplashActivity extends BaseActivity {
     }
   }
 
-  /** Makes the screen layout to cover the full display of the device */
+  /**
+   * Makes the screen layout to cover the full display of the device
+   */
   private void hideSystemUI() {
     getWindow()
         .setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+  }
+
+  @Override
+  public void setListeners() {
   }
 
   @Override

@@ -1,7 +1,6 @@
 package com.fazemeright.chatbotmetcs622.network;
 
 import android.content.Context;
-
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
@@ -11,7 +10,6 @@ import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.request.MessageQueryRequestModel;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 import com.google.gson.reflect.TypeToken;
-
 import org.jetbrains.annotations.NotNull;
 
 public class ApiManager {
@@ -41,20 +39,21 @@ public class ApiManager {
   /**
    * Call Query API to backend to fetch results for the given Message query
    *
-   * @param context context
-   * @param newMessage given message query
+   * @param context         context
+   * @param newMessage      given message query
    * @param networkCallback callback to listen to response
    */
   public void queryDatabase(
       Context context,
       Message newMessage,
       final NetworkCallback<QueryResponseMessage> networkCallback) {
-      String url = BaseUrl.BASE_URL.concat(BaseUrl.BASE_APP_NAME)
-              .concat(getServerEndPoint((int) newMessage.getChatRoomId()));
+    String url = BaseUrl.BASE_URL.concat(BaseUrl.BASE_APP_NAME)
+        .concat(getServerEndPoint((int) newMessage.getChatRoomId()));
 
     MessageQueryRequestModel messageQuery = new MessageQueryRequestModel(newMessage.getMsg());
 
-    TypeToken<QueryResponseMessage> typeToken = new TypeToken<QueryResponseMessage>() {};
+    TypeToken<QueryResponseMessage> typeToken = new TypeToken<QueryResponseMessage>() {
+    };
     networkManager.makePostRequest(
         context,
         url,
@@ -74,27 +73,29 @@ public class ApiManager {
         });
   }
 
-    @NotNull
-    private String getServerEndPoint(int chatRoomId) {
-        String serverEndPoint;
-        switch (chatRoomId) {
-          case ChatRoom.BRUTE_FORCE_ID:
-            serverEndPoint = DatabaseUrl.BRUTE_FORCE;
-            break;
-          case ChatRoom.LUCENE_ID:
-            serverEndPoint = DatabaseUrl.LUCENE;
-            break;
-          case ChatRoom.MONGO_DB_ID:
-            serverEndPoint = DatabaseUrl.MONGO_DB;
-            break;
-          default:
-            serverEndPoint = DatabaseUrl.MY_SQL;
-            break;
-        }
-        return serverEndPoint;
+  @NotNull
+  private String getServerEndPoint(int chatRoomId) {
+    String serverEndPoint;
+    switch (chatRoomId) {
+      case ChatRoom.BRUTE_FORCE_ID:
+        serverEndPoint = DatabaseUrl.BRUTE_FORCE;
+        break;
+      case ChatRoom.LUCENE_ID:
+        serverEndPoint = DatabaseUrl.LUCENE;
+        break;
+      case ChatRoom.MONGO_DB_ID:
+        serverEndPoint = DatabaseUrl.MONGO_DB;
+        break;
+      default:
+        serverEndPoint = DatabaseUrl.MY_SQL;
+        break;
     }
+    return serverEndPoint;
+  }
 
-    /** DatabaseUrl module Api sub url */
+  /**
+   * DatabaseUrl module Api sub url
+   */
   static class DatabaseUrl {
     static final String MONGO_DB = "/mongodb";
     static final String LUCENE = "/lucene";
@@ -102,7 +103,9 @@ public class ApiManager {
     static final String BRUTE_FORCE = "/bruteforce";
   }
 
-  /** baseURL model for all the BASE URL addresses */
+  /**
+   * baseURL model for all the BASE URL addresses
+   */
   public static class BaseUrl {
     static String BASE_URL =
         "http://192.168.43.28:8080"; //  Update the url as per your local ip address

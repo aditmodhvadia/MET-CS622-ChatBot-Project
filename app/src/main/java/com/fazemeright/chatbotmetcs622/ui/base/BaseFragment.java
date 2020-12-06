@@ -7,32 +7,27 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
-import com.fazemeright.firebase_api_library.api.FireBaseApiManager;
 
 public abstract class BaseFragment extends Fragment {
 
   public Context mContext;
-  public FireBaseApiManager mFireBaseApiManager;
-  protected MessageRepository mMessageRepository;
-  protected ApiManager mApiManager;
+  protected MessageRepository messageRepository;
+  protected ApiManager apiManager;
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = getActivity();
-    mFireBaseApiManager = FireBaseApiManager.getInstance();
-    mMessageRepository = MessageRepository.getInstance(mContext);
-    mApiManager = ApiManager.getInstance();
-    mApiManager.init(NetworkManager.getInstance());
+    messageRepository = MessageRepository.getInstance(mContext);
+    apiManager = ApiManager.getInstance();
+    apiManager.init(NetworkManager.getInstance());
   }
 
   @Nullable
@@ -47,18 +42,25 @@ public abstract class BaseFragment extends Fragment {
     return view;
   }
 
-  /** To get layout resource id */
-  public abstract @LayoutRes int getLayoutResId();
+  /**
+   * To get layout resource id
+   */
+  public abstract @LayoutRes
+  int getLayoutResId();
 
-  /** Template method to initialize views of activity */
-  public void initViews(View view) {}
+  /**
+   * Template method to initialize views of activity
+   */
+  public void initViews(View view) {
+  }
 
   /**
    * Template method to set listeners of view or callback
    *
    * @param view view
    */
-  public void setListeners(View view) {}
+  public void setListeners(View view) {
+  }
 
   public boolean isNetworkConnected() {
     ConnectivityManager cm =

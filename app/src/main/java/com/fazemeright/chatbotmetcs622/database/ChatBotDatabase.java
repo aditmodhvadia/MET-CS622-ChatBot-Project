@@ -1,11 +1,9 @@
 package com.fazemeright.chatbotmetcs622.database;
 
 import android.content.Context;
-
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
 
