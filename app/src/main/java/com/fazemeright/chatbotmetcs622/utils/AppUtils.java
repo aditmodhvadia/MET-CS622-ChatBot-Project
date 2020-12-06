@@ -28,7 +28,7 @@ public class AppUtils {
   /**
    * Call to check if given password match or not
    *
-   * @param password given password
+   * @param password    given password
    * @param conPassword given confirm password
    * @return <code>true</code> if both passwords match, else <code>false</code>
    */

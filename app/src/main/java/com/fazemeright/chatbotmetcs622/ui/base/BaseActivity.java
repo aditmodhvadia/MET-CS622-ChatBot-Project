@@ -9,13 +9,10 @@ import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.MenuRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
@@ -87,13 +84,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     button.setEnabled(true);
   }
 
-  /** Template method to initialize views of activity */
-  public void initViews(){}
+  /**
+   * Template method to initialize views of activity
+   */
+  public void initViews() {
+  }
 
-  /** Template method to set listeners of view or callback */
-  public void setListeners(){}
+  /**
+   * Template method to set listeners of view or callback
+   */
+  public void setListeners() {
+  }
 
-  /** To get layout resource id */
+  /**
+   * To get layout resource id
+   */
   public abstract int getLayoutResId();
 
   public boolean isNetworkConnected() {
@@ -122,7 +127,7 @@ public abstract class BaseActivity extends AppCompatActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     @MenuRes int menuId = getMenuId();
-    if(menuId != 0) {
+    if (menuId != 0) {
       getMenuInflater().inflate(menuId, menu);
     }
     return super.onCreateOptionsMenu(menu);

@@ -4,10 +4,8 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
-
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
 import com.fazemeright.chatbotmetcs622.network.NetworkManager;
-
 import timber.log.Timber;
 
 public class ChatBotApp extends Application {
@@ -27,7 +25,9 @@ public class ChatBotApp extends Application {
     createNotificationChannel();
   }
 
-  /** Call to create a notification channel for OS greater than OREO */
+  /**
+   * Call to create a notification channel for OS greater than OREO
+   */
   private void createNotificationChannel() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel serviceChannel =

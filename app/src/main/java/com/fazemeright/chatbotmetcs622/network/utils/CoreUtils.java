@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.webkit.URLUtil;
-
 import com.google.gson.Gson;
 
 public class CoreUtils {

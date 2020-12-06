@@ -1,13 +1,10 @@
 package com.fazemeright.chatbotmetcs622.database.messages;
 
 import androidx.room.Dao;
-import androidx.room.FtsOptions;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-
 import com.fazemeright.chatbotmetcs622.database.BaseDao;
-
 import java.util.List;
 
 @Dao

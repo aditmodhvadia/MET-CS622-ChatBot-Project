@@ -5,14 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
-
 import java.util.ArrayList;
 
 /**
@@ -47,17 +44,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
       // TODO: Update with something else, like future message types. Currently will not result in this.
       view = getInflatedLayout(viewGroup, R.layout.receiver_message_display_view_item);
     }
-      return new MessageViewHolder(view);
+    return new MessageViewHolder(view);
   }
 
   private View getInflatedLayout(@NonNull ViewGroup viewGroup, @LayoutRes int layoutResId) {
     return LayoutInflater.from(context)
-            .inflate(layoutResId, viewGroup, false);
+        .inflate(layoutResId, viewGroup, false);
   }
 
   @Override
   public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-      ((MessageViewHolder) holder).bind(messages.get(position));
+    ((MessageViewHolder) holder).bind(messages.get(position));
   }
 
   @Override
@@ -87,14 +84,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     notifyItemInserted(MOST_RECENT_MSG_POSITION);
   }
 
-  /** Call to remove all messages from the Data List and notify data set changed */
+  /**
+   * Call to remove all messages from the Data List and notify data set changed
+   */
   void clearAllMessages() {
     int messagesSize = messages.size();
     messages.clear();
     notifyItemRangeRemoved(0, messagesSize);
   }
 
-  public interface ChatMessageInteractionListener {}
+  public interface ChatMessageInteractionListener {
+  }
 
   /*public static class SentViewHolder extends MessageViewHolder {
       SentViewHolder(@NonNull View itemView) {
@@ -109,18 +109,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
   }*/
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-      TextView tvMsg, tvTimestamp;
+  public static class MessageViewHolder extends RecyclerView.ViewHolder {
+    TextView tvMsg, tvTimestamp;
 
-      MessageViewHolder(@NonNull View itemView) {
-          super(itemView);
-          tvMsg = itemView.findViewById(R.id.tvMsg);
-          tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
-      }
-
-        void bind(Message item) {
-            tvMsg.setText(item.getMsg());
-            tvTimestamp.setText(item.getFormattedTime());
-        }
+    MessageViewHolder(@NonNull View itemView) {
+      super(itemView);
+      tvMsg = itemView.findViewById(R.id.tvMsg);
+      tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
     }
+
+    void bind(Message item) {
+      tvMsg.setText(item.getMsg());
+      tvTimestamp.setText(item.getFormattedTime());
+    }
+  }
 }

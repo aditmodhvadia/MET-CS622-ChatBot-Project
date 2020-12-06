@@ -1,9 +1,7 @@
 package com.fazemeright.chatbotmetcs622.network;
 
 import android.content.Context;
-
 import androidx.annotation.Nullable;
-
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
@@ -18,10 +16,8 @@ import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.utils.CoreUtils;
 import com.google.gson.reflect.TypeToken;
-
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
-
 import okhttp3.OkHttpClient;
 import timber.log.Timber;
 
@@ -59,7 +55,7 @@ public class NetworkManager implements NetworkWrapper {
    * Initializing at the very first time Set Request Timeout Enabling network logging
    *
    * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
-   * @param context context
+   * @param context        context
    */
   public void init(Context context, int requestTimeOut) {
     initSecureClient(context, requestTimeOut);
@@ -68,7 +64,7 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To initialize network manager
    *
-   * @param context App context
+   * @param context        App context
    * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
    */
   private void initSecureClient(Context context, int requestTimeOut) {
@@ -298,7 +294,8 @@ public class NetworkManager implements NetworkWrapper {
       String data,
       TypeToken<T> typeToken,
       String tag,
-      NetworkCallback<T> networkCallback) {}
+      NetworkCallback<T> networkCallback) {
+  }
 
   @Override
   public <T> NetCompoundRes<T> makePostRequestSync(
@@ -405,19 +402,20 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   @Override
-  public void cancelRequest(String tag) {}
+  public void cancelRequest(String tag) {
+  }
 
   /**
    * To use only for get id_token,access_token and refresh_token when login with Social
    *
-   * @param context context
-   * @param url endpoint
-   * @param dataObject request data
-   * @param typeToken response type
-   * @param hashMapHeader header
-   * @param tag request tag
+   * @param context         context
+   * @param url             endpoint
+   * @param dataObject      request data
+   * @param typeToken       response type
+   * @param hashMapHeader   header
+   * @param tag             request tag
    * @param networkCallback network callback
-   * @param <T> Type
+   * @param <T>             Type
    */
   @Override
   public <T> void makeCustomPostForSocialRequest(
@@ -431,7 +429,7 @@ public class NetworkManager implements NetworkWrapper {
 
     String stringURL =
         url.concat(
-                "?grant_type=authorization_code&redirect_uri=rosedaleapp://login&client_id=2idjeho7u7717nur0uhb6kmuhj&")
+            "?grant_type=authorization_code&redirect_uri=rosedaleapp://login&client_id=2idjeho7u7717nur0uhb6kmuhj&")
             .concat("code=")
             .concat(dataObject)
             .concat("&scope=email openid profile");
@@ -471,7 +469,7 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To create class for error from network/api
    *
-   * @param anError network error
+   * @param anError       network error
    * @param requestObject request object
    */
   private NetError getNetError(ANError anError, @Nullable Object requestObject) {
@@ -488,7 +486,7 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To create class for error from network/api
    *
-   * @param anError network error
+   * @param anError       network error
    * @param requestObject request object
    */
   private NetError getNetErrorConnectivityError(ANError anError, @Nullable Object requestObject) {
@@ -518,7 +516,7 @@ public class NetworkManager implements NetworkWrapper {
   /**
    * To Print Request
    *
-   * @param url endpoint
+   * @param url  endpoint
    * @param data data
    */
   private void printURLAndRequestParameters(String url, Object data) {
