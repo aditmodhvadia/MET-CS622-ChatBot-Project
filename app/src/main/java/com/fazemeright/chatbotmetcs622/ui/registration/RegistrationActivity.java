@@ -12,7 +12,8 @@ import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 import timber.log.Timber;
 
-public class RegistrationActivity extends BaseActivity implements View.OnClickListener {
+public class RegistrationActivity extends BaseActivity<RegistrationActivityViewModel>
+    implements View.OnClickListener {
 
   private EditText userEmailEditText,
       userPasswordEditText,
@@ -21,6 +22,11 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       etLastName;
   private TextView tvHaveAccount;
   private Button btnRegister;
+
+  @Override
+  protected Class<RegistrationActivityViewModel> getViewModelClass() {
+    return RegistrationActivityViewModel.class;
+  }
 
   @Override
   public void initViews() {
@@ -127,7 +133,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       return;
     }
 
-    messageRepository.createNewUserAndStoreDetails(
+    viewModel.mMessageRepository.createNewUserAndStoreDetails(
         email,
         password,
         firstName,
@@ -136,7 +142,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
           if (result.isSuccessful()) {
             Timber.i(
                 "New user registered successfully %s",
-                messageRepository.getUserAuthentication().getCurrentUserEmail());
+                viewModel.mMessageRepository.getUserAuthentication().getCurrentUserEmail());
             btnRegister.setText(getString(R.string.registration_success_msg));
             openLandingActivity();
 
