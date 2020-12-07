@@ -39,8 +39,8 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
     startAnimationOnViews(R.anim.fade_in);
 
-    new Handler().postDelayed(() -> viewModel.userAuthState.observe(this, userAuthState -> {
-      if (userAuthState) {
+    new Handler().postDelayed(() -> viewModel.userAuthState.observe(this, result -> {
+      if (result.isSuccessful()) {
         setUpWorkManagerRequest();
         openLandingActivity();
       } else {

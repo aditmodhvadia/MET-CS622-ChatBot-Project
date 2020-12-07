@@ -40,7 +40,7 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
     btnRegister = findViewById(R.id.btnRegister);
 
     viewModel.userRegistered.observe(this, userRegistered -> {
-      if (userRegistered) {
+      if (userRegistered.isSuccessful()) {
         btnRegister.setText(getString(R.string.registration_success_msg));
         openLandingActivity();
       }
