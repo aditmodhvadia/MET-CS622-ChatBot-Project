@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
@@ -19,22 +21,22 @@ import javax.annotation.Nonnull;
  *
  * @see ChatActivity for use
  */
-public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.MessageViewHolder> {
 
   static final int MOST_RECENT_MSG_POSITION = 0;
   private static final int TYPE_SENT = 0;
   private static final int TYPE_RECEIVED = 1;
   private final Context context;
-  private ArrayList<Message> messages;
 
-  ChatListAdapter(@Nonnull ArrayList<Message> messages, Context context) {
-    this.messages = messages;
+  protected ChatListAdapter(Context context) {
+    super(new MessageDiffCallback());
     this.context = context;
   }
 
+
   @NonNull
   @Override
-  public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+  public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
     View view;
     boolean isViewSendMessageType = viewType == TYPE_SENT;
     boolean isViewReceiveMessageType = viewType == TYPE_RECEIVED;
@@ -49,54 +51,35 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     return new MessageViewHolder(view);
   }
 
+  @Override
+  public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+    holder.bind(getItem(position));
+  }
+
   private View getInflatedLayout(@NonNull ViewGroup viewGroup, @LayoutRes int layoutResId) {
     return LayoutInflater.from(context)
         .inflate(layoutResId, viewGroup, false);
   }
 
   @Override
-  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    ((MessageViewHolder) holder).bind(messages.get(position));
-  }
-
-  @Override
   public int getItemViewType(int position) {
-    if (messages.get(position).getSender().equals(Message.SENDER_USER)) {
+    if (getItem(position).getSender().equals(Message.SENDER_USER)) {
       return TYPE_SENT;
     } else {
       return TYPE_RECEIVED;
     }
   }
 
-  @Override
-  public int getItemCount() {
-    return messages != null ? messages.size() : 0;
-  }
-
-  /**
-   * Call to add given new message to ArrayList at the bottom of the list and notify it was inserted
-   *
-   * @param newMessage given new message
-   */
-  void addMessage(Message newMessage) {
-    if (messages == null) {
-      messages = new ArrayList<>();
-    }
-    messages.add(MOST_RECENT_MSG_POSITION, newMessage);
-    notifyItemInserted(MOST_RECENT_MSG_POSITION);
-  }
-
   /**
    * Call to remove all messages from the Data List and notify data set changed
    */
   void clearAllMessages() {
-    int messagesSize = messages.size();
-    messages.clear();
-    notifyItemRangeRemoved(0, messagesSize);
+    submitList(new ArrayList<>());
   }
 
   public void updateList(List<Message> messages) {
 //    TODO: Call submit list in ListAdapter
+    submitList(messages);
   }
 
   public interface ChatMessageInteractionListener {
@@ -127,6 +110,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     void bind(Message item) {
       tvMsg.setText(item.getMsg());
       tvTimestamp.setText(item.getFormattedTime());
+    }
+  }
+
+  private static class MessageDiffCallback extends DiffUtil.ItemCallback<Message> {
+    @Override
+    public boolean areItemsTheSame(@NonNull Message oldItem, @NonNull Message newItem) {
+      return oldItem.getMid() == newItem.getMid();
+    }
+
+    @Override
+    public boolean areContentsTheSame(@NonNull Message oldItem, @NonNull Message newItem) {
+      return oldItem.equals(newItem);
     }
   }
 }
