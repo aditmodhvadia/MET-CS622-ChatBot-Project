@@ -8,7 +8,7 @@ import com.fazemeright.chatbotmetcs622.network.NetworkManager;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 
 public abstract class BaseViewModel extends AndroidViewModel {
-  public MessageRepository mMessageRepository;
+  protected MessageRepository mMessageRepository;
   protected ApiManager apiManager;
 
   public BaseViewModel(@NonNull Application application) {

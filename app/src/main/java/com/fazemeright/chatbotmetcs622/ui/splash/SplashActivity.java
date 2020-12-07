@@ -39,20 +39,15 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
     startAnimationOnViews(R.anim.fade_in);
 
-    new Handler().postDelayed(this::determineIfUserIsLoggedIn, 800);
-  }
-
-  private void determineIfUserIsLoggedIn() {
-    viewModel.mMessageRepository.getUserAuthentication().reloadCurrentUserAuthState(
-        result -> {
-          if (result.isSuccessful()) {
-            setUpWorkManagerRequest();
-            openLandingActivity();
-          } else {
-            Timber.i("Open Registration Activity");
-            openRegistrationActivity();
-          }
-        });
+    new Handler().postDelayed(() -> viewModel.userAuthState.observe(this, userAuthState -> {
+      if (userAuthState) {
+        setUpWorkManagerRequest();
+        openLandingActivity();
+      } else {
+        Timber.i("Open Registration Activity");
+        openRegistrationActivity();
+      }
+    }), 800);
   }
 
   private void setUpWorkManagerRequest() {
