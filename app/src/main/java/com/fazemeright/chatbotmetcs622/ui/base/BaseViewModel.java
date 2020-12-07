@@ -21,4 +21,20 @@ public abstract class BaseViewModel extends AndroidViewModel {
   public void runOnThread(Runnable runnable) {
     new Thread(runnable).start();
   }
+
+  /**
+   * Get username of the current logged in user
+   *
+   * @return username if logged in, else <code>null</code>
+   */
+  public String getUserName() {
+    return mMessageRepository.getUserAuthentication().getUserName();
+  }
+
+  /**
+   * Logs out the user
+   */
+  public void logOutUser() {
+    mMessageRepository.logOutUser();
+  }
 }

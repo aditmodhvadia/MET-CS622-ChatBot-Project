@@ -30,8 +30,8 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
   public void initViews() {
     if (getSupportActionBar() != null) {
       String firstName =
-          viewModel.mMessageRepository.getUserAuthentication().getUserName() != null ?
-              viewModel.mMessageRepository.getUserAuthentication().getUserName() : "Adit";
+          viewModel.getUserName() != null ?
+              viewModel.getUserName() : "Adit";
       getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + firstName);
     }
 
@@ -69,7 +69,7 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     if (item.getItemId() == R.id.action_logout) {
-      viewModel.mMessageRepository.logOutUser();
+      viewModel.logOutUser();
       openRegistrationActivity();
       return true;
     }
