@@ -15,6 +15,7 @@ import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 import com.fazemeright.firebase_api_library.api.DatabaseStore;
+import com.fazemeright.firebase_api_library.api.Storable;
 import com.fazemeright.firebase_api_library.api.UserAuthentication;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseDatabaseStore;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import timber.log.Timber;
 
@@ -96,9 +98,9 @@ public class MessageRepository {
                                            final OnTaskCompleteListener<Void> onTaskCompleteListener) {
     userAuthentication.createNewUserWithEmailPassword(userEmail, password, result -> {
       if (result.isSuccessful()) {
-        Map<String, Object> userProfile = getMapFromUserDetails(userEmail, firstName, lastName);
         onlineDatabaseStore.storeUserData(
-            Objects.requireNonNull(userAuthentication.getCurrentUserUid()), userProfile);
+            Objects.requireNonNull(userAuthentication.getCurrentUserUid()),
+            getStorableFromUserDetails(userEmail, firstName, lastName));
         onTaskCompleteListener.onComplete(Result.nullResult());
       } else {
         onTaskCompleteListener.onComplete(Result.exception(result.getException()));
@@ -107,13 +109,24 @@ public class MessageRepository {
   }
 
   @NonNull
-  private Map<String, Object> getMapFromUserDetails(String userEmail, String firstName,
-                                                    String lastName) {
-    Map<String, Object> userProfile = new HashMap<>();
-    userProfile.put("emailAddress", userEmail);
-    userProfile.put("firstName", firstName);
-    userProfile.put("lastName", lastName);
-    return userProfile;
+  private Storable getStorableFromUserDetails(String userEmail, String firstName,
+                                              String lastName) {
+    return new Storable() {
+      @Nonnull
+      @Override
+      public Map<String, Object> getHashMap() {
+        Map<String, Object> userProfile = new HashMap<>();
+        userProfile.put("emailAddress", userEmail);
+        userProfile.put("firstName", firstName);
+        userProfile.put("lastName", lastName);
+        return userProfile;
+      }
+
+      @Override
+      public long getId() {
+        return 0;
+      }
+    };
   }
 
   /**
@@ -255,11 +268,11 @@ public class MessageRepository {
   /**
    * Call to add the given message to FireStore
    *
-   * @param messageHashMap given message converted into HashMap
+   * @param message given message
    */
-  public void addMessageToFireBase(Map<String, Object> messageHashMap) {
+  public void addMessageToFireBase(Message message) {
     this.onlineDatabaseStore
-        .storeMessage(messageHashMap, this.userAuthentication.getCurrentUserUid());
+        .storeMessage(message, this.userAuthentication.getCurrentUserUid());
   }
 
   /**
@@ -269,7 +282,7 @@ public class MessageRepository {
    */
   public void addMessagesToFireBase(List<Message> messageList) {
     for (Message message : messageList) {
-      this.addMessageToFireBase(Message.getHashMap(message));
+      this.addMessageToFireBase(message);
     }
   }
 

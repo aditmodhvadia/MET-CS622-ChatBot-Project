@@ -8,9 +8,9 @@ import javax.annotation.Nonnull;
 
 public interface DatabaseStore {
 
-  void storeUserData(@Nonnull String uid, @Nonnull Map<String, Object> userData);
+  void storeUserData(@Nonnull String uid, @Nonnull Storable userData);
 
-  void storeMessage(@Nonnull Map<String, Object> messageHashMap, String currentUserUid);
+  void storeMessage(@Nonnull Storable object, String currentUserUid);
 
   void getAllMessagesForUser(@Nonnull String currentUserUid,
                              @Nullable

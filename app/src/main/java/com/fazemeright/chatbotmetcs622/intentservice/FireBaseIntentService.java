@@ -88,7 +88,7 @@ public class FireBaseIntentService extends IntentService {
    * @param message given message
    */
   private void addMessageToFireStore(Message message) {
-    messageRepository.addMessageToFireBase(Message.getHashMap(message));
+    messageRepository.addMessageToFireBase(message);
   }
 
   /**

@@ -3,6 +3,7 @@ package com.fazemeright.chatbotmetcs622.database.message;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import com.fazemeright.firebase_api_library.api.Storable;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,38 +11,39 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 /**
  * POJO for a message
  */
 @Entity(tableName = "my_messages_table")
-public class Message implements Serializable {
+public class Message implements Storable, Serializable {
   public static final String SENDER_USER = "User";
   /**
    * mid of message
    */
   @PrimaryKey(autoGenerate = true)
-  private long mid;
+  private final long mid;
   /**
    * text of message
    */
-  private String msg;
+  private final String msg;
   /**
    * sender of the message
    */
-  private String sender;
+  private final String sender;
   /**
    * receiver of the message
    */
-  private String receiver;
+  private final String receiver;
   /**
    * mid of the chat room where message was sent
    */
-  private long chatRoomId;
+  private final long chatRoomId;
   /**
    * timestamp of the message
    */
-  private long timestamp;
+  private final long timestamp;
 
   public Message(
       long mid, String msg, String sender, String receiver, long chatRoomId, long timestamp) {
@@ -55,17 +57,6 @@ public class Message implements Serializable {
 
   public static Message newMessage(String msg, String sender, String receiver, long chatRoomId) {
     return new Message(0, msg, sender, receiver, chatRoomId, System.currentTimeMillis());
-  }
-
-  public static Map<String, Object> getHashMap(Message message) {
-    Map<String, Object> messageHashMap = new HashMap<>();
-    messageHashMap.put("mid", message.getMid());
-    messageHashMap.put("msg", message.getMsg());
-    messageHashMap.put("sender", message.getSender());
-    messageHashMap.put("receiver", message.getReceiver());
-    messageHashMap.put("chatRoomId", message.getChatRoomId());
-    messageHashMap.put("timestamp", message.getTimestamp());
-    return messageHashMap;
   }
 
   @NonNull
@@ -130,5 +121,23 @@ public class Message implements Serializable {
   @Override
   public int hashCode() {
     return Objects.hash(mid, msg, sender, receiver, chatRoomId, timestamp);
+  }
+
+  @Override
+  public @Nonnull
+  Map<String, Object> getHashMap() {
+    Map<String, Object> messageHashMap = new HashMap<>();
+    messageHashMap.put("mid", getMid());
+    messageHashMap.put("msg", getMsg());
+    messageHashMap.put("sender", getSender());
+    messageHashMap.put("receiver", getReceiver());
+    messageHashMap.put("chatRoomId", getChatRoomId());
+    messageHashMap.put("timestamp", getTimestamp());
+    return messageHashMap;
+  }
+
+  @Override
+  public long getId() {
+    return getMid();
   }
 }
