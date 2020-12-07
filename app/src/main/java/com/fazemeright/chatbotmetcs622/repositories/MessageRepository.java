@@ -262,11 +262,7 @@ public class MessageRepository {
    * @param chatRoom given chat room
    */
   public void clearAllChatRoomMessages(ChatRoom chatRoom) {
-    clearAllChatRoomMessagesFromRoom(chatRoom);
-  }
-
-  private void clearAllChatRoomMessagesFromRoom(ChatRoom chatRoom) {
-    new ClearAllMessagesInChatRoomAsyncTask(database.messageDao()).execute(chatRoom);
+    database.messageDao().clearChatRoomMessages(chatRoom.getId());
   }
 
   /**
@@ -281,7 +277,7 @@ public class MessageRepository {
    * Call to clear all messages from Room
    */
   private void clearAllMessages() {
-    new ClearAllMessagesAsyncTask(database.messageDao()).execute();
+    database.messageDao().clear();
   }
 
   /**
@@ -345,24 +341,6 @@ public class MessageRepository {
     @Override
     protected List<Message> doInBackground(ChatRoom... params) {
       return mAsyncTaskDao.getAllMessagesFromChatRoom(params[0].getId());
-    }
-  }
-
-  /**
-   * Fetch all chat room messages for the given ChatRoom through AsyncTask from Room
-   */
-  private static class ClearAllMessagesInChatRoomAsyncTask extends AsyncTask<ChatRoom, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    ClearAllMessagesInChatRoomAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(ChatRoom... params) {
-      mAsyncTaskDao.clearChatRoomMessages(params[0].getId());
-      return null;
     }
   }
 
