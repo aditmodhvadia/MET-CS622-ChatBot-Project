@@ -41,6 +41,9 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
     setUpRecyclerView();
   }
 
+  /**
+   * Set up the RecyclerView
+   */
   private void setUpRecyclerView() {
     rvChatRoomList.setHasFixedSize(true);
     rvChatRoomList.setLayoutManager(new LinearLayoutManager(mContext));
@@ -50,6 +53,11 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
     adapter.submitDataList(getChatRoomList());
   }
 
+  /**
+   * Get the static chat room list
+   *
+   * @return list of ChatRoom
+   */
   private ArrayList<ChatRoom> getChatRoomList() {
     ArrayList<ChatRoom> chatRooms = new ArrayList<>();
     chatRooms.add(
@@ -77,6 +85,9 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
     return super.onOptionsItemSelected(item);
   }
 
+  /**
+   * Navigate to RegistrationActivity
+   */
   private void openRegistrationActivity() {
     startActivity(new Intent(LandingActivity.this, RegistrationActivity.class));
     finish();

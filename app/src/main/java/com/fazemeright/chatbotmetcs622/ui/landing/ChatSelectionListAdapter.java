@@ -43,14 +43,25 @@ public class ChatSelectionListAdapter
     holder.bind(getItem(position));
   }
 
+  /**
+   * Update list of chat rooms
+   *
+   * @param dataList list of ChatRoom
+   */
   public void submitDataList(ArrayList<ChatRoom> dataList) {
     submitList(dataList);
   }
 
+  /**
+   * Chat List Item interaction listener
+   */
   public interface ChatListInteractionListener {
     void onChatRoomClicked(ChatRoom chatRoom);
   }
 
+  /**
+   * Calculate the diff of list items
+   */
   static class ChatRoomDiffCallBack extends DiffUtil.ItemCallback<ChatRoom> {
 
     @Override
