@@ -9,8 +9,8 @@ import com.fazemeright.firebase_api_library.api.result.Result;
 import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLiveUpdates;
 
 public class SplashActivityViewModel extends BaseViewModel {
-  private final MutableLiveData<Result<Boolean>> _userAuthState = new MutableLiveData<>();
-  public LiveData<Result<Boolean>> userAuthState = _userAuthState;
+  private final MutableLiveData<Result<Boolean>> userAuthStateMutable = new MutableLiveData<>();
+  public LiveData<Result<Boolean>> userAuthState = userAuthStateMutable;
 
   public SplashActivityViewModel(@NonNull Application application) {
     super(application);
@@ -21,7 +21,7 @@ public class SplashActivityViewModel extends BaseViewModel {
    * Observe for user authentication state changes and report it.
    */
   private void observeForUserAuthenticationState() {
-    mMessageRepository
-        .reloadCurrentUserAuthState(new ResultAdapterForBooleanLiveUpdates<>(_userAuthState));
+    messageRepository
+        .reloadCurrentUserAuthState(new ResultAdapterForBooleanLiveUpdates<>(userAuthStateMutable));
   }
 }

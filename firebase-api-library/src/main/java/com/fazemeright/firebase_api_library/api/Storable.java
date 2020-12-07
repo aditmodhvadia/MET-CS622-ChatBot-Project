@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 public interface Storable {
 
   /**
-   * Get map of the object
+   * Get map of the object.
    *
    * @return map of data
    */
@@ -14,7 +14,7 @@ public interface Storable {
   Map<String, Object> getHashMap();
 
   /**
-   * ID
+   * ID.
    *
    * @return id
    */

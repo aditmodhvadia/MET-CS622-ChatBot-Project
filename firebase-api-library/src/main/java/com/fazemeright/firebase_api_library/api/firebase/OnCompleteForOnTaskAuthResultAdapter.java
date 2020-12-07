@@ -45,7 +45,7 @@ public class OnCompleteForOnTaskAuthResultAdapter implements OnCompleteListener<
     @Nullable
     @Override
     public String getErrorMsg() {
-//    TODO: Parse error here
+      // TODO: Parse error here
       return "Some error occurred, Change this later";
     }
   }

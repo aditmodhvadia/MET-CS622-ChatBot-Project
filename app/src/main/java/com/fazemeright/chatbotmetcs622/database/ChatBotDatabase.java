@@ -14,13 +14,12 @@ import com.fazemeright.chatbotmetcs622.database.message.MessageDao;
 public abstract class ChatBotDatabase extends RoomDatabase {
 
   public static final String DATABASE_NAME = "chat_bot_database";
-  //    singleton instance of Database
   private static ChatBotDatabase INSTANCE;
 
   /**
-   * Get singleton instance of the database
+   * Get singleton instance of the database.
    *
-   * @param context application cotext
+   * @param context application context
    * @return thread-safe database instance
    */
   public static synchronized ChatBotDatabase getInstance(Context context) {

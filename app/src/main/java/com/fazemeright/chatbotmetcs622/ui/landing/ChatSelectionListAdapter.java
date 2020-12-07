@@ -14,7 +14,7 @@ import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import java.util.ArrayList;
 
 /**
- * RecyclerView Adapter to show Chat Rooms
+ * RecyclerView Adapter to show Chat Rooms.
  *
  * @see LandingActivity for use
  */
@@ -44,7 +44,7 @@ public class ChatSelectionListAdapter
   }
 
   /**
-   * Update list of chat rooms
+   * Update list of chat rooms.
    *
    * @param dataList list of ChatRoom
    */
@@ -53,14 +53,14 @@ public class ChatSelectionListAdapter
   }
 
   /**
-   * Chat List Item interaction listener
+   * Chat List Item interaction listener.
    */
   public interface ChatListInteractionListener {
     void onChatRoomClicked(ChatRoom chatRoom);
   }
 
   /**
-   * Calculate the diff of list items
+   * Calculate the diff of list items.
    */
   static class ChatRoomDiffCallBack extends DiffUtil.ItemCallback<ChatRoom> {
 
@@ -80,12 +80,22 @@ public class ChatSelectionListAdapter
     TextView tvChatRoomName;
     ImageView ivChatRoom;
 
+    /**
+     * ViewHolder.
+     *
+     * @param itemView view for list item
+     */
     public ViewHolder(@NonNull View itemView) {
       super(itemView);
       tvChatRoomName = itemView.findViewById(R.id.tvChatRoomName);
       ivChatRoom = itemView.findViewById(R.id.ivChatRoom);
     }
 
+    /**
+     * Bind model to view.
+     *
+     * @param item ChatRoom
+     */
     public void bind(ChatRoom item) {
       tvChatRoomName.setText(item.getName());
 

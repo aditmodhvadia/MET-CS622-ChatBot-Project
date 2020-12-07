@@ -14,37 +14,47 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
- * POJO for a message
+ * POJO for a message.
  */
 @Entity(tableName = "my_messages_table")
 public class Message implements Storable, Serializable {
   public static final String SENDER_USER = "User";
   /**
-   * mid of message
+   * mid of message.
    */
   @PrimaryKey(autoGenerate = true)
   private final long mid;
   /**
-   * text of message
+   * text of message.
    */
   private final String msg;
   /**
-   * sender of the message
+   * sender of the message.
    */
   private final String sender;
   /**
-   * receiver of the message
+   * receiver of the message.
    */
   private final String receiver;
   /**
-   * mid of the chat room where message was sent
+   * mid of the chat room where message was sent.
    */
   private final long chatRoomId;
   /**
-   * timestamp of the message
+   * timestamp of the message.
    */
   private final long timestamp;
 
+  /**
+   * Constructor.
+   *
+   * @param mid        id
+   * @param msg        message text
+   * @param sender     sender name
+   * @param receiver   receiver name
+   * @param chatRoomId chat room id
+   * @param timestamp  timestamp
+   */
   public Message(
       long mid, String msg, String sender, String receiver, long chatRoomId, long timestamp) {
     this.mid = mid;
@@ -55,10 +65,25 @@ public class Message implements Storable, Serializable {
     this.timestamp = timestamp;
   }
 
+  /**
+   * Create a message object.
+   *
+   * @param msg        msg text
+   * @param sender     sender name
+   * @param receiver   receiver name
+   * @param chatRoomId chat room id
+   * @return Message object
+   */
   public static Message newMessage(String msg, String sender, String receiver, long chatRoomId) {
     return new Message(0, msg, sender, receiver, chatRoomId, System.currentTimeMillis());
   }
 
+  /**
+   * Get Message object from Map.
+   *
+   * @param object Map
+   * @return Message object
+   */
   @NonNull
   public static Message fromMap(Map<String, Object> object) {
     return new Message(
@@ -94,6 +119,11 @@ public class Message implements Storable, Serializable {
     return timestamp;
   }
 
+  /**
+   * Get the formatted time.
+   *
+   * @return formatted date
+   */
   public String getFormattedTime() {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd HH:mm a", Locale.getDefault());
     Calendar cal = Calendar.getInstance();
@@ -110,12 +140,12 @@ public class Message implements Storable, Serializable {
       return false;
     }
     Message message = (Message) o;
-    return mid == message.mid &&
-        chatRoomId == message.chatRoomId &&
-        timestamp == message.timestamp &&
-        Objects.equals(msg, message.msg) &&
-        Objects.equals(sender, message.sender) &&
-        Objects.equals(receiver, message.receiver);
+    return mid == message.mid
+        && chatRoomId == message.chatRoomId
+        && timestamp == message.timestamp
+        && Objects.equals(msg, message.msg)
+        && Objects.equals(sender, message.sender)
+        && Objects.equals(receiver, message.receiver);
   }
 
   @Override

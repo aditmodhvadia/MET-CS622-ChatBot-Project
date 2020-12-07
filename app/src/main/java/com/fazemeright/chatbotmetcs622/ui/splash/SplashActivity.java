@@ -32,7 +32,7 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
   @Override
   public void initViews() {
-    hideSystemUI();
+    hideSystemUi();
     tvAppVersion = findViewById(R.id.tvAppVersion);
     tvAppTitle = findViewById(R.id.tvAppTitle);
 
@@ -61,11 +61,11 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
             .setConstraints(constraints)
             .build();
 
-    WorkManager.getInstance(mContext).enqueue(saveRequest);
+    WorkManager.getInstance(context).enqueue(saveRequest);
   }
 
   /**
-   * Call to open RegistrationActivity from the current activity
+   * Call to open RegistrationActivity from the current activity.
    */
   private void openRegistrationActivity() {
     startAnimationOnViews(R.anim.fade_out);
@@ -86,7 +86,7 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
   }
 
   /**
-   * Open LandingActivity and finish this one
+   * Open LandingActivity and finish this one.
    */
   private void openLandingActivity() {
     startAnimationOnViews(R.anim.fade_out);
@@ -96,24 +96,24 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
   }
 
   /**
-   * Call to get the version of the Application
+   * Call to get the version of the Application.
    *
    * @return version name of the application
    */
   private String getAppVersion() {
-    PackageInfo pInfo;
+    PackageInfo packageInfo;
     try {
-      pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-      return pInfo.versionName;
+      packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+      return packageInfo.versionName;
     } catch (PackageManager.NameNotFoundException e) {
       return "beta-testing";
     }
   }
 
   /**
-   * Makes the screen layout to cover the full display of the device
+   * Makes the screen layout to cover the full display of the device.
    */
-  private void hideSystemUI() {
+  private void hideSystemUi() {
     getWindow()
         .setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,

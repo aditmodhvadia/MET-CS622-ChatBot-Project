@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * RecyclerView Adapter to display Chat
+ * RecyclerView Adapter to display Chat.
  *
  * @see ChatActivity for use
  */
@@ -43,7 +43,7 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
     } else if (isViewReceiveMessageType) { // for received message layout
       view = getInflatedLayout(viewGroup, R.layout.receiver_message_display_view_item);
     } else {
-      // TODO: Update with something else, like future message types. Currently will not result in this.
+      // TODO: Update with something else. Currently will not result in this.
       view = getInflatedLayout(viewGroup, R.layout.receiver_message_display_view_item);
     }
     return new MessageViewHolder(view);
@@ -55,7 +55,7 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
   }
 
   /**
-   * Get inflated layout for the view holder item
+   * Get inflated layout for the view holder item.
    *
    * @param viewGroup   view group
    * @param layoutResId layout resource id
@@ -76,14 +76,14 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
   }
 
   /**
-   * Call to remove all messages from the Data List and notify data set changed
+   * Call to remove all messages from the Data List and notify data set changed.
    */
   void clearAllMessages() {
     submitList(new ArrayList<>());
   }
 
   /**
-   * Update list of messages
+   * Update list of messages.
    *
    * @param messages list of messages
    */
@@ -92,7 +92,8 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
   }
 
   public static class MessageViewHolder extends RecyclerView.ViewHolder {
-    TextView tvMsg, tvTimestamp;
+    TextView tvMsg;
+    TextView tvTimestamp;
 
     MessageViewHolder(@NonNull View itemView) {
       super(itemView);
@@ -107,7 +108,7 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
   }
 
   /**
-   * Diff calculator callback
+   * Diff calculator callback.
    */
   private static class MessageDiffCallback extends DiffUtil.ItemCallback<Message> {
     @Override

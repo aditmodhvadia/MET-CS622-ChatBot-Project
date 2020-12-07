@@ -9,14 +9,14 @@ import com.google.gson.Gson;
 public class CoreUtils {
 
   /**
-   * To check internet connection
+   * To check internet connection.
    *
-   * @param mContext App context
+   * @param context App context
    * @return true if available else false
    */
-  public static boolean isNetworkAvailable(Context mContext) {
+  public static boolean isNetworkAvailable(Context context) {
     ConnectivityManager cm =
-        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = null;
     if (cm != null) {
       networkInfo = cm.getActiveNetworkInfo();
@@ -30,7 +30,7 @@ public class CoreUtils {
   }
 
   /**
-   * Check whether URL is valid or not
+   * Check whether URL is valid or not.
    *
    * @param url url
    * @return true if valid else false

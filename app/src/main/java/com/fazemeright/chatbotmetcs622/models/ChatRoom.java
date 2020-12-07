@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * POJO to hold Chat room
+ * POJO to hold Chat room.
  */
 public class ChatRoom implements Serializable {
   public static final int BRUTE_FORCE_ID = 0;
@@ -17,18 +17,25 @@ public class ChatRoom implements Serializable {
   public static final String LUCENE = "Lucene";
   public static final String BRUTE_FORCE = "Brute Force";
   /**
-   * is of the chat room
+   * is of the chat room.
    */
   private final long id;
   /**
-   * Name of the chat room
+   * Name of the chat room.
    */
   private final String name;
   /**
-   * Id of resource file associated with the ChatRoom
+   * Id of resource file associated with the ChatRoom.
    */
   private final int logoId;
 
+  /**
+   * Constructor.
+   *
+   * @param id     id
+   * @param name   name
+   * @param logoId logo resource id
+   */
   public ChatRoom(int id, String name, int logoId) {
     this.id = id;
     this.name = name;

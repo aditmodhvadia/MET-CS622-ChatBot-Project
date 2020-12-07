@@ -10,21 +10,26 @@ import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLi
 import javax.annotation.Nonnull;
 
 public class LoginActivityViewModel extends BaseViewModel {
-  private final MutableLiveData<Result<Boolean>> _userSignedIn = new MutableLiveData<>();
-  public LiveData<Result<Boolean>> userSignedIn = _userSignedIn;
+  private final MutableLiveData<Result<Boolean>> userSignedInMutable = new MutableLiveData<>();
+  public LiveData<Result<Boolean>> userSignedIn = userSignedInMutable;
 
+  /**
+   * Constructor.
+   *
+   * @param application application
+   */
   public LoginActivityViewModel(@NonNull Application application) {
     super(application);
   }
 
   /**
-   * Sign in user with email and password
+   * Sign in user with email and password.
    *
    * @param email    email
    * @param password password
    */
   public void signInWithEmailPassword(@Nonnull String email, @Nonnull String password) {
-    runOnThread(() -> mMessageRepository.signInWithEmailAndPassword(email, password,
-        new ResultAdapterForBooleanLiveUpdates<>(_userSignedIn)));
+    runOnThread(() -> messageRepository.signInWithEmailAndPassword(email, password,
+        new ResultAdapterForBooleanLiveUpdates<>(userSignedInMutable)));
   }
 }

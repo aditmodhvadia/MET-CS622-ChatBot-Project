@@ -9,14 +9,14 @@ import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 public interface NetworkCallback<T> {
 
   /**
-   * Interface method called on success of api call
+   * Interface method called on success of api call.
    *
    * @param response {@link NetResponse}
    */
   void onSuccess(NetResponse<T> response);
 
   /**
-   * Interface method called on api/network failure
+   * Interface method called on api/network failure.
    *
    * @param error Error obj with error detail
    */

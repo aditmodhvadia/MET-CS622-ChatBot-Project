@@ -13,35 +13,35 @@ import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLi
 import java.util.List;
 
 public class ChatActivityViewModel extends BaseViewModel {
-  private final MutableLiveData<Result<Boolean>> _messageSent = new MutableLiveData<>();
-  public LiveData<Result<Boolean>> messageSent = _messageSent;
+  private final MutableLiveData<Result<Boolean>> messageSentMutable = new MutableLiveData<>();
+  public LiveData<Result<Boolean>> messageSent = messageSentMutable;
 
   public ChatActivityViewModel(@NonNull Application application) {
     super(application);
   }
 
   public LiveData<List<Message>> getMessagesForChatRoom(ChatRoom chatRoom) {
-    return mMessageRepository.getMessagesForChatRoom(chatRoom);
+    return messageRepository.getMessagesForChatRoom(chatRoom);
   }
 
   /**
-   * Clear all messages for the chat room
+   * Clear all messages for the chat room.
    *
    * @param chatRoom chat room
    */
   public void clearAllChatRoomMessages(ChatRoom chatRoom) {
-    runOnThread(() -> mMessageRepository.clearAllChatRoomMessages(chatRoom));
+    runOnThread(() -> messageRepository.clearAllChatRoomMessages(chatRoom));
   }
 
   /**
    * Send new message.
-   * Store in local database
+   * Store in local database.
    *
-   * @param mContext   context
+   * @param context    context
    * @param newMessage message
    */
-  public void sendNewMessage(Context mContext, Message newMessage) {
-    runOnThread(() -> mMessageRepository.newMessageSent(mContext, newMessage,
-        new ResultAdapterForBooleanLiveUpdates<>(_messageSent)));
+  public void sendNewMessage(Context context, Message newMessage) {
+    runOnThread(() -> messageRepository.newMessageSent(context, newMessage,
+        new ResultAdapterForBooleanLiveUpdates<>(messageSentMutable)));
   }
 }

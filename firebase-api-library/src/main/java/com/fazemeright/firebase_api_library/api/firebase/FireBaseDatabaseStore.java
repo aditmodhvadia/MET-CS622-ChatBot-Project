@@ -14,9 +14,13 @@ import javax.annotation.Nonnull;
 
 public class FireBaseDatabaseStore implements DatabaseStore {
   private static FireBaseDatabaseStore mInstance;
-  private final String TAG = FireBaseDatabaseStore.class.getSimpleName();
 
-  public synchronized static FireBaseDatabaseStore getInstance() {
+  /**
+   * Get singleton instance of the object.
+   *
+   * @return instance
+   */
+  public static synchronized FireBaseDatabaseStore getInstance() {
     if (mInstance == null) {
       mInstance = new FireBaseDatabaseStore();
     }
@@ -56,7 +60,8 @@ public class FireBaseDatabaseStore implements DatabaseStore {
   @Override
   public void getAllMessagesForUser(@Nonnull String currentUserUid,
                                     @Nullable
-                                        OnTaskCompleteListener<List<Map<String, Object>>> listener) {
+                                        OnTaskCompleteListener<List<Map<String, Object>>>
+                                        listener) {
     CollectionReference collectionReference =
         FirebaseFirestore.getInstance().collection(BaseUrl.USERS)
             .document(currentUserUid)

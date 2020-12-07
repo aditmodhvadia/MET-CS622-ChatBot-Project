@@ -8,19 +8,19 @@ import com.google.firebase.auth.FirebaseUser;
 public interface UserAuthentication {
 
   /**
-   * Sign out the current user
+   * Sign out the current user.
    */
   void signOutUser();
 
   /**
-   * Determine is user is authenticated or not
+   * Determine is user is authenticated or not.
    *
    * @return <code>true</code> if user is authenticated, else <code>false</code>
    */
   boolean isUserVerified();
 
   /**
-   * Create a new user
+   * Create a new user.
    *
    * @param userEmail              email address
    * @param password               password

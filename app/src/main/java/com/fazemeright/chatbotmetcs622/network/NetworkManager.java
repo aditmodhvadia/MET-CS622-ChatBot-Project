@@ -27,6 +27,11 @@ public class NetworkManager implements NetworkWrapper {
   private static final String CONTENT_TYPE = "application/json; charset=utf-8";
   private static NetworkManager networkManager = null;
 
+  /**
+   * Get singleton instance.
+   *
+   * @return instance
+   */
   public static NetworkManager getInstance() {
     if (networkManager == null) {
       networkManager = new NetworkManager();
@@ -35,7 +40,7 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * To get Http client
+   * To get Http client.
    *
    * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
    * @return OkHttpClient
@@ -52,7 +57,7 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * Initializing at the very first time Set Request Timeout Enabling network logging
+   * Initializing at the very first time Set Request Timeout Enabling network logging.
    *
    * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
    * @param context        context
@@ -62,7 +67,7 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * To initialize network manager
+   * To initialize network manager.
    *
    * @param context        App context
    * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
@@ -80,7 +85,7 @@ public class NetworkManager implements NetworkWrapper {
       final NetworkCallback<T> networkCallback) {
     if (CoreUtils.isValidUrl(url)) {
       if (CoreUtils.isNetworkAvailable(context)) {
-        printURLAndRequestParameters(url, null);
+        printUrlAndRequestParameters(url, null);
         AndroidNetworking.get(url)
             .setTag(tag)
             .setPriority(Priority.MEDIUM)
@@ -104,6 +109,54 @@ public class NetworkManager implements NetworkWrapper {
                 });
       } else {
         networkCallback.onError(getNetErrorConnectivityError(getConnectivityError(context), null));
+      }
+    } else {
+      networkCallback.onError(getInvalidUrlError(url));
+    }
+  }
+
+  @Override
+  public <T> void makePostRequest(
+      Context context,
+      String url,
+      final Object dataObject,
+      TypeToken<T> typeToken,
+      String tag,
+      final NetworkCallback<T> networkCallback) {
+    if (CoreUtils.isValidUrl(url)) {
+      if (CoreUtils.isNetworkAvailable(context)) {
+        printUrlAndRequestParameters(url, dataObject);
+        // .addBodyParameter(dataObject)
+        // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
+        AndroidNetworking.post(url)
+            .addApplicationJsonBody(dataObject)
+            //                        .addHeaders(hashMapHeader)
+            .setContentType(CONTENT_TYPE) // custom ContentType
+            .setTag(tag)
+            .setPriority(Priority.MEDIUM)
+            .build()
+            .getAsParsed(
+                typeToken,
+                new ParsedRequestListener<T>() {
+                  @Override
+                  public void onResponse(T response) {
+                    // LogUtils.getInstance().printLog(TAG, "onResponse :: "
+                    // + CoreUtils.getStringFromObject(response));
+                    NetResponse<T> netResponse = new NetResponse<>();
+                    netResponse.setResponse(response);
+                    networkCallback.onSuccess(netResponse);
+                  }
+
+                  @Override
+                  public void onError(ANError anError) {
+                    //   LogUtils.getInstance().printLog(TAG, "onError :: "
+                    // + CoreUtils.getStringFromObject(anError));
+                    networkCallback.onError(getNetError(anError, dataObject));
+                  }
+                });
+      } else {
+        networkCallback.onError(
+            getNetErrorConnectivityError(getConnectivityError(context), dataObject));
       }
     } else {
       networkCallback.onError(getInvalidUrlError(url));
@@ -159,7 +212,7 @@ public class NetworkManager implements NetworkWrapper {
       final NetworkCallback<T> networkCallback) {
     if (CoreUtils.isValidUrl(url)) {
       if (CoreUtils.isNetworkAvailable(context)) {
-        printURLAndRequestParameters(url, null);
+        printUrlAndRequestParameters(url, null);
         AndroidNetworking.get(url)
             .setTag(tag)
             .addHeaders(hashMapHeader)
@@ -201,60 +254,12 @@ public class NetworkManager implements NetworkWrapper {
       final NetworkCallback<T> networkCallback) {
     if (CoreUtils.isValidUrl(url)) {
       if (CoreUtils.isNetworkAvailable(context)) {
-        printURLAndRequestParameters(url, dataObject);
+        printUrlAndRequestParameters(url, dataObject);
         // .addBodyParameter(dataObject)
         // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
         AndroidNetworking.put(url)
             .addApplicationJsonBody(dataObject)
             .addHeaders(hashMapHeader)
-            .setContentType(CONTENT_TYPE) // custom ContentType
-            .setTag(tag)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    // LogUtils.getInstance().printLog(TAG, "onResponse :: "
-                    // + CoreUtils.getStringFromObject(response));
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
-
-                  @Override
-                  public void onError(ANError anError) {
-                    //   LogUtils.getInstance().printLog(TAG, "onError :: "
-                    // + CoreUtils.getStringFromObject(anError));
-                    networkCallback.onError(getNetError(anError, dataObject));
-                  }
-                });
-      } else {
-        networkCallback.onError(
-            getNetErrorConnectivityError(getConnectivityError(context), dataObject));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
-    }
-  }
-
-  @Override
-  public <T> void makePostRequest(
-      Context context,
-      String url,
-      final Object dataObject,
-      TypeToken<T> typeToken,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        printURLAndRequestParameters(url, dataObject);
-        // .addBodyParameter(dataObject)
-        // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
-        AndroidNetworking.post(url)
-            .addApplicationJsonBody(dataObject)
-            //                        .addHeaders(hashMapHeader)
             .setContentType(CONTENT_TYPE) // custom ContentType
             .setTag(tag)
             .setPriority(Priority.MEDIUM)
@@ -315,7 +320,7 @@ public class NetworkManager implements NetworkWrapper {
 
     if (CoreUtils.isValidUrl(url)) {
       if (CoreUtils.isNetworkAvailable(context)) {
-        printURLAndRequestParameters(url, dataObject);
+        printUrlAndRequestParameters(url, dataObject);
         // .addBodyParameter(dataObject)
         // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
         AndroidNetworking.post(url)
@@ -406,7 +411,7 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * To use only for get id_token,access_token and refresh_token when login with Social
+   * To use only for get id_token,access_token and refresh_token when login with Social.
    *
    * @param context         context
    * @param url             endpoint
@@ -427,17 +432,15 @@ public class NetworkManager implements NetworkWrapper {
       String tag,
       final NetworkCallback<T> networkCallback) {
 
-    String stringURL =
-        url.concat(
-            "?grant_type=authorization_code&redirect_uri=rosedaleapp://login&client_id=2idjeho7u7717nur0uhb6kmuhj&")
-            .concat("code=")
+    String stringUrl =
+        url.concat("code=")
             .concat(dataObject)
             .concat("&scope=email openid profile");
 
     if (CoreUtils.isValidUrl(url)) {
       if (CoreUtils.isNetworkAvailable(context)) {
-        printURLAndRequestParameters(stringURL, dataObject);
-        AndroidNetworking.post(stringURL)
+        printUrlAndRequestParameters(stringUrl, dataObject);
+        AndroidNetworking.post(stringUrl)
             .setContentType("application/x-www-form-urlencoded") // custom ContentType
             .setTag(tag)
             .setPriority(Priority.MEDIUM)
@@ -467,7 +470,7 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * To create class for error from network/api
+   * To create class for error from network/api.
    *
    * @param anError       network error
    * @param requestObject request object
@@ -484,7 +487,7 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * To create class for error from network/api
+   * To create class for error from network/api.
    *
    * @param anError       network error
    * @param requestObject request object
@@ -501,7 +504,7 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * To get Connectivity Error
+   * To get Connectivity Error.
    *
    * @param context context
    * @return network error
@@ -514,18 +517,18 @@ public class NetworkManager implements NetworkWrapper {
   }
 
   /**
-   * To Print Request
+   * To Print Request.
    *
    * @param url  endpoint
    * @param data data
    */
-  private void printURLAndRequestParameters(String url, Object data) {
+  private void printUrlAndRequestParameters(String url, Object data) {
     Timber.i("url :: %s", url);
     Timber.i("requestParameters :: %s", CoreUtils.getStringFromObject(data));
   }
 
   /**
-   * To get Invalid Url Error
+   * To get Invalid Url Error.
    *
    * @param url url
    * @return network error if occurred

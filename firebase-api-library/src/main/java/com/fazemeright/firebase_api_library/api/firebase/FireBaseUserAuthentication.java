@@ -14,9 +14,13 @@ import java.util.Objects;
 
 public class FireBaseUserAuthentication implements UserAuthentication {
   private static FireBaseUserAuthentication mInstance;
-  private final String TAG = FireBaseUserAuthentication.class.getSimpleName();
 
-  public synchronized static FireBaseUserAuthentication getInstance() {
+  /**
+   * Get singleton instance.
+   *
+   * @return instance
+   */
+  public static synchronized FireBaseUserAuthentication getInstance() {
     if (mInstance == null) {
       mInstance = new FireBaseUserAuthentication();
     }
@@ -36,7 +40,8 @@ public class FireBaseUserAuthentication implements UserAuthentication {
   @Override
   public void createNewUserWithEmailPassword(@NonNull String userEmail, @NonNull String password,
                                              @Nullable
-                                                 OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener) {
+                                                 OnTaskCompleteListener<UserAuthResult>
+                                                 onTaskCompleteListener) {
     Task<AuthResult> createUserTask =
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(userEmail, password);
     if (onTaskCompleteListener != null) {
@@ -48,7 +53,8 @@ public class FireBaseUserAuthentication implements UserAuthentication {
   @Override
   public void signInWithEmailAndPassword(@NonNull String userEmail, @NonNull String password,
                                          @Nullable
-                                             OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener) {
+                                             OnTaskCompleteListener<UserAuthResult>
+                                             onTaskCompleteListener) {
     Task<AuthResult> signInTask =
         FirebaseAuth.getInstance().signInWithEmailAndPassword(userEmail, password);
     if (onTaskCompleteListener != null) {

@@ -30,8 +30,8 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
   public void initViews() {
     if (getSupportActionBar() != null) {
       String firstName =
-          viewModel.getUserName() != null ?
-              viewModel.getUserName() : "Adit";
+          viewModel.getUserName() != null
+              ? viewModel.getUserName() : "Adit";
       getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + firstName);
     }
 
@@ -42,11 +42,11 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
   }
 
   /**
-   * Set up the RecyclerView
+   * Set up the RecyclerView.
    */
   private void setUpRecyclerView() {
     rvChatRoomList.setHasFixedSize(true);
-    rvChatRoomList.setLayoutManager(new LinearLayoutManager(mContext));
+    rvChatRoomList.setLayoutManager(new LinearLayoutManager(context));
     rvChatRoomList.addItemDecoration(
         new DividerItemDecoration(rvChatRoomList.getContext(), LinearLayoutManager.VERTICAL));
     rvChatRoomList.setAdapter(adapter);
@@ -54,7 +54,7 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
   }
 
   /**
-   * Get the static chat room list
+   * Get the static chat room list.
    *
    * @return list of ChatRoom
    */
@@ -86,7 +86,7 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
   }
 
   /**
-   * Navigate to RegistrationActivity
+   * Navigate to RegistrationActivity.
    */
   private void openRegistrationActivity() {
     startActivity(new Intent(LandingActivity.this, RegistrationActivity.class));

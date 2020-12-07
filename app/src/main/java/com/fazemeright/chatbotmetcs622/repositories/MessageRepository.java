@@ -165,7 +165,7 @@ public class MessageRepository {
   }
 
   /**
-   * Get messages from the given chatroom
+   * Get messages from the given chat room.
    *
    * @param chatRoom chat room
    * @return List of Messages
@@ -238,7 +238,7 @@ public class MessageRepository {
   }
 
   /**
-   * Get all messages stored inside local database
+   * Get all messages stored inside local database.
    *
    * @return <code>List</code> of  messages
    */
@@ -319,7 +319,7 @@ public class MessageRepository {
   }
 
   /**
-   * Get user name of the current user
+   * Get user name of the current user.
    *
    * @return user name
    */
@@ -329,7 +329,7 @@ public class MessageRepository {
   }
 
   /**
-   * Sign in user with email and password
+   * Sign in user with email and password.
    *
    * @param email    email
    * @param password password
@@ -341,7 +341,7 @@ public class MessageRepository {
   }
 
   /**
-   * Reload the current user authentication state
+   * Reload the current user authentication state.
    *
    * @param listener listener for updates
    */

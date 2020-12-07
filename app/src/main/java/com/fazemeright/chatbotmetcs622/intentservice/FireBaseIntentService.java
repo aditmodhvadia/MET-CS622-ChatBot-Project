@@ -20,7 +20,7 @@ public class FireBaseIntentService extends IntentService {
   public static final String MESSAGE = "Message";
   public static final String RESULT_RECEIVER = "ResultReceiver";
   /**
-   * TAG for logs
+   * TAG for logs.
    */
   private static final String TAG = "FireBaseIntentService";
   protected ChatBotDatabase database;
@@ -71,19 +71,22 @@ public class FireBaseIntentService extends IntentService {
         case Actions.ACTION_SYNC_MESSAGES:
           syncMessages();
           break;
+        default:
+          throw new IllegalStateException(
+              "Unexpected value: " + intent.getStringExtra(Actions.ACTION));
       }
     }
   }
 
   /**
-   * Call to sync messages from FireStore to Room for the logged in user
+   * Call to sync messages from FireStore to Room for the logged in user.
    */
   private void syncMessages() {
     messageRepository.syncMessagesFromFireStoreToRoom();
   }
 
   /**
-   * Call to add given message to FireStore
+   * Call to add given message to FireStore.
    *
    * @param message given message
    */
@@ -93,7 +96,7 @@ public class FireBaseIntentService extends IntentService {
 
   /**
    * Call to display foreground running notification to notify user of a background operation
-   * running
+   * running.
    */
   private void showForegroundServiceNotification() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -119,7 +122,7 @@ public class FireBaseIntentService extends IntentService {
     public static final String ACTION_ADD_MESSAGE = "AddMessage";
     public static final String ACTION_SYNC_MESSAGES = "SyncMessages";
     /**
-     * Use to send data with intent
+     * Use to send data with intent.
      */
     public static final String ACTION = "IntentAction";
   }

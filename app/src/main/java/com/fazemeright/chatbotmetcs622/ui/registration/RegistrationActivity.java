@@ -14,11 +14,11 @@ import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 public class RegistrationActivity extends BaseActivity<RegistrationActivityViewModel>
     implements View.OnClickListener {
 
-  private EditText userEmailEditText,
-      userPasswordEditText,
-      userConPasswordEditText,
-      etFirstName,
-      etLastName;
+  private EditText userEmailEditText;
+  private EditText userPasswordEditText;
+  private EditText userConPasswordEditText;
+  private EditText etFirstName;
+  private EditText etLastName;
   private TextView tvHaveAccount;
   private Button btnRegister;
 
@@ -48,7 +48,7 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
   }
 
   /**
-   * Set up support action bar
+   * Set up support action bar.
    */
   private void setUpSupportActionBar() {
     if (getSupportActionBar() != null) {
@@ -80,7 +80,7 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
   }
 
   /**
-   * Register the user
+   * Register the user.
    */
   private void registerUser() {
     String email = userEmailEditText.getText().toString();
@@ -92,14 +92,14 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
   }
 
   /**
-   * Open Login Activity
+   * Open Login Activity.
    */
   private void openLoginActivity() {
     startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
   }
 
   /**
-   * Call to perform validation on the input parameters and then perform registration
+   * Call to perform validation on the input parameters and then perform registration.
    *
    * @param email       user email address
    * @param firstName   first name of user
@@ -113,33 +113,33 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
       String lastName,
       final String password,
       String conPassword) {
-//    TODO: Move to ViewModel
+    // TODO: Move to ViewModel
     if (!AppUtils.isValidEmail(email)) {
-      userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
+      userEmailEditText.setError(context.getString(R.string.incorrect_email_err_msg));
       userEmailEditText.requestFocus();
       return;
     }
 
     if (!AppUtils.isValidName(firstName)) {
-      etFirstName.setError(mContext.getString(R.string.incorrect_first_name));
+      etFirstName.setError(context.getString(R.string.incorrect_first_name));
       etFirstName.requestFocus();
       return;
     }
 
     if (!AppUtils.isValidName(lastName)) {
-      etLastName.setError(mContext.getString(R.string.incorrect_last_name));
+      etLastName.setError(context.getString(R.string.incorrect_last_name));
       etLastName.requestFocus();
       return;
     }
 
     if (!AppUtils.isValidPassword(password)) {
-      userPasswordEditText.setError(mContext.getString(R.string.incorrect_pass_err_msg));
+      userPasswordEditText.setError(context.getString(R.string.incorrect_pass_err_msg));
       userPasswordEditText.requestFocus();
       return;
     }
 
     if (!AppUtils.arePasswordsValid(password, conPassword)) {
-      userPasswordEditText.setError(mContext.getString(R.string.passwords_dont_match_err_msg));
+      userPasswordEditText.setError(context.getString(R.string.passwords_dont_match_err_msg));
       userPasswordEditText.requestFocus();
       userPasswordEditText.setText("");
       userConPasswordEditText.setText("");
@@ -154,7 +154,7 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
   }
 
   /**
-   * Open LandingActivity and finish this one
+   * Open LandingActivity and finish this one.
    */
   private void openLandingActivity() {
     startActivity(new Intent(RegistrationActivity.this, LandingActivity.class));
