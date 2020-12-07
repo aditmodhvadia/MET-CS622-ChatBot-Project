@@ -5,10 +5,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel;
+import com.fazemeright.firebase_api_library.api.result.Result;
+import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLiveUpdates;
 
 public class RegistrationActivityViewModel extends BaseViewModel {
-  private MutableLiveData<Boolean> _userRegistered = new MutableLiveData<>();
-  public LiveData<Boolean> userRegistered = _userRegistered;
+  private final MutableLiveData<Result<Boolean>> _userRegistered = new MutableLiveData<>();
+  public LiveData<Result<Boolean>> userRegistered = _userRegistered;
 
   public RegistrationActivityViewModel(
       @NonNull Application application) {
@@ -18,6 +20,6 @@ public class RegistrationActivityViewModel extends BaseViewModel {
   public void registerNewUser(String email, String password, String firstName, String lastName) {
     runOnThread(() -> mMessageRepository
         .createNewUserAndStoreDetails(email, password, firstName, lastName,
-            result -> _userRegistered.setValue(result.isSuccessful())));
+            new ResultAdapterForBooleanLiveUpdates<>(_userRegistered)));
   }
 }

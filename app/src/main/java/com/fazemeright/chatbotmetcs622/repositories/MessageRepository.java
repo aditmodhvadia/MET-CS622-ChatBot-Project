@@ -204,7 +204,7 @@ public class MessageRepository {
   public void newMessageSent(
       final Context context,
       final Message newMessage,
-      final OnMessageResponseReceivedListener listener) {
+      @Nullable final OnTaskCompleteListener<Message> listener) {
     final Message roomLastMessage = insertMessageInRoom(newMessage);
     insertMessageInFireBase(context, roomLastMessage);
     apiManager.queryDatabase(
@@ -222,12 +222,16 @@ public class MessageRepository {
 
             Message roomLastInsertedMessage = insertMessageInRoom(queryResponseMessage);
             insertMessageInFireBase(context, roomLastInsertedMessage);
-            listener.onMessageResponseReceived(queryResponseMessage);
+            if (listener != null) {
+              listener.onComplete(Result.withData(queryResponseMessage));
+            }
           }
 
           @Override
           public void onError(NetError error) {
-            listener.onNoResponseReceived(new Error(error.getErrorLocalizeMessage()));
+            if (listener != null) {
+              listener.onComplete(Result.exception(error));
+            }
           }
         });
 
@@ -324,12 +328,6 @@ public class MessageRepository {
         addMessages(messages);
       }
     });
-  }
-
-  public interface OnMessageResponseReceivedListener {
-    void onMessageResponseReceived(Message response);
-
-    void onNoResponseReceived(Error error);
   }
 
   /**

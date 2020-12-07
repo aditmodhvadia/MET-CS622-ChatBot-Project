@@ -5,16 +5,16 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel;
+import com.fazemeright.firebase_api_library.api.result.Result;
+import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLiveUpdates;
 
 public class SplashActivityViewModel extends BaseViewModel {
-  private final MutableLiveData<Boolean> _userAuthState = new MutableLiveData<>();
-  public LiveData<Boolean> userAuthState = _userAuthState;
+  private final MutableLiveData<Result<Boolean>> _userAuthState = new MutableLiveData<>();
+  public LiveData<Result<Boolean>> userAuthState = _userAuthState;
 
   public SplashActivityViewModel(@NonNull Application application) {
     super(application);
-    mMessageRepository.getUserAuthentication().reloadCurrentUserAuthState(
-        result -> _userAuthState.setValue(result.isSuccessful()));
+    mMessageRepository.getUserAuthentication()
+        .reloadCurrentUserAuthState(new ResultAdapterForBooleanLiveUpdates<>(_userAuthState));
   }
-
-
 }

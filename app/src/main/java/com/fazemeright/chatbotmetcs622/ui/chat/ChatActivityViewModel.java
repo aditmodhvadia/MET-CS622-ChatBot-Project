@@ -7,9 +7,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
-import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel;
 import com.fazemeright.firebase_api_library.api.result.Result;
+import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLiveUpdates;
 import java.util.List;
 
 public class ChatActivityViewModel extends BaseViewModel {
@@ -31,16 +31,6 @@ public class ChatActivityViewModel extends BaseViewModel {
 
   public void sendNewMessage(Context mContext, Message newMessage) {
     runOnThread(() -> mMessageRepository.newMessageSent(mContext, newMessage,
-        new MessageRepository.OnMessageResponseReceivedListener() {
-          @Override
-          public void onMessageResponseReceived(Message response) {
-            _messageSent.setValue(Result.withData(true));
-          }
-
-          @Override
-          public void onNoResponseReceived(Error error) {
-            _messageSent.setValue(Result.exception(new Exception(error.getMessage())));
-          }
-        }));
+        new ResultAdapterForBooleanLiveUpdates<>(_messageSent)));
   }
 }
