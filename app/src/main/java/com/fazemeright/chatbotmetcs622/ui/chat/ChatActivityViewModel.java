@@ -15,7 +15,6 @@ import java.util.List;
 public class ChatActivityViewModel extends BaseViewModel {
   private final MutableLiveData<Result<Boolean>> _messageSent = new MutableLiveData<>();
   public LiveData<Result<Boolean>> messageSent = _messageSent;
-  public LiveData<Message> messages;
 
   public ChatActivityViewModel(@NonNull Application application) {
     super(application);
@@ -25,10 +24,22 @@ public class ChatActivityViewModel extends BaseViewModel {
     return mMessageRepository.getMessagesForChatRoom(chatRoom);
   }
 
+  /**
+   * Clear all messages for the chat room
+   *
+   * @param chatRoom chat room
+   */
   public void clearAllChatRoomMessages(ChatRoom chatRoom) {
     runOnThread(() -> mMessageRepository.clearAllChatRoomMessages(chatRoom));
   }
 
+  /**
+   * Send new message.
+   * Store in local database
+   *
+   * @param mContext   context
+   * @param newMessage message
+   */
   public void sendNewMessage(Context mContext, Message newMessage) {
     runOnThread(() -> mMessageRepository.newMessageSent(mContext, newMessage,
         new ResultAdapterForBooleanLiveUpdates<>(_messageSent)));

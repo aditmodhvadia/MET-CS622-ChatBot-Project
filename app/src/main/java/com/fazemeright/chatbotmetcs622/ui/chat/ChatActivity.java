@@ -48,8 +48,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
       setUpSupportActionBar();
     }
 
-    String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
-    setupFilterKeywords(dataFilters);
+    setupFilterKeywords(getResources().getStringArray(R.array.query_sample_selection));
 
     adapter = new ChatListAdapter(mContext);
 
@@ -76,14 +75,20 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     });
   }
 
+  /**
+   * Set up the recyclerview.
+   */
   private void setUpRecyclerView() {
     rvChatList.setAdapter(adapter);
     rvChatList.setLayoutManager(getLinearLayoutManager());
     rvChatList.setHasFixedSize(true);
 //    Show user the most recent messages, hence scroll to the top
-    rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
+    rvChatList.scrollToPosition(adapter.getItemCount());
   }
 
+  /**
+   * Set up the support action bar
+   */
   private void setUpSupportActionBar() {
     if (getSupportActionBar() != null) {
       getSupportActionBar().setHomeButtonEnabled(true);
@@ -94,6 +99,11 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     }
   }
 
+  /**
+   * Get LinearLayoutManager for the recyclerview
+   *
+   * @return linear layout manager
+   */
   private LinearLayoutManager getLinearLayoutManager() {
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
     linearLayoutManager.setReverseLayout(true);
