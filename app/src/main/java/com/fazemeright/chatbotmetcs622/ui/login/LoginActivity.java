@@ -15,11 +15,17 @@ import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 import timber.log.Timber;
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity<LoginActivityViewModel>
+    implements View.OnClickListener {
 
   private EditText userEmailEditText, userPasswordEditText;
   private TextView tvDoNotHaveAccount;
   private Button btnLogin;
+
+  @Override
+  protected Class<LoginActivityViewModel> getViewModelClass() {
+    return LoginActivityViewModel.class;
+  }
 
   @Override
   public void initViews() {
@@ -91,13 +97,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     Timber.i("Login clicked");
-    messageRepository.getUserAuthentication().signInWithEmailAndPassword(
+    viewModel.mMessageRepository.getUserAuthentication().signInWithEmailAndPassword(
         email,
         password, userAuthResult -> {
           if (userAuthResult.isSuccessful()) {
             Timber.i(
                 "User logged in successfully %s",
-                messageRepository.getUserAuthentication().getCurrentUserEmail());
+                viewModel.mMessageRepository.getUserAuthentication().getCurrentUserEmail());
             btnLogin.setText(getString(R.string.login_success_msg));
             Intent intent = new Intent(mContext, FireBaseIntentService.class);
             intent.putExtra(
