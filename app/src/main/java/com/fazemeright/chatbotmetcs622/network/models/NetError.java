@@ -17,6 +17,21 @@ public class NetError extends Exception {
   private String requestName = "";
   private String responseErrorMessage;
 
+  /**
+   * Constructor.
+   *
+   * @param message message
+   */
+  public NetError(String message) {
+    super(message);
+    if (message == null) {
+      message = "Getting null error message.";
+    }
+    setErrorLocalizeMessage(message);
+    setErrorBody(message);
+    setErrorDetail(message);
+  }
+
   public String getResponseErrorMessage() {
     return responseErrorMessage;
   }
@@ -47,12 +62,22 @@ public class NetError extends Exception {
     return requestName;
   }
 
+  /**
+   * Set request name.
+   *
+   * @param requestName request name
+   */
   public void setRequestName(String requestName) {
     if (requestName != null) {
       this.requestName = requestName;
     }
   }
 
+  /**
+   * Get api request.
+   *
+   * @return api request
+   */
   public Object getApiRequest() {
     return apiRequest;
   }
@@ -65,25 +90,14 @@ public class NetError extends Exception {
     return errorLocalizeMessage;
   }
 
+  /**
+   * Set error localize message.
+   *
+   * @param errorLocalizeMessage message
+   */
   public void setErrorLocalizeMessage(String errorLocalizeMessage) {
     if (errorLocalizeMessage != null) {
       this.errorLocalizeMessage = errorLocalizeMessage;
-    }
-  }
-
-  public NetError(String message) {
-    super(message);
-    if (message == null) {
-      message = "Getting null error message.";
-    }
-    setErrorLocalizeMessage(message);
-    setErrorBody(message);
-    setErrorDetail(message);
-  }
-
-  public void setErrorDetail(String errorDetail) {
-    if (errorDetail != null) {
-      this.errorDetail = errorDetail;
     }
   }
 
@@ -91,18 +105,34 @@ public class NetError extends Exception {
     return this.errorDetail;
   }
 
-  public void setErrorCode(int errorCode) {
-    this.errorCode = errorCode;
+  /**
+   * Set error detail.
+   *
+   * @param errorDetail error detail
+   */
+  public void setErrorDetail(String errorDetail) {
+    if (errorDetail != null) {
+      this.errorDetail = errorDetail;
+    }
   }
 
   public int getErrorCode() {
     return this.errorCode;
   }
 
+  public void setErrorCode(int errorCode) {
+    this.errorCode = errorCode;
+  }
+
   public String getErrorBody() {
     return errorBody;
   }
 
+  /**
+   * Set error body.
+   *
+   * @param errorBody error body
+   */
   public void setErrorBody(String errorBody) {
     if (errorBody != null) {
       this.errorBody = errorBody;

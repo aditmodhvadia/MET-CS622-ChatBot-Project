@@ -1,4 +1,4 @@
-package com.fazemeright.chatbotmetcs622.database.messages;
+package com.fazemeright.chatbotmetcs622.database.message;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -30,7 +30,8 @@ public interface MessageDao extends BaseDao<Message> {
   void clearChatRoomMessages(long chatRoomId);
 
   @Query(
-      "SELECT * FROM my_messages_table WHERE chatRoomId = :chatRoomId ORDER BY timestamp DESC LIMIT 1")
+      "SELECT * FROM my_messages_table WHERE"
+          + " chatRoomId = :chatRoomId ORDER BY timestamp DESC LIMIT 1")
   Message getLatestMessage(long chatRoomId);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)

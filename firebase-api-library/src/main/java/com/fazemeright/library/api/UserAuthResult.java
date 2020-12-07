@@ -1,4 +1,4 @@
-package com.fazemeright.firebase_api_library.api;
+package com.fazemeright.library.api;
 
 import androidx.annotation.Nullable;
 

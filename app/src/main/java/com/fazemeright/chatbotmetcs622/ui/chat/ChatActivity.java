@@ -10,13 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.fazemeright.chatbotmetcs622.R;
-import com.fazemeright.chatbotmetcs622.database.messages.Message;
+import com.fazemeright.chatbotmetcs622.database.message.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import java.util.ArrayList;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import timber.log.Timber;
@@ -49,10 +48,9 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
       setUpSupportActionBar();
     }
 
-    String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
-    setupFilterKeywords(dataFilters);
+    setupFilterKeywords(getResources().getStringArray(R.array.query_sample_selection));
 
-    adapter = new ChatListAdapter(mContext);
+    adapter = new ChatListAdapter(context);
 
     setUpRecyclerView();
 
@@ -69,22 +67,28 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
         etMsg.setText("");
         rvChatList.scrollToPosition(adapter.getItemCount());
       } else {
-//        TODO: Show error to the user
+        // TODO: Show error to the user
         if (result.getException() != null) {
-          Toast.makeText(mContext, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
+          Toast.makeText(context, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
         }
       }
     });
   }
 
+  /**
+   * Set up the recyclerview.
+   */
   private void setUpRecyclerView() {
     rvChatList.setAdapter(adapter);
     rvChatList.setLayoutManager(getLinearLayoutManager());
     rvChatList.setHasFixedSize(true);
-//    Show user the most recent messages, hence scroll to the top
-    rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
+    // Show user the most recent messages, hence scroll to the top
+    rvChatList.scrollToPosition(adapter.getItemCount());
   }
 
+  /**
+   * Set up the support action bar.
+   */
   private void setUpSupportActionBar() {
     if (getSupportActionBar() != null) {
       getSupportActionBar().setHomeButtonEnabled(true);
@@ -95,15 +99,20 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     }
   }
 
+  /**
+   * Get LinearLayoutManager for the recyclerview.
+   *
+   * @return linear layout manager
+   */
   private LinearLayoutManager getLinearLayoutManager() {
-    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
+    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
     linearLayoutManager.setReverseLayout(true);
     linearLayoutManager.setStackFromEnd(true);
     return linearLayoutManager;
   }
 
   /**
-   * Use to setup chips for the given list of data filter for device usage
+   * Use to setup chips for the given list of data filter for device usage.
    *
    * @param dataFilters given array of data filter
    */
@@ -134,7 +143,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
 
   @NotNull
   private Chip getChip(final String dataFilter) {
-    return new Chip(Objects.requireNonNull(mContext)) {
+    return new Chip(Objects.requireNonNull(context)) {
       {
         setText(dataFilter);
         setClickable(true);
@@ -156,7 +165,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
   }
 
   /**
-   * Call to clear all message for the given ChatRoom
+   * Call to clear all message for the given ChatRoom.
    *
    * @param chatRoom given ChatRoom
    */
@@ -182,7 +191,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
   }
 
   /**
-   * User clicked send message. Show new message to user and pass it to repository
+   * User clicked send message. Show new message to user and pass it to repository.
    */
   private void sendMessageClicked() {
     String msg = etMsg.getText().toString().trim();
@@ -191,7 +200,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     }
     Message newMessage =
         Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
-    viewModel.sendNewMessage(mContext, newMessage);
+    viewModel.sendNewMessage(context, newMessage);
   }
 
   @Override

@@ -17,13 +17,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatActivity {
 
-  public Context mContext;
+  public Context context;
   protected T viewModel;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mContext = this;
+    context = this;
     viewModel = new ViewModelProvider(this).get(getViewModelClass());
     setContentView(getLayoutResId());
   }
@@ -31,14 +31,14 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
   protected abstract Class<T> getViewModelClass();
 
   @Override
-  public void setContentView(@LayoutRes int layoutResID) {
-    super.setContentView(layoutResID);
+  public void setContentView(@LayoutRes int layoutResId) {
+    super.setContentView(layoutResId);
     initViews();
     setListeners();
   }
 
   /**
-   * Call to hide soft keyboard
+   * Call to hide soft keyboard.
    *
    * @param activity calling activity
    */
@@ -56,6 +56,11 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
     }
   }
 
+  /**
+   * Call to show keyboard.
+   *
+   * @param view view
+   */
   public void showKeyBoard(View view) {
     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     if (imm != null) {
@@ -64,7 +69,7 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
   }
 
   /**
-   * Call to disable the given button
+   * Call to disable the given button.
    *
    * @param button given button
    */
@@ -73,7 +78,7 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
   }
 
   /**
-   * Call to enable the given button
+   * Call to enable the given button.
    *
    * @param button given button
    */
@@ -82,22 +87,27 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
   }
 
   /**
-   * Template method to initialize views of activity
+   * Template method to initialize views of activity.
    */
   public void initViews() {
   }
 
   /**
-   * Template method to set listeners of view or callback
+   * Template method to set listeners of view or callback.
    */
   public void setListeners() {
   }
 
   /**
-   * To get layout resource id
+   * To get layout resource id.
    */
   public abstract int getLayoutResId();
 
+  /**
+   * Determine if network is available and connected.
+   *
+   * @return <code>true</code> if connected, else <code>false</code>
+   */
   public boolean isNetworkConnected() {
     ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = null;
@@ -107,8 +117,13 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
     return networkInfo != null && networkInfo.isConnected();
   }
 
+  /**
+   * Get the activity context.
+   *
+   * @return context
+   */
   public Context getContext() {
-    return mContext;
+    return context;
   }
 
   @Override
@@ -131,9 +146,9 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
   }
 
   /**
-   * Template method to get Menu Resource Id
+   * Template method to get Menu Resource Id.
    *
-   * @return <code>0</code> if no menu item needed to inflate, else <code>override</code> by sub activity
+   * @return <code>0</code> if no menu item needed to inflate, else <code>override</code>.
    */
   public int getMenuId() {
     return 0;

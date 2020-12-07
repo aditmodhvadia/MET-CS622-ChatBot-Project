@@ -11,19 +11,17 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import com.fazemeright.chatbotmetcs622.R;
-import com.fazemeright.chatbotmetcs622.database.messages.Message;
+import com.fazemeright.chatbotmetcs622.database.message.Message;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 /**
- * RecyclerView Adapter to display Chat
+ * RecyclerView Adapter to display Chat.
  *
  * @see ChatActivity for use
  */
 public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.MessageViewHolder> {
 
-  static final int MOST_RECENT_MSG_POSITION = 0;
   private static final int TYPE_SENT = 0;
   private static final int TYPE_RECEIVED = 1;
   private final Context context;
@@ -45,7 +43,7 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
     } else if (isViewReceiveMessageType) { // for received message layout
       view = getInflatedLayout(viewGroup, R.layout.receiver_message_display_view_item);
     } else {
-      // TODO: Update with something else, like future message types. Currently will not result in this.
+      // TODO: Update with something else. Currently will not result in this.
       view = getInflatedLayout(viewGroup, R.layout.receiver_message_display_view_item);
     }
     return new MessageViewHolder(view);
@@ -56,6 +54,13 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
     holder.bind(getItem(position));
   }
 
+  /**
+   * Get inflated layout for the view holder item.
+   *
+   * @param viewGroup   view group
+   * @param layoutResId layout resource id
+   * @return inflated layout view
+   */
   private View getInflatedLayout(@NonNull ViewGroup viewGroup, @LayoutRes int layoutResId) {
     return LayoutInflater.from(context)
         .inflate(layoutResId, viewGroup, false);
@@ -71,35 +76,24 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
   }
 
   /**
-   * Call to remove all messages from the Data List and notify data set changed
+   * Call to remove all messages from the Data List and notify data set changed.
    */
   void clearAllMessages() {
     submitList(new ArrayList<>());
   }
 
+  /**
+   * Update list of messages.
+   *
+   * @param messages list of messages
+   */
   public void updateList(List<Message> messages) {
-//    TODO: Call submit list in ListAdapter
     submitList(messages);
   }
 
-  public interface ChatMessageInteractionListener {
-  }
-
-  /*public static class SentViewHolder extends MessageViewHolder {
-      SentViewHolder(@NonNull View itemView) {
-          super(itemView);
-      }
-  }
-
-  public static class ReceivedViewHolder extends MessageViewHolder {
-
-    ReceivedViewHolder(@NonNull View itemView) {
-      super(itemView);
-    }
-  }*/
-
   public static class MessageViewHolder extends RecyclerView.ViewHolder {
-    TextView tvMsg, tvTimestamp;
+    TextView tvMsg;
+    TextView tvTimestamp;
 
     MessageViewHolder(@NonNull View itemView) {
       super(itemView);
@@ -113,6 +107,9 @@ public class ChatListAdapter extends ListAdapter<Message, ChatListAdapter.Messag
     }
   }
 
+  /**
+   * Diff calculator callback.
+   */
   private static class MessageDiffCallback extends DiffUtil.ItemCallback<Message> {
     @Override
     public boolean areItemsTheSame(@NonNull Message oldItem, @NonNull Message newItem) {

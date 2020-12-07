@@ -1,10 +1,10 @@
-package com.fazemeright.firebase_api_library.api;
+package com.fazemeright.library.api;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
+import com.fazemeright.library.api.firebase.FireBaseUserAuthentication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

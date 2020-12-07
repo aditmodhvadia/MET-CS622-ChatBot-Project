@@ -1,7 +1,7 @@
 package com.fazemeright.chatbotmetcs622.network;
 
 import android.content.Context;
-import com.fazemeright.chatbotmetcs622.database.messages.Message;
+import com.fazemeright.chatbotmetcs622.database.message.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkWrapper;
@@ -17,6 +17,11 @@ public class ApiManager {
   private static ApiManager apiManager = null;
   private NetworkManager networkManager;
 
+  /**
+   * Get singleton instance.
+   *
+   * @return singleton instance
+   */
   public static ApiManager getInstance() {
     synchronized (ApiManager.class) {
       if (apiManager == null) {
@@ -37,7 +42,7 @@ public class ApiManager {
   }
 
   /**
-   * Call Query API to backend to fetch results for the given Message query
+   * Call Query API to backend to fetch results for the given Message query.
    *
    * @param context         context
    * @param newMessage      given message query
@@ -94,7 +99,7 @@ public class ApiManager {
   }
 
   /**
-   * DatabaseUrl module Api sub url
+   * DatabaseUrl module Api sub url.
    */
   static class DatabaseUrl {
     static final String MONGO_DB = "/mongodb";
@@ -104,12 +109,12 @@ public class ApiManager {
   }
 
   /**
-   * baseURL model for all the BASE URL addresses
+   * BaseURL model for all the BASE URL addresses.
    */
   public static class BaseUrl {
+    static final String BASE_APP_NAME = "/MET_CS622_ChatBot_Backend_war_exploded";
     static String BASE_URL =
         "http://192.168.43.28:8080"; //  Update the url as per your local ip address
-    static final String BASE_APP_NAME = "/MET_CS622_ChatBot_Backend_war_exploded";
 
     /**
      * Set the local IP address or the base url address for the server where the database back end
@@ -117,7 +122,7 @@ public class ApiManager {
      *
      * @param hostAddress ip address
      */
-    public static void setLocalIP(String hostAddress) {
+    public static void setLocalIp(String hostAddress) {
       BASE_URL = hostAddress;
     }
   }

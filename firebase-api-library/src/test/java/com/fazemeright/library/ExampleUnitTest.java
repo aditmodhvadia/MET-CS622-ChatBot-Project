@@ -1,4 +1,4 @@
-package com.fazemeright.firebase_api_library;
+package com.fazemeright.library;
 
 import org.junit.Test;
 

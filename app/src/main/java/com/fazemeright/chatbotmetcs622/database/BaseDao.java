@@ -4,6 +4,11 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Update;
 
+/**
+ * Class/Interface can extend to benefit from the basic CRUD operations supported.
+ *
+ * @param <T> Class/Interface
+ */
 public interface BaseDao<T> {
 
   /**
@@ -23,7 +28,7 @@ public interface BaseDao<T> {
   void update(T element);
 
   /**
-   * Delete an object from the database
+   * Delete an object from the database.
    *
    * @param element the object to be deleted
    */

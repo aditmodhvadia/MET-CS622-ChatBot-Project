@@ -17,15 +17,15 @@ import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 
 public abstract class BaseFragment extends Fragment {
 
-  public Context mContext;
+  public Context context;
   protected MessageRepository messageRepository;
   protected ApiManager apiManager;
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mContext = getActivity();
-    messageRepository = MessageRepository.getInstance(mContext);
+    context = getActivity();
+    messageRepository = MessageRepository.getInstance(context);
     apiManager = ApiManager.getInstance();
     apiManager.init(NetworkManager.getInstance());
   }
@@ -43,28 +43,32 @@ public abstract class BaseFragment extends Fragment {
   }
 
   /**
-   * To get layout resource id
+   * To get layout resource id.
    */
-  public abstract @LayoutRes
-  int getLayoutResId();
+  public abstract @LayoutRes int getLayoutResId();
 
   /**
-   * Template method to initialize views of activity
+   * Template method to initialize views of activity.
    */
   public void initViews(View view) {
   }
 
   /**
-   * Template method to set listeners of view or callback
+   * Template method to set listeners of view or callback.
    *
    * @param view view
    */
   public void setListeners(View view) {
   }
 
+  /**
+   * Determine if network is connected.
+   *
+   * @return <code>true</code> if connected, else <code>false</code>
+   */
   public boolean isNetworkConnected() {
     ConnectivityManager cm =
-        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = null;
     if (cm != null) {
       networkInfo = cm.getActiveNetworkInfo();
@@ -75,6 +79,6 @@ public abstract class BaseFragment extends Fragment {
   @Nullable
   @Override
   public Context getContext() {
-    return mContext;
+    return context;
   }
 }

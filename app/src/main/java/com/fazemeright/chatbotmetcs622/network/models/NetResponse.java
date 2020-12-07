@@ -3,7 +3,7 @@ package com.fazemeright.chatbotmetcs622.network.models;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Class for handling generic response
+ * Class for handling generic response.
  */
 public class NetResponse<T> {
 

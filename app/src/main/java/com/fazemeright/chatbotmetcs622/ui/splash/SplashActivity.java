@@ -22,7 +22,8 @@ import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
-  private TextView tvAppVersion, tvAppTitle;
+  private TextView tvAppVersion;
+  private TextView tvAppTitle;
 
   @Override
   protected Class<SplashActivityViewModel> getViewModelClass() {
@@ -31,7 +32,7 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
   @Override
   public void initViews() {
-    hideSystemUI();
+    hideSystemUi();
     tvAppVersion = findViewById(R.id.tvAppVersion);
     tvAppTitle = findViewById(R.id.tvAppTitle);
 
@@ -50,6 +51,9 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
     }), 400);
   }
 
+  /**
+   * Set up work manager request to sync message once daily.
+   */
   private void setUpWorkManagerRequest() {
     Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
     PeriodicWorkRequest saveRequest =
@@ -57,11 +61,11 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
             .setConstraints(constraints)
             .build();
 
-    WorkManager.getInstance(mContext).enqueue(saveRequest);
+    WorkManager.getInstance(context).enqueue(saveRequest);
   }
 
   /**
-   * Call to open RegistrationActivity from the current activity
+   * Call to open RegistrationActivity from the current activity.
    */
   private void openRegistrationActivity() {
     startAnimationOnViews(R.anim.fade_out);
@@ -70,6 +74,11 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
     finish();
   }
 
+  /**
+   * Run given animation on all the views.
+   *
+   * @param animationId animation resource id
+   */
   private void startAnimationOnViews(@AnimRes int animationId) {
     Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), animationId);
     tvAppVersion.startAnimation(animFadeOut);
@@ -77,7 +86,7 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
   }
 
   /**
-   * Open LandingActivity and finish this one
+   * Open LandingActivity and finish this one.
    */
   private void openLandingActivity() {
     startAnimationOnViews(R.anim.fade_out);
@@ -87,32 +96,28 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
   }
 
   /**
-   * Call to get the version of the Application
+   * Call to get the version of the Application.
    *
    * @return version name of the application
    */
   private String getAppVersion() {
-    PackageInfo pInfo;
+    PackageInfo packageInfo;
     try {
-      pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-      return pInfo.versionName;
+      packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+      return packageInfo.versionName;
     } catch (PackageManager.NameNotFoundException e) {
       return "beta-testing";
     }
   }
 
   /**
-   * Makes the screen layout to cover the full display of the device
+   * Makes the screen layout to cover the full display of the device.
    */
-  private void hideSystemUI() {
+  private void hideSystemUi() {
     getWindow()
         .setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-  }
-
-  @Override
-  public void setListeners() {
   }
 
   @Override

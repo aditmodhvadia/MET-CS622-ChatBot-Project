@@ -1,11 +1,11 @@
-package com.fazemeright.firebase_api_library.api.firebase;
+package com.fazemeright.library.api.firebase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.fazemeright.firebase_api_library.api.UserAuthResult;
-import com.fazemeright.firebase_api_library.api.UserAuthentication;
-import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
+import com.fazemeright.library.api.UserAuthResult;
+import com.fazemeright.library.api.UserAuthentication;
+import com.fazemeright.library.api.result.Result;
+import com.fazemeright.library.listeners.OnTaskCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,9 +14,13 @@ import java.util.Objects;
 
 public class FireBaseUserAuthentication implements UserAuthentication {
   private static FireBaseUserAuthentication mInstance;
-  private final String TAG = FireBaseUserAuthentication.class.getSimpleName();
 
-  public synchronized static FireBaseUserAuthentication getInstance() {
+  /**
+   * Get singleton instance.
+   *
+   * @return instance
+   */
+  public static synchronized FireBaseUserAuthentication getInstance() {
     if (mInstance == null) {
       mInstance = new FireBaseUserAuthentication();
     }
@@ -36,7 +40,8 @@ public class FireBaseUserAuthentication implements UserAuthentication {
   @Override
   public void createNewUserWithEmailPassword(@NonNull String userEmail, @NonNull String password,
                                              @Nullable
-                                                 OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener) {
+                                                 OnTaskCompleteListener<UserAuthResult>
+                                                 onTaskCompleteListener) {
     Task<AuthResult> createUserTask =
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(userEmail, password);
     if (onTaskCompleteListener != null) {
@@ -48,7 +53,8 @@ public class FireBaseUserAuthentication implements UserAuthentication {
   @Override
   public void signInWithEmailAndPassword(@NonNull String userEmail, @NonNull String password,
                                          @Nullable
-                                             OnTaskCompleteListener<UserAuthResult> onTaskCompleteListener) {
+                                             OnTaskCompleteListener<UserAuthResult>
+                                             onTaskCompleteListener) {
     Task<AuthResult> signInTask =
         FirebaseAuth.getInstance().signInWithEmailAndPassword(userEmail, password);
     if (onTaskCompleteListener != null) {

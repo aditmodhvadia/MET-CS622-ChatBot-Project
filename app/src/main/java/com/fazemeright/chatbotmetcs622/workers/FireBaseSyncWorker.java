@@ -19,7 +19,7 @@ public class FireBaseSyncWorker extends Worker {
   }
 
   /**
-   * Sync messages from local to cloud, and then from cloud to local
+   * Sync messages from local to cloud, and then from cloud to local.
    */
   private void syncMessagesWithCloudAndLocal() {
     final MessageRepository messageRepository =

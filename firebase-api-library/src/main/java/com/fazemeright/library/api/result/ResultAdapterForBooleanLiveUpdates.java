@@ -1,23 +1,23 @@
-package com.fazemeright.firebase_api_library.api.result;
+package com.fazemeright.library.api.result;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
+import com.fazemeright.library.listeners.OnTaskCompleteListener;
 
 public class ResultAdapterForBooleanLiveUpdates<T> implements OnTaskCompleteListener<T> {
-  private final MutableLiveData<Result<Boolean>> _mutableLiveData;
+  private final MutableLiveData<Result<Boolean>> mutableLiveData;
 
   public ResultAdapterForBooleanLiveUpdates(
       MutableLiveData<Result<Boolean>> mutableLiveData) {
-    _mutableLiveData = mutableLiveData;
+    this.mutableLiveData = mutableLiveData;
   }
 
   @Override
   public void onComplete(@NonNull TaskResult<T> task) {
     if (task.isSuccessful()) {
-      _mutableLiveData.setValue(Result.withData(true));
+      mutableLiveData.setValue(Result.withData(true));
     } else {
-      _mutableLiveData.setValue(Result.exception(task.getException()));
+      mutableLiveData.setValue(Result.exception(task.getException()));
     }
   }
 }

@@ -5,7 +5,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
-import com.fazemeright.chatbotmetcs622.database.messages.Message;
+import com.fazemeright.chatbotmetcs622.database.message.Message;
 import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
@@ -14,17 +14,20 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
-import com.fazemeright.firebase_api_library.api.DatabaseStore;
-import com.fazemeright.firebase_api_library.api.UserAuthentication;
-import com.fazemeright.firebase_api_library.api.firebase.FireBaseDatabaseStore;
-import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
-import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
+import com.fazemeright.library.api.DatabaseStore;
+import com.fazemeright.library.api.Storable;
+import com.fazemeright.library.api.UserAuthResult;
+import com.fazemeright.library.api.UserAuthentication;
+import com.fazemeright.library.api.firebase.FireBaseDatabaseStore;
+import com.fazemeright.library.api.firebase.FireBaseUserAuthentication;
+import com.fazemeright.library.api.result.Result;
+import com.fazemeright.library.listeners.OnTaskCompleteListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import timber.log.Timber;
 
@@ -46,7 +49,7 @@ public class MessageRepository {
   }
 
   /**
-   * Call to get instance of MessageRepository with the given context
+   * Call to get instance of MessageRepository with the given context.
    *
    * @param context given context
    * @return synchronized call to get Instance of MessageRepository class
@@ -67,15 +70,11 @@ public class MessageRepository {
     return repository;
   }
 
-  public UserAuthentication getUserAuthentication() {
-    return this.userAuthentication;
-  }
-
   /**
-   * Call to insert given message into database with thread safety
+   * Call to insert given message into database with thread safety.
    *
    * @param newMessage given project
-   * @param listener
+   * @param listener   task completion listener
    */
   private void insertMessageInRoom(Message newMessage,
                                    @Nullable OnTaskCompleteListener<Message> listener) {
@@ -88,17 +87,26 @@ public class MessageRepository {
     }
   }
 
+  /**
+   * Register new user and store the details.
+   *
+   * @param userEmail              email
+   * @param password               password
+   * @param firstName              first name
+   * @param lastName               last name
+   * @param onTaskCompleteListener task completion listener
+   */
   public void createNewUserAndStoreDetails(final String userEmail,
                                            final String password,
                                            final String firstName,
                                            final String lastName,
-                                           @Nullable
-                                           final OnTaskCompleteListener<Void> onTaskCompleteListener) {
+                                           @Nullable final OnTaskCompleteListener<Void>
+                                               onTaskCompleteListener) {
     userAuthentication.createNewUserWithEmailPassword(userEmail, password, result -> {
       if (result.isSuccessful()) {
-        Map<String, Object> userProfile = getMapFromUserDetails(userEmail, firstName, lastName);
         onlineDatabaseStore.storeUserData(
-            Objects.requireNonNull(userAuthentication.getCurrentUserUid()), userProfile);
+            Objects.requireNonNull(userAuthentication.getCurrentUserUid()),
+            getStorableFromUserDetails(userEmail, firstName, lastName));
         onTaskCompleteListener.onComplete(Result.nullResult());
       } else {
         onTaskCompleteListener.onComplete(Result.exception(result.getException()));
@@ -107,17 +115,28 @@ public class MessageRepository {
   }
 
   @NonNull
-  private Map<String, Object> getMapFromUserDetails(String userEmail, String firstName,
-                                                    String lastName) {
-    Map<String, Object> userProfile = new HashMap<>();
-    userProfile.put("emailAddress", userEmail);
-    userProfile.put("firstName", firstName);
-    userProfile.put("lastName", lastName);
-    return userProfile;
+  private Storable getStorableFromUserDetails(String userEmail, String firstName,
+                                              String lastName) {
+    return new Storable() {
+      @Nonnull
+      @Override
+      public Map<String, Object> getHashMap() {
+        Map<String, Object> userProfile = new HashMap<>();
+        userProfile.put("emailAddress", userEmail);
+        userProfile.put("firstName", firstName);
+        userProfile.put("lastName", lastName);
+        return userProfile;
+      }
+
+      @Override
+      public long getId() {
+        return 0;
+      }
+    };
   }
 
   /**
-   * Call to update given project into database with thread safety
+   * Call to update given project into database with thread safety.
    *
    * @param oldMessage given project
    */
@@ -127,7 +146,7 @@ public class MessageRepository {
   }
 
   /**
-   * Call to get Message with given Message ID
+   * Call to get Message with given Message ID.
    *
    * @param messageId given Message ID
    * @return Message with given ID
@@ -137,7 +156,7 @@ public class MessageRepository {
   }
 
   /**
-   * Call to delete message with given message
+   * Call to delete message with given message.
    *
    * @param message given Message
    */
@@ -145,7 +164,12 @@ public class MessageRepository {
     runOnThread(() -> database.messageDao().deleteItem(message));
   }
 
-
+  /**
+   * Get messages from the given chat room.
+   *
+   * @param chatRoom chat room
+   * @return List of Messages
+   */
   public LiveData<List<Message>> getMessagesForChatRoom(ChatRoom chatRoom) {
     return getChatRoomMessagesFromDatabase(chatRoom);
   }
@@ -156,7 +180,7 @@ public class MessageRepository {
 
   /**
    * Called when user sends a given new message in the ChatRoom - Add new Message to Room - Call API
-   * to fetch answer for new message - Sync message with FireStore
+   * to fetch answer for new message - Sync message with FireStore.
    *
    * @param newMessage given new message
    */
@@ -200,7 +224,7 @@ public class MessageRepository {
   }
 
   /**
-   * Call to insert the given new message to FireStore database
+   * Call to insert the given new message to FireStore database.
    *
    * @param context    context
    * @param newMessage given new message
@@ -213,12 +237,17 @@ public class MessageRepository {
     context.startService(intent);
   }
 
+  /**
+   * Get all messages stored inside local database.
+   *
+   * @return <code>List</code> of  messages
+   */
   public ArrayList<Message> getAllMessages() {
     return (ArrayList<Message>) database.messageDao().getAllMessages();
   }
 
   /**
-   * Clear all given chat room messages - From Room - From FireStore
+   * Clear all given chat room messages - From Room - From FireStore.
    *
    * @param chatRoom given chat room
    */
@@ -227,7 +256,7 @@ public class MessageRepository {
   }
 
   /**
-   * Call to logout user and clear all messages from Room
+   * Call to logout user and clear all messages from Room.
    */
   public void logOutUser() {
     userAuthentication.signOutUser();
@@ -235,14 +264,14 @@ public class MessageRepository {
   }
 
   /**
-   * Call to clear all messages from Room
+   * Call to clear all messages from Room.
    */
   private void clearAllMessages() {
     database.messageDao().clear();
   }
 
   /**
-   * Add given list of messages to Room
+   * Add given list of messages to Room.
    */
   public void addMessagesToLocal(List<Message> messages) {
     runOnThread(() -> database.messageDao().insertAllMessages(messages));
@@ -253,28 +282,28 @@ public class MessageRepository {
   }
 
   /**
-   * Call to add the given message to FireStore
+   * Call to add the given message to FireStore.
    *
-   * @param messageHashMap given message converted into HashMap
+   * @param message given message
    */
-  public void addMessageToFireBase(Map<String, Object> messageHashMap) {
+  public void addMessageToFireBase(Message message) {
     this.onlineDatabaseStore
-        .storeMessage(messageHashMap, this.userAuthentication.getCurrentUserUid());
+        .storeMessage(message, this.userAuthentication.getCurrentUserUid());
   }
 
   /**
-   * Call to add the given messages to FireStore
+   * Call to add the given messages to FireStore.
    *
    * @param messageList given messages list
    */
   public void addMessagesToFireBase(List<Message> messageList) {
     for (Message message : messageList) {
-      this.addMessageToFireBase(Message.getHashMap(message));
+      this.addMessageToFireBase(message);
     }
   }
 
   /**
-   * Call to sync messages from FireStore to Room for the logged in user
+   * Call to sync messages from FireStore to Room for the logged in user.
    */
   public void syncMessagesFromFireStoreToRoom() {
     onlineDatabaseStore.getAllMessagesForUser(userAuthentication.getCurrentUserUid(), result -> {
@@ -287,5 +316,37 @@ public class MessageRepository {
         addMessagesToLocal(messages);
       }
     });
+  }
+
+  /**
+   * Get user name of the current user.
+   *
+   * @return user name
+   */
+  @Nullable
+  public String getUserName() {
+    return userAuthentication.getUserName();
+  }
+
+  /**
+   * Sign in user with email and password.
+   *
+   * @param email    email
+   * @param password password
+   * @param listener task completion listener`
+   */
+  public void signInWithEmailAndPassword(String email, String password,
+                                         OnTaskCompleteListener<UserAuthResult> listener) {
+    userAuthentication.signInWithEmailAndPassword(email, password, listener);
+  }
+
+  /**
+   * Reload the current user authentication state.
+   *
+   * @param listener listener for updates
+   */
+  public void reloadCurrentUserAuthState(
+      OnTaskCompleteListener<Void> listener) {
+    userAuthentication.reloadCurrentUserAuthState(listener);
   }
 }

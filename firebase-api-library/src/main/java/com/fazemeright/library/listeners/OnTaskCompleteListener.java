@@ -1,7 +1,7 @@
-package com.fazemeright.firebase_api_library.listeners;
+package com.fazemeright.library.listeners;
 
 import androidx.annotation.NonNull;
-import com.fazemeright.firebase_api_library.api.result.TaskResult;
+import com.fazemeright.library.api.result.TaskResult;
 
 /**
  * Functional Callback for all tasks.

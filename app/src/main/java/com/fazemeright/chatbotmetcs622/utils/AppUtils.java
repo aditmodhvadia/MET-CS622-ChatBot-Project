@@ -6,7 +6,7 @@ import android.util.Patterns;
 public class AppUtils {
 
   /**
-   * Call to check validity of given email address
+   * Call to check validity of given email address.
    *
    * @param email given email address
    * @return <code>true</code> if given email is valid, else <code>false</code>
@@ -16,7 +16,7 @@ public class AppUtils {
   }
 
   /**
-   * Call to check if given password is valid i.e. it is longer than 7 characters
+   * Call to check if given password is valid i.e. it is longer than 7 characters.
    *
    * @param password given password
    * @return <code>true</code> if given password is valid, else <code>false</code>
@@ -26,7 +26,7 @@ public class AppUtils {
   }
 
   /**
-   * Call to check if given password match or not
+   * Call to check if given password match or not.
    *
    * @param password    given password
    * @param conPassword given confirm password
@@ -37,7 +37,7 @@ public class AppUtils {
   }
 
   /**
-   * Call to check if given name is valid or not. It should not be empty
+   * Call to check if given name is valid or not. It should not be empty.
    *
    * @param name given name
    * @return <code>true</code> if given name is valid, else <code>false</code>

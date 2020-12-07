@@ -1,6 +1,6 @@
-package com.fazemeright.firebase_api_library.api.firebase;
+package com.fazemeright.library.api.firebase;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -26,13 +26,6 @@ public class FireBaseDatabaseStoreTest {
   @After
   public void tearDown() {
     databaseStore = null;
-  }
-
-  @Test
-  public void joinPath() {
-    assertEquals("users/userid", databaseStore.joinPath("users", "userid"));
-    assertEquals("users/userid/messages/messageid",
-        databaseStore.joinPath("users", "userid", "messages", "messageid"));
   }
 
   @Test
