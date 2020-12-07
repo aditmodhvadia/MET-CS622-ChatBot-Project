@@ -17,4 +17,8 @@ public abstract class BaseViewModel extends AndroidViewModel {
     apiManager = ApiManager.getInstance();
     apiManager.init(NetworkManager.getInstance());
   }
+
+  public void runOnThread(Runnable runnable) {
+    new Thread(runnable).start();
+  }
 }
