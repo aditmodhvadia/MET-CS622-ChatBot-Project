@@ -3,7 +3,6 @@ package com.fazemeright.chatbotmetcs622.ui.chat;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -21,7 +20,8 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public class ChatActivity extends BaseActivity implements View.OnClickListener {
+public class ChatActivity extends BaseActivity<ChatActivityViewModel>
+    implements View.OnClickListener {
 
   private RecyclerView rvChatList;
   private ChatListAdapter adapter;
@@ -29,6 +29,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
   private ImageView ivSendMsg;
   private ChatRoom chatRoom;
   private ChipGroup dataFilterChipGroup;
+
+  @Override
+  protected Class<ChatActivityViewModel> getViewModelClass() {
+    return ChatActivityViewModel.class;
+  }
 
   @Override
   public void initViews() {
@@ -46,7 +51,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
     setupFilterKeywords(dataFilters);
 
-    adapter = new ChatListAdapter(messageRepository.getMessagesForChatRoom(chatRoom), mContext);
+    adapter = new ChatListAdapter(viewModel.mMessageRepository.getMessagesForChatRoom(chatRoom),
+        mContext);
 
     rvChatList.setAdapter(adapter);
     rvChatList.setLayoutManager(getLinearLayoutManager());
@@ -89,15 +95,12 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         Chip chip = getChip(dataFilter);
         dataFilterChipGroup.addView(chip); // add chip to ChipGroup
         chip.setOnCheckedChangeListener(
-            new CompoundButton.OnCheckedChangeListener() {
-              @Override
-              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                  etMsg.requestFocus();
-                  etMsg.setText(buttonView.getText().toString());
-                  etMsg.setSelection(buttonView.getText().toString().length());
-                  showKeyBoard(etMsg);
-                }
+            (buttonView, isChecked) -> {
+              if (isChecked) {
+                etMsg.requestFocus();
+                etMsg.setText(buttonView.getText().toString());
+                etMsg.setSelection(buttonView.getText().toString().length());
+                showKeyBoard(etMsg);
               }
             });
       }
@@ -119,13 +122,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        onBackPressed();
-        break;
-      case R.id.action_clear:
-        clearChatRoomMessagesClicked(chatRoom);
-        break;
+    int itemId = item.getItemId();
+    if (itemId == android.R.id.home) {
+      onBackPressed();
+    } else if (itemId == R.id.action_clear) {
+      clearChatRoomMessagesClicked(chatRoom);
     }
     return super.onOptionsItemSelected(item);
   }
@@ -136,7 +137,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
    * @param chatRoom given ChatRoom
    */
   private void clearChatRoomMessagesClicked(ChatRoom chatRoom) {
-    messageRepository.clearAllChatRoomMessages(chatRoom);
+    viewModel.mMessageRepository.clearAllChatRoomMessages(chatRoom);
     adapter.clearAllMessages();
   }
 
@@ -169,7 +170,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
     addMessageToAdapter(newMessage);
     //        send new message to repository
-    messageRepository.newMessageSent(
+    viewModel.mMessageRepository.newMessageSent(
         mContext,
         newMessage,
         new MessageRepository.OnMessageResponseReceivedListener() {
