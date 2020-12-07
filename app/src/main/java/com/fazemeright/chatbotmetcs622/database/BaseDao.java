@@ -12,7 +12,7 @@ public interface BaseDao<T> {
    * @param element the object to be inserted.
    */
   @Insert
-  void insert(T element);
+  T insert(T element);
 
   /**
    * Update an object from the database.
