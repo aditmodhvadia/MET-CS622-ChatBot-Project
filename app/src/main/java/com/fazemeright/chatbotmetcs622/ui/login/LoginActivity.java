@@ -15,11 +15,17 @@ import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
 import timber.log.Timber;
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity<LoginActivityViewModel>
+    implements View.OnClickListener {
 
   private EditText userEmailEditText, userPasswordEditText;
   private TextView tvDoNotHaveAccount;
   private Button btnLogin;
+
+  @Override
+  protected Class<LoginActivityViewModel> getViewModelClass() {
+    return LoginActivityViewModel.class;
+  }
 
   @Override
   public void initViews() {
@@ -29,6 +35,24 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     userPasswordEditText = findViewById(R.id.userPasswordEditText);
     tvDoNotHaveAccount = findViewById(R.id.tvDontHaveAccount);
     btnLogin = findViewById(R.id.btnLogin);
+
+    viewModel.userSignedIn.observe(this, userSignedIn -> {
+      setLoginSuccessInButton();
+      startMessageSyncWithCloud();
+      openLandingActivity();
+    });
+  }
+
+  private void startMessageSyncWithCloud() {
+    Intent intent = new Intent(mContext, FireBaseIntentService.class);
+    intent.putExtra(
+        FireBaseIntentService.Actions.ACTION,
+        FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
+    ContextCompat.startForegroundService(mContext, intent);
+  }
+
+  private void setLoginSuccessInButton() {
+    btnLogin.setText(getString(R.string.login_success_msg));
   }
 
   private void setUpSupportActionBar() {
@@ -91,24 +115,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     Timber.i("Login clicked");
-    messageRepository.getUserAuthentication().signInWithEmailAndPassword(
+    viewModel.signInWithEmailPassword(
         email,
-        password, userAuthResult -> {
-          if (userAuthResult.isSuccessful()) {
-            Timber.i(
-                "User logged in successfully %s",
-                messageRepository.getUserAuthentication().getCurrentUserEmail());
-            btnLogin.setText(getString(R.string.login_success_msg));
-            Intent intent = new Intent(mContext, FireBaseIntentService.class);
-            intent.putExtra(
-                FireBaseIntentService.Actions.ACTION,
-                FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
-            ContextCompat.startForegroundService(mContext, intent);
-            openLandingActivity();
-          } else {
-            Timber.e(userAuthResult.getException());
-          }
-        });
+        password);
   }
 
   /**

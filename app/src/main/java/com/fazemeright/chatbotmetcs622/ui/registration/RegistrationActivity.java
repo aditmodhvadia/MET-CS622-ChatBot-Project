@@ -10,9 +10,9 @@ import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
-import timber.log.Timber;
 
-public class RegistrationActivity extends BaseActivity implements View.OnClickListener {
+public class RegistrationActivity extends BaseActivity<RegistrationActivityViewModel>
+    implements View.OnClickListener {
 
   private EditText userEmailEditText,
       userPasswordEditText,
@@ -21,6 +21,11 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       etLastName;
   private TextView tvHaveAccount;
   private Button btnRegister;
+
+  @Override
+  protected Class<RegistrationActivityViewModel> getViewModelClass() {
+    return RegistrationActivityViewModel.class;
+  }
 
   @Override
   public void initViews() {
@@ -33,6 +38,13 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
     userConPasswordEditText = findViewById(R.id.userConPasswordEditText);
     tvHaveAccount = findViewById(R.id.tvHaveAccount);
     btnRegister = findViewById(R.id.btnRegister);
+
+    viewModel.userRegistered.observe(this, userRegistered -> {
+      if (userRegistered) {
+        btnRegister.setText(getString(R.string.registration_success_msg));
+        openLandingActivity();
+      }
+    });
   }
 
   private void setUpSupportActionBar() {
@@ -127,23 +139,11 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
       return;
     }
 
-    messageRepository.createNewUserAndStoreDetails(
+    viewModel.registerNewUser(
         email,
         password,
         firstName,
-        lastName,
-        result -> {
-          if (result.isSuccessful()) {
-            Timber.i(
-                "New user registered successfully %s",
-                messageRepository.getUserAuthentication().getCurrentUserEmail());
-            btnRegister.setText(getString(R.string.registration_success_msg));
-            openLandingActivity();
-
-          } else {
-            Timber.e(result.getException());
-          }
-        });
+        lastName);
   }
 
   /**

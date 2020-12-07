@@ -20,9 +20,14 @@ import com.fazemeright.chatbotmetcs622.workers.FireBaseSyncWorker;
 import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
   private TextView tvAppVersion, tvAppTitle;
+
+  @Override
+  protected Class<SplashActivityViewModel> getViewModelClass() {
+    return SplashActivityViewModel.class;
+  }
 
   @Override
   public void initViews() {
@@ -34,20 +39,15 @@ public class SplashActivity extends BaseActivity {
 
     startAnimationOnViews(R.anim.fade_in);
 
-    new Handler().postDelayed(this::determineIfUserIsLoggedIn, 800);
-  }
-
-  private void determineIfUserIsLoggedIn() {
-    messageRepository.getUserAuthentication().reloadCurrentUserAuthState(
-        result -> {
-          if (result.isSuccessful()) {
-            setUpWorkManagerRequest();
-            openLandingActivity();
-          } else {
-            Timber.i("Open Registration Activity");
-            openRegistrationActivity();
-          }
-        });
+    new Handler().postDelayed(() -> viewModel.userAuthState.observe(this, userAuthState -> {
+      if (userAuthState) {
+        setUpWorkManagerRequest();
+        openLandingActivity();
+      } else {
+        Timber.i("Open Registration Activity");
+        openRegistrationActivity();
+      }
+    }), 800);
   }
 
   private void setUpWorkManagerRequest() {

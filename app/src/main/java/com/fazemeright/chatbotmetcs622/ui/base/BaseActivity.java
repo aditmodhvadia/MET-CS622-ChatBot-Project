@@ -13,25 +13,22 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.MenuRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.fazemeright.chatbotmetcs622.network.ApiManager;
-import com.fazemeright.chatbotmetcs622.network.NetworkManager;
-import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
+import androidx.lifecycle.ViewModelProvider;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatActivity {
 
   public Context mContext;
-  protected MessageRepository messageRepository;
-  protected ApiManager apiManager;
+  protected T viewModel;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = this;
-    messageRepository = MessageRepository.getInstance(mContext);
-    apiManager = ApiManager.getInstance();
-    apiManager.init(NetworkManager.getInstance());
+    viewModel = new ViewModelProvider(this).get(getViewModelClass());
     setContentView(getLayoutResId());
   }
+
+  protected abstract Class<T> getViewModelClass();
 
   @Override
   public void setContentView(@LayoutRes int layoutResID) {

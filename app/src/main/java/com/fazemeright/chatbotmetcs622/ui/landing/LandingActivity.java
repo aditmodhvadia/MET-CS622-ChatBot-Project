@@ -14,7 +14,7 @@ import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity;
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
 import java.util.ArrayList;
 
-public class LandingActivity extends BaseActivity
+public class LandingActivity extends BaseActivity<LandingActivityViewModel>
     implements ChatSelectionListAdapter.ChatListInteractionListener {
 
   public static final String SELECTED_CHAT_ROOM = "chatRoomSelected";
@@ -22,10 +22,16 @@ public class LandingActivity extends BaseActivity
   private ChatSelectionListAdapter adapter;
 
   @Override
+  protected Class<LandingActivityViewModel> getViewModelClass() {
+    return LandingActivityViewModel.class;
+  }
+
+  @Override
   public void initViews() {
     if (getSupportActionBar() != null) {
-      String firstName = messageRepository.getUserAuthentication().getUserName() != null ?
-          messageRepository.getUserAuthentication().getUserName() : "Adit";
+      String firstName =
+          viewModel.getUserName() != null ?
+              viewModel.getUserName() : "Adit";
       getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + firstName);
     }
 
@@ -63,7 +69,7 @@ public class LandingActivity extends BaseActivity
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     if (item.getItemId() == R.id.action_logout) {
-      logoutUser();
+      viewModel.logOutUser();
       openRegistrationActivity();
       return true;
     }
@@ -74,14 +80,6 @@ public class LandingActivity extends BaseActivity
   private void openRegistrationActivity() {
     startActivity(new Intent(LandingActivity.this, RegistrationActivity.class));
     finish();
-  }
-
-  private void logoutUser() {
-    messageRepository.logOutUser();
-  }
-
-  @Override
-  public void setListeners() {
   }
 
   @Override
