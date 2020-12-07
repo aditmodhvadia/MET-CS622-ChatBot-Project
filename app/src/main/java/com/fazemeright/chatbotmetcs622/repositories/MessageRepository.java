@@ -2,12 +2,10 @@ package com.fazemeright.chatbotmetcs622.repositories;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
-import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
 import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.ApiManager;
@@ -27,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import javax.annotation.Nullable;
 import timber.log.Timber;
 
@@ -74,25 +71,21 @@ public class MessageRepository {
     return this.userAuthentication;
   }
 
-  public DatabaseStore getOnlineDatabaseStore() {
-    return this.onlineDatabaseStore;
-  }
-
   /**
    * Call to insert given message into database with thread safety
    *
    * @param newMessage given project
-   * @return inserted message
+   * @param listener
    */
-  private Message insertMessageInRoom(Message newMessage) {
-    //        insert into Room using AsyncTask
+  private void insertMessageInRoom(Message newMessage,
+                                   @Nullable OnTaskCompleteListener<Message> listener) {
     Timber.i("Insert message in Room called%s", newMessage.getMsg());
-    try {
-      return new InsertAsyncTask(database.messageDao()).execute(newMessage).get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
+    database.messageDao().insert(newMessage);
+    Message insertedMsg = database.messageDao().getLatestMessage(newMessage.getChatRoomId());
+
+    if (listener != null) {
+      listener.onComplete(Result.withData(insertedMsg));
     }
-    return newMessage;
   }
 
   public void createNewUserAndStoreDetails(final String userEmail,
@@ -130,7 +123,7 @@ public class MessageRepository {
    */
   private void updateMessage(Message oldMessage) {
     //        insert into Room using AsyncTask
-    new UpdateAsyncTask(database.messageDao()).execute(oldMessage);
+    database.messageDao().update(oldMessage);
   }
 
   /**
@@ -140,45 +133,18 @@ public class MessageRepository {
    * @return Message with given ID
    */
   public Message getMessage(long messageId) {
-    return fetchMessage(messageId);
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   /**
-   * Call to get Message with given Message ID with thread safety
+   * Call to delete message with given message
    *
-   * @param messageId given Message ID
-   * @return Message with given ID
+   * @param message given Message
    */
-  private Message fetchMessage(long messageId) {
-    try {
-      return new FetchMessageAsyncTask(database.messageDao()).execute(messageId).get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public void deleteMessage(Message message) {
+    runOnThread(() -> database.messageDao().deleteItem(message));
   }
 
-  /**
-   * Call to delete project with given project
-   *
-   * @param project given Message
-   */
-  public void deleteMessage(Message project) {
-    deleteMessageFromRoom(project);
-  }
-
-  /**
-   * Delete given Message from Room with Thread Safety
-   *
-   * @param project given Message
-   */
-  private void deleteMessageFromRoom(Message project) {
-    try {
-      new DeleteMessageAsyncTask(database.messageDao()).execute(project).get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
 
   public LiveData<List<Message>> getMessagesForChatRoom(ChatRoom chatRoom) {
     return getChatRoomMessagesFromDatabase(chatRoom);
@@ -186,13 +152,6 @@ public class MessageRepository {
 
   private LiveData<List<Message>> getChatRoomMessagesFromDatabase(ChatRoom chatRoom) {
     return database.messageDao().getAllMessagesFromChatRoomLive(chatRoom.getId());
-    /*try {
-      return (ArrayList<Message>)
-          new FetchChatRoomMessagesAsyncTask(database.messageDao()).execute(chatRoom).get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-      return new ArrayList<>();
-    }*/
   }
 
   /**
@@ -205,37 +164,39 @@ public class MessageRepository {
       final Context context,
       final Message newMessage,
       @Nullable final OnTaskCompleteListener<Message> listener) {
-    final Message roomLastMessage = insertMessageInRoom(newMessage);
-    insertMessageInFireBase(context, roomLastMessage);
-    apiManager.queryDatabase(
-        context,
-        newMessage,
-        new NetworkCallback<QueryResponseMessage>() {
-          @Override
-          public void onSuccess(NetResponse<QueryResponseMessage> response) {
-            Message queryResponseMessage =
-                Message.newMessage(
-                    response.getResponse().getData().getResponseMsg(),
-                    newMessage.getReceiver(),
-                    newMessage.getSender(),
-                    newMessage.getChatRoomId());
+    insertMessageInRoom(newMessage, result -> {
+      final Message roomLastMessage = result.getData();
+      insertMessageInFireBase(context, roomLastMessage);
+      apiManager.queryDatabase(
+          context,
+          newMessage,
+          new NetworkCallback<QueryResponseMessage>() {
+            @Override
+            public void onSuccess(NetResponse<QueryResponseMessage> response) {
+              Message queryResponseMessage =
+                  Message.newMessage(
+                      response.getResponse().getData().getResponseMsg(),
+                      newMessage.getReceiver(),
+                      newMessage.getSender(),
+                      newMessage.getChatRoomId());
 
-            Message roomLastInsertedMessage = insertMessageInRoom(queryResponseMessage);
-            insertMessageInFireBase(context, roomLastInsertedMessage);
-            if (listener != null) {
-              listener.onComplete(Result.withData(queryResponseMessage));
+              insertMessageInRoom(queryResponseMessage, result -> {
+                Message roomLastInsertedMessage = result.getData();
+                insertMessageInFireBase(context, roomLastInsertedMessage);
+                if (listener != null) {
+                  listener.onComplete(Result.withData(queryResponseMessage));
+                }
+              });
             }
-          }
 
-          @Override
-          public void onError(NetError error) {
-            if (listener != null) {
-              listener.onComplete(Result.exception(error));
+            @Override
+            public void onError(NetError error) {
+              if (listener != null) {
+                listener.onComplete(Result.exception(error));
+              }
             }
-          }
-        });
-
-    //        TODO: Finish the remaining cart
+          });
+    });
   }
 
   /**
@@ -262,11 +223,7 @@ public class MessageRepository {
    * @param chatRoom given chat room
    */
   public void clearAllChatRoomMessages(ChatRoom chatRoom) {
-    clearAllChatRoomMessagesFromRoom(chatRoom);
-  }
-
-  private void clearAllChatRoomMessagesFromRoom(ChatRoom chatRoom) {
-    new ClearAllMessagesInChatRoomAsyncTask(database.messageDao()).execute(chatRoom);
+    database.messageDao().clearChatRoomMessages(chatRoom.getId());
   }
 
   /**
@@ -281,16 +238,18 @@ public class MessageRepository {
    * Call to clear all messages from Room
    */
   private void clearAllMessages() {
-    new ClearAllMessagesAsyncTask(database.messageDao()).execute();
+    database.messageDao().clear();
   }
 
   /**
    * Add given list of messages to Room
-   *
-   * @param messages
    */
-  public void addMessages(List<Message> messages) {
-    new AddAllMessagesAsyncTask(database.messageDao()).execute(messages);
+  public void addMessagesToLocal(List<Message> messages) {
+    runOnThread(() -> database.messageDao().insertAllMessages(messages));
+  }
+
+  public void runOnThread(Runnable runnable) {
+    new Thread(runnable).start();
   }
 
   /**
@@ -325,154 +284,8 @@ public class MessageRepository {
           Timber.i(String.valueOf(data.get("mid")));
           messages.add(Message.fromMap(data));
         }
-        addMessages(messages);
+        addMessagesToLocal(messages);
       }
     });
-  }
-
-  /**
-   * Fetch all chat room messages for the given ChatRoom through AsyncTask from Room
-   */
-  private static class FetchChatRoomMessagesAsyncTask
-      extends AsyncTask<ChatRoom, Void, List<Message>> {
-
-    private MessageDao mAsyncTaskDao;
-
-    FetchChatRoomMessagesAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected List<Message> doInBackground(ChatRoom... params) {
-      return mAsyncTaskDao.getAllMessagesFromChatRoom(params[0].getId());
-    }
-  }
-
-  /**
-   * Fetch all chat room messages for the given ChatRoom through AsyncTask from Room
-   */
-  private static class ClearAllMessagesInChatRoomAsyncTask extends AsyncTask<ChatRoom, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    ClearAllMessagesInChatRoomAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(ChatRoom... params) {
-      mAsyncTaskDao.clearChatRoomMessages(params[0].getId());
-      return null;
-    }
-  }
-
-  /**
-   * Fetch all messages through AsyncTask from Room
-   */
-  private static class AddAllMessagesAsyncTask extends AsyncTask<List<Message>, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    AddAllMessagesAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(List<Message>... lists) {
-      mAsyncTaskDao.insertAllMessages(lists[0]);
-      return null;
-    }
-  }
-
-  /**
-   * Fetch all messages through AsyncTask from Room
-   */
-  private static class ClearAllMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    ClearAllMessagesAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(Void... params) {
-      mAsyncTaskDao.clear();
-      return null;
-    }
-  }
-
-  /**
-   * Call to get favorite projects from Room through AsyncTask
-   */
-  private static class DeleteMessageAsyncTask extends AsyncTask<Message, Void, Message> {
-
-    private MessageDao dao;
-
-    DeleteMessageAsyncTask(MessageDao mDao) {
-      dao = mDao;
-    }
-
-    @Override
-    protected Message doInBackground(Message... params) {
-      dao.deleteItem(params[0]);
-      return params[0];
-    }
-  }
-
-  /**
-   * Fetch a specific project for the given Message ID through AsyncTask
-   */
-  private static class FetchMessageAsyncTask extends AsyncTask<Long, Void, Message> {
-
-    private MessageDao mAsyncTaskDao;
-
-    FetchMessageAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Message doInBackground(Long... params) {
-      return mAsyncTaskDao.get(params[0]);
-    }
-  }
-
-  /**
-   * AsyncTask which makes insert operation thread safe and does not block the main thread for a
-   * long time
-   */
-  private static class InsertAsyncTask extends AsyncTask<Message, Void, Message> {
-
-    private MessageDao mAsyncTaskDao;
-
-    InsertAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Message doInBackground(final Message... params) {
-      mAsyncTaskDao.insert(params[0]);
-      Timber.i("Inside AsyncTask to insert message in Room %s", params[0].getMsg());
-      return mAsyncTaskDao.getLatestMessage(params[0].getChatRoomId());
-    }
-  }
-
-  /**
-   * AsyncTask which makes insert operation thread safe and does not block the main thread for a
-   * long time
-   */
-  private static class UpdateAsyncTask extends AsyncTask<Message, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    UpdateAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(final Message... params) {
-      mAsyncTaskDao.update(params[0]);
-      return null;
-    }
   }
 }

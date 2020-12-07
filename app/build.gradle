@@ -19,6 +19,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    //    To support GitHub CI build
+    flavorDimensions "dev"
+    // If you need to add more flavors, consider using flavor dimensions.
+    productFlavors {
+        dev {
+            dimension "dev"
+        }
+    }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }

@@ -47,7 +47,7 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
         Timber.i("Open Registration Activity");
         openRegistrationActivity();
       }
-    }), 800);
+    }), 400);
   }
 
   private void setUpWorkManagerRequest() {
