@@ -18,12 +18,17 @@ public abstract class BaseViewModel extends AndroidViewModel {
     apiManager.init(NetworkManager.getInstance());
   }
 
+  /**
+   * Run on a UI safe thread.
+   *
+   * @param runnable runnable
+   */
   public void runOnThread(Runnable runnable) {
     new Thread(runnable).start();
   }
 
   /**
-   * Get username of the current logged in user
+   * Get username of the current logged in user.
    *
    * @return username if logged in, else <code>null</code>
    */
@@ -32,7 +37,7 @@ public abstract class BaseViewModel extends AndroidViewModel {
   }
 
   /**
-   * Logs out the user
+   * Logs out the user.
    */
   public void logOutUser() {
     mMessageRepository.logOutUser();

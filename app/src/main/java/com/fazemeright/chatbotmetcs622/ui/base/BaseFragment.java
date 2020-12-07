@@ -43,25 +43,30 @@ public abstract class BaseFragment extends Fragment {
   }
 
   /**
-   * To get layout resource id
+   * To get layout resource id.
    */
   public abstract @LayoutRes
   int getLayoutResId();
 
   /**
-   * Template method to initialize views of activity
+   * Template method to initialize views of activity.
    */
   public void initViews(View view) {
   }
 
   /**
-   * Template method to set listeners of view or callback
+   * Template method to set listeners of view or callback.
    *
    * @param view view
    */
   public void setListeners(View view) {
   }
 
+  /**
+   * Determine if network is connected.
+   *
+   * @return <code>true</code> if connected, else <code>false</code>
+   */
   public boolean isNetworkConnected() {
     ConnectivityManager cm =
         (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);

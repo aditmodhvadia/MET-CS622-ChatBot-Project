@@ -56,6 +56,11 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
     }
   }
 
+  /**
+   * Call to show keyboard
+   *
+   * @param view view
+   */
   public void showKeyBoard(View view) {
     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     if (imm != null) {
@@ -107,6 +112,11 @@ public abstract class BaseActivity<T extends BaseViewModel> extends AppCompatAct
     return networkInfo != null && networkInfo.isConnected();
   }
 
+  /**
+   * Get context
+   *
+   * @return context
+   */
   public Context getContext() {
     return mContext;
   }
