@@ -12,13 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
-import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import java.util.ArrayList;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import timber.log.Timber;
 
 public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     implements View.OnClickListener {
@@ -51,9 +52,30 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
     setupFilterKeywords(dataFilters);
 
-    adapter = new ChatListAdapter(viewModel.mMessageRepository.getMessagesForChatRoom(chatRoom),
+    adapter = new ChatListAdapter(new ArrayList<>(),
         mContext);
 
+    setUpRecyclerView();
+
+    viewModel.getMessagesForChatRoom(chatRoom).observe(this, messages -> {
+      if (messages != null) {
+        adapter.updateList(messages);
+      } else {
+        Timber.e("No messages found");
+      }
+    });
+
+    viewModel.messageSent.observe(this, result -> {
+      if (result.isSuccessful()) {
+        etMsg.setText("");
+      } else {
+//        TODO: Show error to the user
+        Toast.makeText(mContext, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
+      }
+    });
+  }
+
+  private void setUpRecyclerView() {
     rvChatList.setAdapter(adapter);
     rvChatList.setLayoutManager(getLinearLayoutManager());
     rvChatList.setHasFixedSize(true);
@@ -137,8 +159,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
    * @param chatRoom given ChatRoom
    */
   private void clearChatRoomMessagesClicked(ChatRoom chatRoom) {
-    viewModel.mMessageRepository.clearAllChatRoomMessages(chatRoom);
-    adapter.clearAllMessages();
+    viewModel.clearAllChatRoomMessages(chatRoom);
   }
 
   @Override
@@ -169,23 +190,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     Message newMessage =
         Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
     addMessageToAdapter(newMessage);
-    //        send new message to repository
-    viewModel.mMessageRepository.newMessageSent(
-        mContext,
-        newMessage,
-        new MessageRepository.OnMessageResponseReceivedListener() {
-          @Override
-          public void onMessageResponseReceived(Message response) {
-            addMessageToAdapter(response);
-            etMsg.setText("");
-          }
-
-          @Override
-          public void onNoResponseReceived(Error error) {
-            Toast.makeText(mContext, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            //                TODO: Show error to the user
-          }
-        });
+    viewModel.sendNewMessage(mContext, newMessage);
   }
 
   /**

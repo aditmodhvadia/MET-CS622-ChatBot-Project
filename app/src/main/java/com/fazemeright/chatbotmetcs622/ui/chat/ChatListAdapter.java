@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * RecyclerView Adapter to display Chat
@@ -22,10 +24,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
   static final int MOST_RECENT_MSG_POSITION = 0;
   private static final int TYPE_SENT = 0;
   private static final int TYPE_RECEIVED = 1;
-  private ArrayList<Message> messages;
   private final Context context;
+  private ArrayList<Message> messages;
 
-  ChatListAdapter(ArrayList<Message> messages, Context context) {
+  ChatListAdapter(@Nonnull ArrayList<Message> messages, Context context) {
     this.messages = messages;
     this.context = context;
   }
@@ -91,6 +93,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     int messagesSize = messages.size();
     messages.clear();
     notifyItemRangeRemoved(0, messagesSize);
+  }
+
+  public void updateList(List<Message> messages) {
+//    TODO: Call submit list in ListAdapter
   }
 
   public interface ChatMessageInteractionListener {

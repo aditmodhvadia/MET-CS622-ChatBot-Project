@@ -20,7 +20,7 @@ public class Result<T> implements TaskResult<T> {
     return new Result<>(null);
   }
 
-  public static <R> TaskResult<R> exception(Exception exception) {
+  public static <R> Result<R> exception(Exception exception) {
     return new Result<R>(exception);
   }
 

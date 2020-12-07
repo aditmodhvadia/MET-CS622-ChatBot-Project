@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
@@ -179,18 +180,19 @@ public class MessageRepository {
     }
   }
 
-  public ArrayList<Message> getMessagesForChatRoom(ChatRoom chatRoom) {
+  public LiveData<List<Message>> getMessagesForChatRoom(ChatRoom chatRoom) {
     return getChatRoomMessagesFromDatabase(chatRoom);
   }
 
-  private ArrayList<Message> getChatRoomMessagesFromDatabase(ChatRoom chatRoom) {
-    try {
+  private LiveData<List<Message>> getChatRoomMessagesFromDatabase(ChatRoom chatRoom) {
+    return database.messageDao().getAllMessagesFromChatRoomLive(chatRoom.getId());
+    /*try {
       return (ArrayList<Message>)
           new FetchChatRoomMessagesAsyncTask(database.messageDao()).execute(chatRoom).get();
     } catch (ExecutionException | InterruptedException e) {
       e.printStackTrace();
       return new ArrayList<>();
-    }
+    }*/
   }
 
   /**
