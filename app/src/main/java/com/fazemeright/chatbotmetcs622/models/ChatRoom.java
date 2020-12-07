@@ -19,15 +19,15 @@ public class ChatRoom implements Serializable {
   /**
    * is of the chat room
    */
-  private long id;
+  private final long id;
   /**
    * Name of the chat room
    */
-  private String name;
+  private final String name;
   /**
    * Id of resource file associated with the ChatRoom
    */
-  private int logoId;
+  private final int logoId;
 
   public ChatRoom(int id, String name, int logoId) {
     this.id = id;

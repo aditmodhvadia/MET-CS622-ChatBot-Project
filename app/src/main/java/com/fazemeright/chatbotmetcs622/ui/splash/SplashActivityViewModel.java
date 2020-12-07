@@ -14,7 +14,7 @@ public class SplashActivityViewModel extends BaseViewModel {
 
   public SplashActivityViewModel(@NonNull Application application) {
     super(application);
-    mMessageRepository.getUserAuthentication()
+    mMessageRepository
         .reloadCurrentUserAuthState(new ResultAdapterForBooleanLiveUpdates<>(_userAuthState));
   }
 }

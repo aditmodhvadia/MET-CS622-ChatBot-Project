@@ -28,7 +28,7 @@ public abstract class BaseViewModel extends AndroidViewModel {
    * @return username if logged in, else <code>null</code>
    */
   public String getUserName() {
-    return mMessageRepository.getUserAuthentication().getUserName();
+    return mMessageRepository.getUserName();
   }
 
   /**
