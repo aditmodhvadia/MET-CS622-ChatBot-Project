@@ -17,6 +17,14 @@ public class RegistrationActivityViewModel extends BaseViewModel {
     super(application);
   }
 
+  /**
+   * Register the new user and store the details
+   *
+   * @param email     email
+   * @param password  password
+   * @param firstName first name
+   * @param lastName  last name
+   */
   public void registerNewUser(String email, String password, String firstName, String lastName) {
     runOnThread(() -> mMessageRepository
         .createNewUserAndStoreDetails(email, password, firstName, lastName,

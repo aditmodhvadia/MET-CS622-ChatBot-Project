@@ -47,6 +47,9 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
     });
   }
 
+  /**
+   * Set up support action bar
+   */
   private void setUpSupportActionBar() {
     if (getSupportActionBar() != null) {
       getSupportActionBar().setTitle(getString(R.string.registration));
@@ -76,6 +79,9 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
     }
   }
 
+  /**
+   * Register the user
+   */
   private void registerUser() {
     String email = userEmailEditText.getText().toString();
     String firstName = etFirstName.getText().toString();
@@ -107,6 +113,7 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
       String lastName,
       final String password,
       String conPassword) {
+//    TODO: Move to ViewModel
     if (!AppUtils.isValidEmail(email)) {
       userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
       userEmailEditText.requestFocus();

@@ -111,6 +111,7 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
    * @param password user password
    */
   private void performLogin(String email, String password) {
+    //    TODO: Move to ViewModel
     if (!AppUtils.isValidEmail(email)) {
       userEmailEditText.setError(mContext.getString(R.string.incorrect_email_err_msg));
       userEmailEditText.requestFocus();
