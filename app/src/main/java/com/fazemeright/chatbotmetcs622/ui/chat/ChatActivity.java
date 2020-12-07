@@ -52,8 +52,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     String[] dataFilters = getResources().getStringArray(R.array.query_sample_selection);
     setupFilterKeywords(dataFilters);
 
-    adapter = new ChatListAdapter(new ArrayList<>(),
-        mContext);
+    adapter = new ChatListAdapter(mContext);
 
     setUpRecyclerView();
 
@@ -68,9 +67,12 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     viewModel.messageSent.observe(this, result -> {
       if (result.isSuccessful()) {
         etMsg.setText("");
+        rvChatList.scrollToPosition(adapter.getItemCount());
       } else {
 //        TODO: Show error to the user
-        Toast.makeText(mContext, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
+        if (result.getException() != null) {
+          Toast.makeText(mContext, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
+        }
       }
     });
   }
@@ -189,18 +191,7 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
     }
     Message newMessage =
         Message.newMessage(msg, Message.SENDER_USER, chatRoom.getName(), chatRoom.getId());
-    addMessageToAdapter(newMessage);
     viewModel.sendNewMessage(mContext, newMessage);
-  }
-
-  /**
-   * Call to add given new message to the Adapter and display it to the user and scroll to it
-   *
-   * @param newMessage given new message to be displayed
-   */
-  private void addMessageToAdapter(Message newMessage) {
-    adapter.addMessage(newMessage);
-    rvChatList.scrollToPosition(ChatListAdapter.MOST_RECENT_MSG_POSITION);
   }
 
   @Override

@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * POJO for a message
@@ -107,5 +108,27 @@ public class Message implements Serializable {
     Calendar cal = Calendar.getInstance();
     cal.setTimeInMillis(timestamp);
     return simpleDateFormat.format(cal.getTime());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Message message = (Message) o;
+    return mid == message.mid &&
+        chatRoomId == message.chatRoomId &&
+        timestamp == message.timestamp &&
+        Objects.equals(msg, message.msg) &&
+        Objects.equals(sender, message.sender) &&
+        Objects.equals(receiver, message.receiver);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(mid, msg, sender, receiver, chatRoomId, timestamp);
   }
 }
