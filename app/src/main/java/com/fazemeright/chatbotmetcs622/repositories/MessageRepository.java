@@ -80,8 +80,9 @@ public class MessageRepository {
   private void insertMessageInRoom(Message newMessage,
                                    @Nullable OnTaskCompleteListener<Message> listener) {
     Timber.i("Insert message in Room called%s", newMessage.getMsg());
+    database.messageDao().insert(newMessage);
+    Message insertedMsg = database.messageDao().getLatestMessage(newMessage.getChatRoomId());
 
-    Message insertedMsg = database.messageDao().insert(newMessage);
     if (listener != null) {
       listener.onComplete(Result.withData(insertedMsg));
     }
