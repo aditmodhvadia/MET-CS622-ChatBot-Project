@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat;
 import com.fazemeright.chatbotmetcs622.ChatBotApp;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
-import com.fazemeright.chatbotmetcs622.database.messages.Message;
+import com.fazemeright.chatbotmetcs622.database.message.Message;
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
 import timber.log.Timber;
 

@@ -1,7 +1,7 @@
 package com.fazemeright.chatbotmetcs622.network;
 
 import android.content.Context;
-import com.fazemeright.chatbotmetcs622.database.messages.Message;
+import com.fazemeright.chatbotmetcs622.database.message.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
 import com.fazemeright.chatbotmetcs622.network.handlers.NetworkWrapper;

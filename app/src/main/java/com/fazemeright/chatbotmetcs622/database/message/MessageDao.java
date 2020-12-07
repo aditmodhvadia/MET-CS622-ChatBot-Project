@@ -1,4 +1,4 @@
-package com.fazemeright.chatbotmetcs622.database.messages;
+package com.fazemeright.chatbotmetcs622.database.message;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
