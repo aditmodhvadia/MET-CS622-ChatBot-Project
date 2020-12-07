@@ -35,6 +35,24 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
     userPasswordEditText = findViewById(R.id.userPasswordEditText);
     tvDoNotHaveAccount = findViewById(R.id.tvDontHaveAccount);
     btnLogin = findViewById(R.id.btnLogin);
+
+    viewModel.userSignedIn.observe(this, userSignedIn -> {
+      setLoginSuccessInButton();
+      startMessageSyncWithCloud();
+      openLandingActivity();
+    });
+  }
+
+  private void startMessageSyncWithCloud() {
+    Intent intent = new Intent(mContext, FireBaseIntentService.class);
+    intent.putExtra(
+        FireBaseIntentService.Actions.ACTION,
+        FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
+    ContextCompat.startForegroundService(mContext, intent);
+  }
+
+  private void setLoginSuccessInButton() {
+    btnLogin.setText(getString(R.string.login_success_msg));
   }
 
   private void setUpSupportActionBar() {
@@ -97,24 +115,9 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
     }
 
     Timber.i("Login clicked");
-    viewModel.mMessageRepository.getUserAuthentication().signInWithEmailAndPassword(
+    viewModel.signInWithEmailPassword(
         email,
-        password, userAuthResult -> {
-          if (userAuthResult.isSuccessful()) {
-            Timber.i(
-                "User logged in successfully %s",
-                viewModel.mMessageRepository.getUserAuthentication().getCurrentUserEmail());
-            btnLogin.setText(getString(R.string.login_success_msg));
-            Intent intent = new Intent(mContext, FireBaseIntentService.class);
-            intent.putExtra(
-                FireBaseIntentService.Actions.ACTION,
-                FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
-            ContextCompat.startForegroundService(mContext, intent);
-            openLandingActivity();
-          } else {
-            Timber.e(userAuthResult.getException());
-          }
-        });
+        password);
   }
 
   /**
