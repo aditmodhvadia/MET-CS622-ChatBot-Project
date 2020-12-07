@@ -22,7 +22,8 @@ import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
-  private TextView tvAppVersion, tvAppTitle;
+  private TextView tvAppVersion;
+  private TextView tvAppTitle;
 
   @Override
   protected Class<SplashActivityViewModel> getViewModelClass() {
@@ -50,6 +51,9 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
     }), 400);
   }
 
+  /**
+   * Set up work manager request to sync message once daily.
+   */
   private void setUpWorkManagerRequest() {
     Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
     PeriodicWorkRequest saveRequest =
@@ -70,6 +74,11 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
     finish();
   }
 
+  /**
+   * Run given animation on all the views.
+   *
+   * @param animationId animation resource id
+   */
   private void startAnimationOnViews(@AnimRes int animationId) {
     Animation animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), animationId);
     tvAppVersion.startAnimation(animFadeOut);
@@ -109,10 +118,6 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
         .setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-  }
-
-  @Override
-  public void setListeners() {
   }
 
   @Override

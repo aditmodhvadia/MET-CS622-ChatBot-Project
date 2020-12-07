@@ -14,6 +14,13 @@ public class SplashActivityViewModel extends BaseViewModel {
 
   public SplashActivityViewModel(@NonNull Application application) {
     super(application);
+    observeForUserAuthenticationState();
+  }
+
+  /**
+   * Observe for user authentication state changes and report it.
+   */
+  private void observeForUserAuthenticationState() {
     mMessageRepository
         .reloadCurrentUserAuthState(new ResultAdapterForBooleanLiveUpdates<>(_userAuthState));
   }
