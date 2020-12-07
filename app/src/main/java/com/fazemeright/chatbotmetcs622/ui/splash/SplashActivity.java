@@ -20,9 +20,14 @@ import com.fazemeright.chatbotmetcs622.workers.FireBaseSyncWorker;
 import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
 
   private TextView tvAppVersion, tvAppTitle;
+
+  @Override
+  protected Class<SplashActivityViewModel> getViewModelClass() {
+    return SplashActivityViewModel.class;
+  }
 
   @Override
   public void initViews() {
@@ -38,7 +43,7 @@ public class SplashActivity extends BaseActivity {
   }
 
   private void determineIfUserIsLoggedIn() {
-    messageRepository.getUserAuthentication().reloadCurrentUserAuthState(
+    viewModel.mMessageRepository.getUserAuthentication().reloadCurrentUserAuthState(
         result -> {
           if (result.isSuccessful()) {
             setUpWorkManagerRequest();
