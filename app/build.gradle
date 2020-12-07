@@ -18,10 +18,14 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        //    To support GitHub CI build
+    }
+
+    //    To support GitHub CI build
+    flavorDimensions "dev"
+    // If you need to add more flavors, consider using flavor dimensions.
+    productFlavors {
         dev {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            dimension "dev"
         }
     }
 
