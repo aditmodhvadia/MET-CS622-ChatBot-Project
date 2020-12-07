@@ -43,6 +43,9 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
     });
   }
 
+  /**
+   * Sync messages of the cloud with local.
+   */
   private void startMessageSyncWithCloud() {
     Intent intent = new Intent(mContext, FireBaseIntentService.class);
     intent.putExtra(
@@ -51,10 +54,16 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
     ContextCompat.startForegroundService(mContext, intent);
   }
 
+  /**
+   * Set login successful message in the login button.
+   */
   private void setLoginSuccessInButton() {
     btnLogin.setText(getString(R.string.login_success_msg));
   }
 
+  /**
+   * Set up the support action bar.
+   */
   private void setUpSupportActionBar() {
     if (getSupportActionBar() != null) {
       getSupportActionBar().setTitle(getString(R.string.login_title));
@@ -96,7 +105,7 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
   }
 
   /**
-   * Perform login with the given credentials
+   * Perform login with the given credentials.
    *
    * @param email    user email address
    * @param password user password
@@ -121,7 +130,7 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
   }
 
   /**
-   * Open LandingActivity and finish this one
+   * Open LandingActivity and finish this one.
    */
   private void openLandingActivity() {
     startActivity(new Intent(LoginActivity.this, LandingActivity.class));
@@ -129,7 +138,7 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
   }
 
   /**
-   * Go to Registration Activity
+   * Go to Registration Activity.
    */
   private void goToRegistrationActivity() {
     finish();

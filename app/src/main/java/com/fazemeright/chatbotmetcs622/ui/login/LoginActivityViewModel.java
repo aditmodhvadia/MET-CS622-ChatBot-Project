@@ -17,6 +17,12 @@ public class LoginActivityViewModel extends BaseViewModel {
     super(application);
   }
 
+  /**
+   * Sign in user with email and password
+   *
+   * @param email    email
+   * @param password password
+   */
   public void signInWithEmailPassword(@Nonnull String email, @Nonnull String password) {
     runOnThread(() -> mMessageRepository.signInWithEmailAndPassword(email, password,
         new ResultAdapterForBooleanLiveUpdates<>(_userSignedIn)));
