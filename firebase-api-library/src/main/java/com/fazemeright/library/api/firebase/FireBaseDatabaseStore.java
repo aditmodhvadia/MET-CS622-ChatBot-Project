@@ -1,10 +1,10 @@
-package com.fazemeright.firebase_api_library.api.firebase;
+package com.fazemeright.library.api.firebase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.fazemeright.firebase_api_library.api.DatabaseStore;
-import com.fazemeright.firebase_api_library.api.Storable;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
+import com.fazemeright.library.api.DatabaseStore;
+import com.fazemeright.library.api.Storable;
+import com.fazemeright.library.listeners.OnTaskCompleteListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;

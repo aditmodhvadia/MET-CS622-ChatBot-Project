@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.fazemeright.chatbotmetcs622.database.message.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel;
-import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLiveUpdates;
+import com.fazemeright.library.api.result.Result;
+import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates;
 import java.util.List;
 
 public class ChatActivityViewModel extends BaseViewModel {

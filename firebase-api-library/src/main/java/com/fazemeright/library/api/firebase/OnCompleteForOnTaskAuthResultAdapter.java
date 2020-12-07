@@ -1,10 +1,10 @@
-package com.fazemeright.firebase_api_library.api.firebase;
+package com.fazemeright.library.api.firebase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.fazemeright.firebase_api_library.api.UserAuthResult;
-import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
+import com.fazemeright.library.api.UserAuthResult;
+import com.fazemeright.library.api.result.Result;
+import com.fazemeright.library.listeners.OnTaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

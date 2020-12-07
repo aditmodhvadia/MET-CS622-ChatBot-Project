@@ -3,7 +3,7 @@ package com.fazemeright.chatbotmetcs622.database.message;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import com.fazemeright.firebase_api_library.api.Storable;
+import com.fazemeright.library.api.Storable;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

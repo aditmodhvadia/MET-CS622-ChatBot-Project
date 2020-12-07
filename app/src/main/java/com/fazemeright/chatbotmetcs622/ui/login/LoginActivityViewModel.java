@@ -5,8 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel;
-import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.api.result.ResultAdapterForBooleanLiveUpdates;
+import com.fazemeright.library.api.result.Result;
+import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates;
 import javax.annotation.Nonnull;
 
 public class LoginActivityViewModel extends BaseViewModel {

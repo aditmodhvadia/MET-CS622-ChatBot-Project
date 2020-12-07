@@ -1,8 +1,8 @@
-package com.fazemeright.firebase_api_library.api.result;
+package com.fazemeright.library.api.result;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
+import com.fazemeright.library.listeners.OnTaskCompleteListener;
 
 public class ResultAdapterForBooleanLiveUpdates<T> implements OnTaskCompleteListener<T> {
   private final MutableLiveData<Result<Boolean>> mutableLiveData;
