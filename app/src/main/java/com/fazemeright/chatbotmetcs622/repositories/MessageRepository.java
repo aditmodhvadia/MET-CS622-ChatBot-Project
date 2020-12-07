@@ -130,7 +130,7 @@ public class MessageRepository {
    */
   private void updateMessage(Message oldMessage) {
     //        insert into Room using AsyncTask
-    new UpdateAsyncTask(database.messageDao()).execute(oldMessage);
+    database.messageDao().update(oldMessage);
   }
 
   /**
@@ -140,45 +140,18 @@ public class MessageRepository {
    * @return Message with given ID
    */
   public Message getMessage(long messageId) {
-    return fetchMessage(messageId);
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   /**
-   * Call to get Message with given Message ID with thread safety
+   * Call to delete message with given message
    *
-   * @param messageId given Message ID
-   * @return Message with given ID
+   * @param message given Message
    */
-  private Message fetchMessage(long messageId) {
-    try {
-      return new FetchMessageAsyncTask(database.messageDao()).execute(messageId).get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public void deleteMessage(Message message) {
+    runOnThread(() -> database.messageDao().deleteItem(message));
   }
 
-  /**
-   * Call to delete project with given project
-   *
-   * @param project given Message
-   */
-  public void deleteMessage(Message project) {
-    deleteMessageFromRoom(project);
-  }
-
-  /**
-   * Delete given Message from Room with Thread Safety
-   *
-   * @param project given Message
-   */
-  private void deleteMessageFromRoom(Message project) {
-    try {
-      new DeleteMessageAsyncTask(database.messageDao()).execute(project).get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
 
   public LiveData<List<Message>> getMessagesForChatRoom(ChatRoom chatRoom) {
     return getChatRoomMessagesFromDatabase(chatRoom);
@@ -186,13 +159,6 @@ public class MessageRepository {
 
   private LiveData<List<Message>> getChatRoomMessagesFromDatabase(ChatRoom chatRoom) {
     return database.messageDao().getAllMessagesFromChatRoomLive(chatRoom.getId());
-    /*try {
-      return (ArrayList<Message>)
-          new FetchChatRoomMessagesAsyncTask(database.messageDao()).execute(chatRoom).get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-      return new ArrayList<>();
-    }*/
   }
 
   /**
@@ -282,11 +248,13 @@ public class MessageRepository {
 
   /**
    * Add given list of messages to Room
-   *
-   * @param messages
    */
-  public void addMessages(List<Message> messages) {
-    new AddAllMessagesAsyncTask(database.messageDao()).execute(messages);
+  public void addMessagesToLocal(List<Message> messages) {
+    runOnThread(() -> database.messageDao().insertAllMessages(messages));
+  }
+
+  public void runOnThread(Runnable runnable) {
+    new Thread(runnable).start();
   }
 
   /**
@@ -321,98 +289,9 @@ public class MessageRepository {
           Timber.i(String.valueOf(data.get("mid")));
           messages.add(Message.fromMap(data));
         }
-        addMessages(messages);
+        addMessagesToLocal(messages);
       }
     });
-  }
-
-  /**
-   * Fetch all chat room messages for the given ChatRoom through AsyncTask from Room
-   */
-  private static class FetchChatRoomMessagesAsyncTask
-      extends AsyncTask<ChatRoom, Void, List<Message>> {
-
-    private MessageDao mAsyncTaskDao;
-
-    FetchChatRoomMessagesAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected List<Message> doInBackground(ChatRoom... params) {
-      return mAsyncTaskDao.getAllMessagesFromChatRoom(params[0].getId());
-    }
-  }
-
-  /**
-   * Fetch all messages through AsyncTask from Room
-   */
-  private static class AddAllMessagesAsyncTask extends AsyncTask<List<Message>, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    AddAllMessagesAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(List<Message>... lists) {
-      mAsyncTaskDao.insertAllMessages(lists[0]);
-      return null;
-    }
-  }
-
-  /**
-   * Fetch all messages through AsyncTask from Room
-   */
-  private static class ClearAllMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    ClearAllMessagesAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(Void... params) {
-      mAsyncTaskDao.clear();
-      return null;
-    }
-  }
-
-  /**
-   * Call to get favorite projects from Room through AsyncTask
-   */
-  private static class DeleteMessageAsyncTask extends AsyncTask<Message, Void, Message> {
-
-    private MessageDao dao;
-
-    DeleteMessageAsyncTask(MessageDao mDao) {
-      dao = mDao;
-    }
-
-    @Override
-    protected Message doInBackground(Message... params) {
-      dao.deleteItem(params[0]);
-      return params[0];
-    }
-  }
-
-  /**
-   * Fetch a specific project for the given Message ID through AsyncTask
-   */
-  private static class FetchMessageAsyncTask extends AsyncTask<Long, Void, Message> {
-
-    private MessageDao mAsyncTaskDao;
-
-    FetchMessageAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Message doInBackground(Long... params) {
-      return mAsyncTaskDao.get(params[0]);
-    }
   }
 
   /**
@@ -432,25 +311,6 @@ public class MessageRepository {
       mAsyncTaskDao.insert(params[0]);
       Timber.i("Inside AsyncTask to insert message in Room %s", params[0].getMsg());
       return mAsyncTaskDao.getLatestMessage(params[0].getChatRoomId());
-    }
-  }
-
-  /**
-   * AsyncTask which makes insert operation thread safe and does not block the main thread for a
-   * long time
-   */
-  private static class UpdateAsyncTask extends AsyncTask<Message, Void, Void> {
-
-    private MessageDao mAsyncTaskDao;
-
-    UpdateAsyncTask(MessageDao dao) {
-      mAsyncTaskDao = dao;
-    }
-
-    @Override
-    protected Void doInBackground(final Message... params) {
-      mAsyncTaskDao.update(params[0]);
-      return null;
     }
   }
 }

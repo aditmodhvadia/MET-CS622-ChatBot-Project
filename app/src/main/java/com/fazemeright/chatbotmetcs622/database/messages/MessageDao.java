@@ -34,5 +34,5 @@ public interface MessageDao extends BaseDao<Message> {
   Message getLatestMessage(long chatRoomId);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void insertAllMessages(List<Message> order);
+  void insertAllMessages(List<Message> messages);
 }
