@@ -2,7 +2,7 @@ package com.fazemeright.firebase_api_library.api.firebase;
 
 import androidx.annotation.NonNull;
 import com.fazemeright.firebase_api_library.api.result.Result;
-import com.fazemeright.firebase_api_library.listeners.OnCompleteListenerNew;
+import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -14,10 +14,10 @@ import javax.annotation.Nonnull;
 
 public class OnCompleteListenerAdapterForFireBase implements
     OnCompleteListener<QuerySnapshot> {
-  private final OnCompleteListenerNew<List<Map<String, Object>>> listener;
+  private final OnTaskCompleteListener<List<Map<String, Object>>> listener;
 
   public OnCompleteListenerAdapterForFireBase(
-      @Nonnull OnCompleteListenerNew<List<Map<String, Object>>> listener) {
+      @Nonnull OnTaskCompleteListener<List<Map<String, Object>>> listener) {
     this.listener = listener;
   }
 
@@ -28,9 +28,9 @@ public class OnCompleteListenerAdapterForFireBase implements
       for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
         data.add(documentSnapshot.getData());
       }
-      listener.onComplete(new Result<>(data));
+      listener.onComplete(Result.withData(data));
     } else {
-      listener.onComplete(new Result<>(task.getException()));
+      listener.onComplete(Result.exception(task.getException()));
     }
   }
 }

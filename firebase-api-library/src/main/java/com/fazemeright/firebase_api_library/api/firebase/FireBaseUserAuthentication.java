@@ -1,23 +1,20 @@
 package com.fazemeright.firebase_api_library.api.firebase;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.api.UserAuthentication;
+import com.fazemeright.firebase_api_library.api.result.Result;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 
 public class FireBaseUserAuthentication implements UserAuthentication {
-  private final String TAG = FireBaseUserAuthentication.class.getSimpleName();
   private static FireBaseUserAuthentication mInstance;
+  private final String TAG = FireBaseUserAuthentication.class.getSimpleName();
 
   public synchronized static FireBaseUserAuthentication getInstance() {
     if (mInstance == null) {
@@ -63,25 +60,16 @@ public class FireBaseUserAuthentication implements UserAuthentication {
   }
 
   @Override
-  public void sendEmailVerification(@NonNull ActionCodeSettings actionCodeSettings,
-                                    @Nullable OnCompleteListener<Void> onCompleteListener,
-                                    @Nullable OnFailureListener onFailureListener) {
+  public void sendEmailVerification(
+      @Nullable OnTaskCompleteListener<Void> onCompleteListener) {
     if (getCurrentUser() != null) {
       Task<Void> emailVerificationTask = getCurrentUser()
-          .sendEmailVerification(actionCodeSettings);
+          .sendEmailVerification();
       if (onCompleteListener != null) {
-        emailVerificationTask.addOnCompleteListener(onCompleteListener);
-      }
-      if (onFailureListener != null) {
-        emailVerificationTask.addOnFailureListener(onFailureListener);
-      }
-    } else {
-      Log.e(TAG, "sendEmailVerification: User not logged in, cannot send email verification");
-      if (onFailureListener != null) {
-        onFailureListener.onFailure(new Exception("User not logged in"));
+        emailVerificationTask
+            .addOnCompleteListener(new OnTaskCompleteAdapterForOnComplete<>(onCompleteListener));
       }
     }
-
   }
 
   @Nullable
@@ -107,15 +95,12 @@ public class FireBaseUserAuthentication implements UserAuthentication {
 
   @Override
   public void sendPasswordResetEmail(@NonNull String userEmail,
-                                     @Nullable OnCompleteListener<Void> onCompleteListener,
-                                     @Nullable OnFailureListener onFailureListener) {
+                                     @Nullable OnTaskCompleteListener<Void> onCompleteListener) {
     Task<Void> sendEmailTask = FirebaseAuth.getInstance()
         .sendPasswordResetEmail(userEmail);
     if (onCompleteListener != null) {
-      sendEmailTask.addOnCompleteListener(onCompleteListener);
-    }
-    if (onFailureListener != null) {
-      sendEmailTask.addOnFailureListener(onFailureListener);
+      sendEmailTask
+          .addOnCompleteListener(new OnTaskCompleteAdapterForOnComplete<>(onCompleteListener));
     }
   }
 
@@ -131,7 +116,7 @@ public class FireBaseUserAuthentication implements UserAuthentication {
       }
     } else {
       if (onTaskCompleteListener != null) {
-        onTaskCompleteListener.onTaskFailed(new Exception("User not logged in"));
+        onTaskCompleteListener.onComplete(Result.exception(new Exception("User not logged in")));
       }
     }
 

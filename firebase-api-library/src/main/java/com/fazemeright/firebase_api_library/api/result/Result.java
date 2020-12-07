@@ -6,14 +6,26 @@ public class Result<T> implements TaskResult<T> {
   private final T data;
   private final Exception exception;
 
-  public Result(T data) {
+  private Result(T data) {
     this.data = data;
     exception = null;
   }
 
-  public Result(Exception exception) {
+  private Result(Exception exception) {
     this.exception = exception;
     data = null;
+  }
+
+  public static Result<Void> nullResult() {
+    return new Result<>(null);
+  }
+
+  public static <R> TaskResult<R> exception(Exception exception) {
+    return new Result<R>(exception);
+  }
+
+  public static <R> Result<R> withData(R data) {
+    return new Result<>(data);
   }
 
   @Override

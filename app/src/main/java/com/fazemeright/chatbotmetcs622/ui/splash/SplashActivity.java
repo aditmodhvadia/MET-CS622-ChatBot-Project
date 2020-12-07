@@ -17,7 +17,6 @@ import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
 import com.fazemeright.chatbotmetcs622.workers.FireBaseSyncWorker;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
@@ -40,23 +39,11 @@ public class SplashActivity extends BaseActivity {
 
   private void determineIfUserIsLoggedIn() {
     messageRepository.getUserAuthentication().reloadCurrentUserAuthState(
-        new OnTaskCompleteListener<Void>() {
-          @Override
-          public void onTaskSuccessful(Void result) {
+        result -> {
+          if (result.isSuccessful()) {
             setUpWorkManagerRequest();
             openLandingActivity();
-          }
-
-          @Override
-          public void onTaskCompleteButFailed(Void result) {
-            //  user not logged in, open registration activity
-            Timber.i("Open Registration Activity");
-            openRegistrationActivity();
-          }
-
-          @Override
-          public void onTaskFailed(Exception e) {
-            //  user not logged in or could not perform check, open registration activity
+          } else {
             Timber.i("Open Registration Activity");
             openRegistrationActivity();
           }

@@ -10,7 +10,6 @@ import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity;
 import com.fazemeright.chatbotmetcs622.utils.AppUtils;
-import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import timber.log.Timber;
 
 public class RegistrationActivity extends BaseActivity implements View.OnClickListener {
@@ -133,25 +132,16 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
         password,
         firstName,
         lastName,
-        new OnTaskCompleteListener<Void>() {
-          @Override
-          public void onTaskSuccessful(Void result) {
+        result -> {
+          if (result.isSuccessful()) {
             Timber.i(
                 "New user registered successfully %s",
                 messageRepository.getUserAuthentication().getCurrentUserEmail());
             btnRegister.setText(getString(R.string.registration_success_msg));
             openLandingActivity();
-          }
 
-          @Override
-          public void onTaskCompleteButFailed(Void result) {
-
-          }
-
-          @Override
-          public void onTaskFailed(Exception e) {
-            Timber.e(e);
-            //                TODO: Show error to user
+          } else {
+            Timber.e(result.getException());
           }
         });
   }

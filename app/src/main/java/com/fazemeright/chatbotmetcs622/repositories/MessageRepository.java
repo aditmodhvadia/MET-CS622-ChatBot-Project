@@ -3,6 +3,7 @@ package com.fazemeright.chatbotmetcs622.repositories;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import androidx.annotation.NonNull;
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase;
 import com.fazemeright.chatbotmetcs622.database.messages.Message;
 import com.fazemeright.chatbotmetcs622.database.messages.MessageDao;
@@ -15,10 +16,10 @@ import com.fazemeright.chatbotmetcs622.network.models.NetError;
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage;
 import com.fazemeright.firebase_api_library.api.DatabaseStore;
-import com.fazemeright.firebase_api_library.api.UserAuthResult;
 import com.fazemeright.firebase_api_library.api.UserAuthentication;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseDatabaseStore;
 import com.fazemeright.firebase_api_library.api.firebase.FireBaseUserAuthentication;
+import com.fazemeright.firebase_api_library.api.result.Result;
 import com.fazemeright.firebase_api_library.listeners.OnTaskCompleteListener;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,29 +100,26 @@ public class MessageRepository {
                                            final String lastName,
                                            @Nullable
                                            final OnTaskCompleteListener<Void> onTaskCompleteListener) {
-    userAuthentication.createNewUserWithEmailPassword(userEmail, password,
-        new OnTaskCompleteListener<UserAuthResult>() {
-          @Override
-          public void onTaskSuccessful(UserAuthResult result) {
-            Map<String, Object> userProfile = new HashMap<>();
-            userProfile.put("emailAddress", userEmail);
-            userProfile.put("firstName", firstName);
-            userProfile.put("lastName", lastName);
-            onlineDatabaseStore.storeUserData(
-                Objects.requireNonNull(userAuthentication.getCurrentUserUid()), userProfile);
-            onTaskCompleteListener.onTaskSuccessful(null);
-          }
+    userAuthentication.createNewUserWithEmailPassword(userEmail, password, result -> {
+      if (result.isSuccessful()) {
+        Map<String, Object> userProfile = getMapFromUserDetails(userEmail, firstName, lastName);
+        onlineDatabaseStore.storeUserData(
+            Objects.requireNonNull(userAuthentication.getCurrentUserUid()), userProfile);
+        onTaskCompleteListener.onComplete(Result.nullResult());
+      } else {
+        onTaskCompleteListener.onComplete(Result.exception(result.getException()));
+      }
+    });
+  }
 
-          @Override
-          public void onTaskCompleteButFailed(UserAuthResult result) {
-            onTaskCompleteListener.onTaskCompleteButFailed(null);
-          }
-
-          @Override
-          public void onTaskFailed(Exception e) {
-            onTaskCompleteListener.onTaskFailed(e);
-          }
-        });
+  @NonNull
+  private Map<String, Object> getMapFromUserDetails(String userEmail, String firstName,
+                                                    String lastName) {
+    Map<String, Object> userProfile = new HashMap<>();
+    userProfile.put("emailAddress", userEmail);
+    userProfile.put("firstName", firstName);
+    userProfile.put("lastName", lastName);
+    return userProfile;
   }
 
   /**
