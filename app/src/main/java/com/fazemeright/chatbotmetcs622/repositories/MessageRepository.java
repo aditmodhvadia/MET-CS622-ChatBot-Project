@@ -267,7 +267,7 @@ public class MessageRepository {
    * Call to clear all messages from Room.
    */
   private void clearAllMessages() {
-    database.messageDao().clear();
+    runOnThread(() -> database.messageDao().clear());
   }
 
   /**
