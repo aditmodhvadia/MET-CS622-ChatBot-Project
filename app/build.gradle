@@ -68,7 +68,7 @@ dependencies {
     implementation("androidx.work:work-runtime:2.4.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation 'com.google.guava:guava:30.0-android'
+    implementation 'com.google.guava:guava:30.1-android'
 
 
 //    Networking libraries
