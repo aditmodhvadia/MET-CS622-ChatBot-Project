@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import androidx.annotation.AnimRes;
+import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -25,9 +26,10 @@ public class SplashActivity extends BaseActivity<SplashActivityViewModel> {
   private TextView tvAppVersion;
   private TextView tvAppTitle;
 
+  @NonNull
   @Override
-  protected Class<SplashActivityViewModel> getViewModelClass() {
-    return SplashActivityViewModel.class;
+  protected SplashActivityViewModel getViewModelClass() {
+    return new SplashActivityViewModel(getApplication());
   }
 
   @Override

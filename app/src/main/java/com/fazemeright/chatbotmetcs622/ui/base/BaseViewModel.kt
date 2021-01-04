@@ -1,50 +1,41 @@
-package com.fazemeright.chatbotmetcs622.ui.base;
+package com.fazemeright.chatbotmetcs622.ui.base
 
-import android.app.Application;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import com.fazemeright.chatbotmetcs622.network.ApiManager;
-import com.fazemeright.chatbotmetcs622.network.NetworkManager;
-import com.fazemeright.chatbotmetcs622.repositories.MessageRepository;
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.fazemeright.chatbotmetcs622.network.ApiManager
+import com.fazemeright.chatbotmetcs622.network.NetworkManager
+import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
 
-public abstract class BaseViewModel extends AndroidViewModel {
-  protected MessageRepository messageRepository;
-  protected ApiManager apiManager;
+abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
+    @JvmField
+    protected var messageRepository: MessageRepository = MessageRepository.getInstance(application)
+    protected var apiManager: ApiManager = ApiManager.getInstance()
 
-  /**
-   * Constructor.
-   *
-   * @param application application
-   */
-  public BaseViewModel(@NonNull Application application) {
-    super(application);
-    messageRepository = MessageRepository.getInstance(application);
-    apiManager = ApiManager.getInstance();
-    apiManager.init(NetworkManager.getInstance());
-  }
+    /**
+     * Run on a UI safe thread.
+     *
+     * @param runnable runnable
+     */
+    fun runOnThread(runnable: Runnable?) {
+        Thread(runnable).start()
+    }
 
-  /**
-   * Run on a UI safe thread.
-   *
-   * @param runnable runnable
-   */
-  public void runOnThread(Runnable runnable) {
-    new Thread(runnable).start();
-  }
+    /**
+     * Get username of the current logged in user.
+     *
+     * @return username if logged in, else `null`
+     */
+    val userName: String?
+        get() = messageRepository.userName
 
-  /**
-   * Get username of the current logged in user.
-   *
-   * @return username if logged in, else <code>null</code>
-   */
-  public String getUserName() {
-    return messageRepository.getUserName();
-  }
+    /**
+     * Logs out the user.
+     */
+    fun logOutUser() {
+        messageRepository.logOutUser()
+    }
 
-  /**
-   * Logs out the user.
-   */
-  public void logOutUser() {
-    messageRepository.logOutUser();
-  }
+    init {
+        apiManager.init(NetworkManager.getInstance())
+    }
 }

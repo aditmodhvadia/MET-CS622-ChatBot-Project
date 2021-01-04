@@ -21,9 +21,10 @@ public class LandingActivity extends BaseActivity<LandingActivityViewModel>
   private RecyclerView rvChatRoomList;
   private ChatSelectionListAdapter adapter;
 
+  @NonNull
   @Override
-  protected Class<LandingActivityViewModel> getViewModelClass() {
-    return LandingActivityViewModel.class;
+  protected LandingActivityViewModel getViewModelClass() {
+    return new LandingActivityViewModel(getApplication());
   }
 
   @Override

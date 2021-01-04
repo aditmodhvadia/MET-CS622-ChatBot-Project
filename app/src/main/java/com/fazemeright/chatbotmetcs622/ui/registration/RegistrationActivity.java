@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import com.fazemeright.chatbotmetcs622.R;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity;
@@ -22,9 +23,10 @@ public class RegistrationActivity extends BaseActivity<RegistrationActivityViewM
   private TextView tvHaveAccount;
   private Button btnRegister;
 
+  @NonNull
   @Override
-  protected Class<RegistrationActivityViewModel> getViewModelClass() {
-    return RegistrationActivityViewModel.class;
+  protected RegistrationActivityViewModel getViewModelClass() {
+    return new RegistrationActivityViewModel(getApplication());
   }
 
   @Override

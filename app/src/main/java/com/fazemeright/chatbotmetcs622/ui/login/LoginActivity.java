@@ -25,9 +25,10 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
   private TextView tvDoNotHaveAccount;
   private Button btnLogin;
 
+  @NonNull
   @Override
-  protected Class<LoginActivityViewModel> getViewModelClass() {
-    return LoginActivityViewModel.class;
+  protected LoginActivityViewModel getViewModelClass() {
+    return new LoginActivityViewModel(getApplication());
   }
 
   @Override

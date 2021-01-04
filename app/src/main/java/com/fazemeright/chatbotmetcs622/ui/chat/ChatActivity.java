@@ -30,9 +30,10 @@ public class ChatActivity extends BaseActivity<ChatActivityViewModel>
   private ChatRoom chatRoom;
   private ChipGroup dataFilterChipGroup;
 
+  @NonNull
   @Override
-  protected Class<ChatActivityViewModel> getViewModelClass() {
-    return ChatActivityViewModel.class;
+  protected ChatActivityViewModel getViewModelClass() {
+    return new ChatActivityViewModel(getApplication());
   }
 
   @Override
