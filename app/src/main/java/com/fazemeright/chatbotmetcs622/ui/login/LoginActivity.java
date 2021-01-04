@@ -1,5 +1,7 @@
 package com.fazemeright.chatbotmetcs622.ui.login;
 
+import static com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService.ACTION_INTENT;
+
 import android.content.Intent;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,7 +52,7 @@ public class LoginActivity extends BaseActivity<LoginActivityViewModel>
   private void startMessageSyncWithCloud() {
     Intent intent = new Intent(context, FireBaseIntentService.class);
     intent.putExtra(
-        FireBaseIntentService.Actions.ACTION,
+        ACTION_INTENT,
         FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES);
     ContextCompat.startForegroundService(context, intent);
   }

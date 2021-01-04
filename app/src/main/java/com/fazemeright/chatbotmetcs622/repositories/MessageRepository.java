@@ -1,5 +1,7 @@
 package com.fazemeright.chatbotmetcs622.repositories;
 
+import static com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService.ACTION_INTENT;
+
 import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
@@ -231,7 +233,7 @@ public class MessageRepository {
    */
   private void insertMessageInFireBase(Context context, Message newMessage) {
     Intent intent = new Intent(context, FireBaseIntentService.class);
-    intent.putExtra(FireBaseIntentService.Actions.ACTION,
+    intent.putExtra(ACTION_INTENT,
         FireBaseIntentService.Actions.ACTION_ADD_MESSAGE);
     intent.putExtra(FireBaseIntentService.MESSAGE, newMessage);
     context.startService(intent);
