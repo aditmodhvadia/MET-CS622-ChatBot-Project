@@ -1,73 +1,32 @@
-package com.fazemeright.chatbotmetcs622.models;
+package com.fazemeright.chatbotmetcs622.models
 
-import java.io.Serializable;
-import java.util.Objects;
+import java.io.Serializable
 
 /**
  * POJO to hold Chat room.
  */
-public class ChatRoom implements Serializable {
-  public static final int BRUTE_FORCE_ID = 0;
-  public static final int LUCENE_ID = 1;
-  public static final int MONGO_DB_ID = 2;
-  public static final int MY_SQL_ID = 3;
+class ChatRoom(
+        /**
+         * id of the chat room.
+         */
+        val id: Long,
+        /**
+         * Name of the chat room.
+         */
+        val name: String,
+        /**
+         * Id of resource file associated with the ChatRoom.
+         */
+        val logoId: Int) : Serializable {
 
-  public static final String MONGO_DB = "MongoDB";
-  public static final String MY_SQL = "MySQL";
-  public static final String LUCENE = "Lucene";
-  public static final String BRUTE_FORCE = "Brute Force";
-  /**
-   * is of the chat room.
-   */
-  private final long id;
-  /**
-   * Name of the chat room.
-   */
-  private final String name;
-  /**
-   * Id of resource file associated with the ChatRoom.
-   */
-  private final int logoId;
-
-  /**
-   * Constructor.
-   *
-   * @param id     id
-   * @param name   name
-   * @param logoId logo resource id
-   */
-  public ChatRoom(int id, String name, int logoId) {
-    this.id = id;
-    this.name = name;
-    this.logoId = logoId;
-  }
-
-  public long getId() {
-    return id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public int getLogoId() {
-    return logoId;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    companion object {
+        const val BRUTE_FORCE_ID = 0
+        const val LUCENE_ID = 1
+        const val MONGO_DB_ID = 2
+        const val MY_SQL_ID = 3
+        const val MONGO_DB = "MongoDB"
+        const val MY_SQL = "MySQL"
+        const val LUCENE = "Lucene"
+        const val BRUTE_FORCE = "Brute Force"
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ChatRoom chatRoom = (ChatRoom) o;
-    return id == chatRoom.id && logoId == chatRoom.logoId && name.equals(chatRoom.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, name, logoId);
-  }
 }

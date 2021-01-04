@@ -1,39 +1,36 @@
-package com.fazemeright.chatbotmetcs622.database.message;
+package com.fazemeright.chatbotmetcs622.database.message
 
-import androidx.lifecycle.LiveData;
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import com.fazemeright.chatbotmetcs622.database.BaseDao;
-import java.util.List;
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.fazemeright.chatbotmetcs622.database.BaseDao
 
 @Dao
-public interface MessageDao extends BaseDao<Message> {
+interface MessageDao : BaseDao<Message?> {
+    @Query("SELECT * from my_messages_table WHERE mid = :key")
+    operator fun get(key: Long): Message?
 
-  @Query("SELECT * from my_messages_table WHERE mid = :key")
-  Message get(long key);
+    @Query("DELETE FROM my_messages_table")
+    fun clear()
 
-  @Query("DELETE FROM my_messages_table")
-  void clear();
+    @get:Query("SELECT * FROM my_messages_table ORDER BY timestamp DESC")
+    val allMessages: List<Message?>?
 
-  @Query("SELECT * FROM my_messages_table ORDER BY timestamp DESC")
-  List<Message> getAllMessages();
+    @Query("SELECT * FROM my_messages_table WHERE chatRoomId = :chatRoomId ORDER BY timestamp DESC")
+    fun getAllMessagesFromChatRoom(chatRoomId: Long): List<Message?>?
 
-  @Query("SELECT * FROM my_messages_table WHERE chatRoomId = :chatRoomId ORDER BY timestamp DESC")
-  List<Message> getAllMessagesFromChatRoom(long chatRoomId);
+    @Query("SELECT * FROM my_messages_table WHERE chatRoomId = :chatRoomId ORDER BY timestamp DESC")
+    fun getAllMessagesFromChatRoomLive(chatRoomId: Long): LiveData<List<Message?>?>?
 
-  @Query("SELECT * FROM my_messages_table WHERE chatRoomId = :chatRoomId ORDER BY timestamp DESC")
-  LiveData<List<Message>> getAllMessagesFromChatRoomLive(long chatRoomId);
+    @Query("DELETE from my_messages_table WHERE chatRoomId = :chatRoomId")
+    fun clearChatRoomMessages(chatRoomId: Long)
 
-  @Query("DELETE from my_messages_table WHERE chatRoomId = :chatRoomId")
-  void clearChatRoomMessages(long chatRoomId);
+    @Query("SELECT * FROM my_messages_table WHERE"
+            + " chatRoomId = :chatRoomId ORDER BY timestamp DESC LIMIT 1")
+    fun getLatestMessage(chatRoomId: Long): Message?
 
-  @Query(
-      "SELECT * FROM my_messages_table WHERE"
-          + " chatRoomId = :chatRoomId ORDER BY timestamp DESC LIMIT 1")
-  Message getLatestMessage(long chatRoomId);
-
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void insertAllMessages(List<Message> messages);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllMessages(messages: List<Message?>?)
 }
