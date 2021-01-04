@@ -188,7 +188,7 @@ public class MessageRepository {
       final Context context,
       final Message newMessage,
       @Nullable final OnTaskCompleteListener<Message> listener) {
-    insertMessageInRoom(newMessage, result -> {
+    runOnThread(() -> insertMessageInRoom(newMessage, result -> {
       final Message roomLastMessage = result.getData();
       insertMessageInFireBase(context, roomLastMessage);
       apiManager.queryDatabase(
@@ -204,13 +204,13 @@ public class MessageRepository {
                       newMessage.getSender(),
                       newMessage.getChatRoomId());
 
-              insertMessageInRoom(queryResponseMessage, result -> {
+              runOnThread(() -> insertMessageInRoom(queryResponseMessage, result -> {
                 Message roomLastInsertedMessage = result.getData();
                 insertMessageInFireBase(context, roomLastInsertedMessage);
                 if (listener != null) {
                   listener.onComplete(Result.withData(queryResponseMessage));
                 }
-              });
+              }));
             }
 
             @Override
@@ -220,7 +220,7 @@ public class MessageRepository {
               }
             }
           });
-    });
+    }));
   }
 
   /**

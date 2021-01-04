@@ -9,7 +9,6 @@ import com.fazemeright.chatbotmetcs622.database.message.Message;
 import com.fazemeright.chatbotmetcs622.models.ChatRoom;
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel;
 import com.fazemeright.library.api.result.Result;
-import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates;
 import java.util.List;
 
 public class ChatActivityViewModel extends BaseViewModel {
@@ -42,6 +41,7 @@ public class ChatActivityViewModel extends BaseViewModel {
    */
   public void sendNewMessage(Context context, Message newMessage) {
     runOnThread(() -> messageRepository.newMessageSent(context, newMessage,
-        new ResultAdapterForBooleanLiveUpdates<>(messageSentMutable)));
+        null));
+    messageSentMutable.setValue(Result.withData(true));
   }
 }

@@ -20,7 +20,7 @@ public class ChatBotApp extends Application {
     }
     NetworkManager.getInstance().init(getApplicationContext(), 300);
 
-    ApiManager.BaseUrl.setLocalIp("http://192.168.43.28:8080");
+    ApiManager.BaseUrl.setLocalIp("http://155.41.79.79:8080");
 
     createNotificationChannel();
   }
