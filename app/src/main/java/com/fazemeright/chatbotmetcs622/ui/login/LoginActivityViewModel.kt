@@ -1,35 +1,34 @@
-package com.fazemeright.chatbotmetcs622.ui.login;
+package com.fazemeright.chatbotmetcs622.ui.login
 
-import android.app.Application;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel;
-import com.fazemeright.library.api.result.Result;
-import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates;
-import javax.annotation.Nonnull;
+import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
+import com.fazemeright.library.api.result.Result
+import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates
 
-public class LoginActivityViewModel extends BaseViewModel {
-  private final MutableLiveData<Result<Boolean>> userSignedInMutable = new MutableLiveData<>();
-  public LiveData<Result<Boolean>> userSignedIn = userSignedInMutable;
+class LoginActivityViewModel
+/**
+ * Constructor.
+ *
+ * @param application application
+ */
+(application: Application) : BaseViewModel(application) {
+    private val userSignedInMutable = MutableLiveData<Result<Boolean>>()
 
-  /**
-   * Constructor.
-   *
-   * @param application application
-   */
-  public LoginActivityViewModel(@NonNull Application application) {
-    super(application);
-  }
+    @JvmField
+    var userSignedIn: LiveData<Result<Boolean>> = userSignedInMutable
 
-  /**
-   * Sign in user with email and password.
-   *
-   * @param email    email
-   * @param password password
-   */
-  public void signInWithEmailPassword(@Nonnull String email, @Nonnull String password) {
-    runOnThread(() -> messageRepository.signInWithEmailAndPassword(email, password,
-        new ResultAdapterForBooleanLiveUpdates<>(userSignedInMutable)));
-  }
+    /**
+     * Sign in user with email and password.
+     *
+     * @param email    email
+     * @param password password
+     */
+    fun signInWithEmailPassword(email: String, password: String) {
+        runOnThread {
+            messageRepository.signInWithEmailAndPassword(email, password,
+                    ResultAdapterForBooleanLiveUpdates(userSignedInMutable))
+        }
+    }
 }

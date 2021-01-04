@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Entity(tableName = "my_messages_table")
-class Message(
+data class Message(
         /**
          * mid of message.
          */
