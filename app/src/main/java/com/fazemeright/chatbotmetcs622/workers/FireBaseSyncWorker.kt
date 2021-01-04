@@ -15,7 +15,7 @@ class FireBaseSyncWorker(context: Context, workerParams: WorkerParameters) : Wor
      * Sync messages from local to cloud, and then from cloud to local.
      */
     private fun syncMessagesWithCloudAndLocal() {
-        MessageRepository.getInstance(applicationContext)?.apply {
+        MessageRepository.getInstance(applicationContext).apply {
             addMessagesToFireBase(this.allMessages)
             syncMessagesFromFireStoreToRoom()
         }

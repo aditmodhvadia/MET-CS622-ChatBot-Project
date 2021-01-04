@@ -124,11 +124,11 @@ class MessageRepository private constructor(
      * @param chatRoom chat room
      * @return List of Messages
      */
-    fun getMessagesForChatRoom(chatRoom: ChatRoom): LiveData<List<Message?>?>? {
+    fun getMessagesForChatRoom(chatRoom: ChatRoom): LiveData<List<Message>> {
         return getChatRoomMessagesFromDatabase(chatRoom)
     }
 
-    private fun getChatRoomMessagesFromDatabase(chatRoom: ChatRoom): LiveData<List<Message?>?>? {
+    private fun getChatRoomMessagesFromDatabase(chatRoom: ChatRoom): LiveData<List<Message>> {
         return database!!.messageDao().getAllMessagesFromChatRoomLive(chatRoom.id)
     }
 
@@ -141,7 +141,7 @@ class MessageRepository private constructor(
     fun newMessageSent(
             context: Context,
             newMessage: Message,
-            listener: OnTaskCompleteListener<Message?>?) {
+            listener: OnTaskCompleteListener<Message>) {
         insertMessageInRoom(newMessage) { result: TaskResult<Message> ->
             val roomLastMessage = result.data
             insertMessageInFireBase(context, roomLastMessage)
@@ -188,8 +188,8 @@ class MessageRepository private constructor(
      *
      * @return `List` of  messages
      */
-    val allMessages: ArrayList<Message?>?
-        get() = database!!.messageDao().allMessages as ArrayList<Message?>?
+    val allMessages: ArrayList<Message>
+        get() = database!!.messageDao().allMessages as ArrayList<Message>
 
     /**
      * Clear all given chat room messages - From Room - From FireStore.
@@ -218,7 +218,7 @@ class MessageRepository private constructor(
     /**
      * Add given list of messages to Room.
      */
-    fun addMessagesToLocal(messages: List<Message?>?) {
+    fun addMessagesToLocal(messages: List<Message>) {
         runOnThread { database!!.messageDao().insertAllMessages(messages) }
     }
 
@@ -251,9 +251,9 @@ class MessageRepository private constructor(
      * Call to sync messages from FireStore to Room for the logged in user.
      */
     fun syncMessagesFromFireStoreToRoom() {
-        onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!) { result: TaskResult<List<Map<String?, Any>>> ->
+        onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!) { result: TaskResult<List<Map<String, Any>>> ->
             if (result.isSuccessful) {
-                val messages: MutableList<Message?> = ArrayList()
+                val messages: MutableList<Message> = ArrayList()
                 for (data in result.data!!) {
                     Timber.i(data["mid"].toString())
                     messages.add(fromMap(data))
@@ -302,7 +302,7 @@ class MessageRepository private constructor(
          * @param context given context
          * @return synchronized call to get Instance of MessageRepository class
          */
-        fun getInstance(context: Context?): MessageRepository? {
+        fun getInstance(context: Context?): MessageRepository {
             if (repository == null) {
                 synchronized(MessageRepository::class.java) {
                     val database = ChatBotDatabase.getInstance(context)
@@ -314,7 +314,7 @@ class MessageRepository private constructor(
                             databaseStore)
                 }
             }
-            return repository
+            return repository!!
         }
     }
 }

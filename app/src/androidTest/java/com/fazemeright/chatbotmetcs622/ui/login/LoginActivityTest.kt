@@ -1,41 +1,33 @@
-package com.fazemeright.chatbotmetcs622.ui.login;
+package com.fazemeright.chatbotmetcs622.ui.login
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
+import com.fazemeright.chatbotmetcs622.R
+import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivityTest
+import org.hamcrest.core.IsNot
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 
-import com.fazemeright.chatbotmetcs622.R;
-import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivityTest;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.core.IsNot.not;
-
-@RunWith(AndroidJUnit4.class)
-public class LoginActivityTest {
-
+@RunWith(AndroidJUnit4::class)
+class LoginActivityTest {
     @Rule
-    public ActivityTestRule<LoginActivity> mActivityRule = new ActivityTestRule<>(LoginActivity.class);
-
+    var mActivityRule = ActivityTestRule(LoginActivity::class.java)
     @Test
-    public void login_with_email_password_isCorrect() {
+    fun login_with_email_password_isCorrect() {
 //        onView(withId(R.id.tvHaveAccount)).check(matches(isDisplayed()));
 //        onView(withId(R.id.tvHaveAccount)).perform(click());
-        onView(withId(R.id.btnLogin)).check(matches(isDisplayed()));
-        onView(withId(R.id.userLoginEmailEditText)).perform(typeText(RegistrationActivityTest.CORRECT_EMAIL_ADDRESS));
-        onView(withId(R.id.userPasswordEditText)).perform(typeText(RegistrationActivityTest.CORRECT_PASSWORD), closeSoftKeyboard());
-        onView(withId(R.id.btnLogin)).perform(click());
-//        TODO: Add IdlingResources to successfully run these tests
-        onView(withId(R.id.btnLogin)).check(matches(not(isDisplayed())));
-//        openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext());
+        Espresso.onView(ViewMatchers.withId(R.id.btnLogin)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.userLoginEmailEditText)).perform(ViewActions.typeText(RegistrationActivityTest.Companion.CORRECT_EMAIL_ADDRESS))
+        Espresso.onView(ViewMatchers.withId(R.id.userPasswordEditText)).perform(ViewActions.typeText(RegistrationActivityTest.Companion.CORRECT_PASSWORD), ViewActions.closeSoftKeyboard())
+        Espresso.onView(ViewMatchers.withId(R.id.btnLogin)).perform(ViewActions.click())
+        //        TODO: Add IdlingResources to successfully run these tests
+        Espresso.onView(ViewMatchers.withId(R.id.btnLogin)).check(ViewAssertions.matches(IsNot.not(ViewMatchers.isDisplayed())))
+        //        openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext());
 //        onView(withId(R.id.action_logout)).check(matches(withText("Logout")));
     }
 }

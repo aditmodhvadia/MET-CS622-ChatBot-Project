@@ -15,13 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
 abstract class BaseActivity<T : BaseViewModel> : AppCompatActivity() {
-    /**
-     * Get the activity context.
-     *
-     * @return context
-     */
-    @JvmField
-    var context: Context? = null
+
+    lateinit var context: Context
 
     @JvmField
     protected var viewModel: T? = null

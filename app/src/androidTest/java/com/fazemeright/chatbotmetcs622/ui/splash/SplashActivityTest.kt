@@ -1,31 +1,25 @@
-package com.fazemeright.chatbotmetcs622.ui.splash;
+package com.fazemeright.chatbotmetcs622.ui.splash
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
+import com.fazemeright.chatbotmetcs622.BuildConfig
+import com.fazemeright.chatbotmetcs622.R
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 
-import com.fazemeright.chatbotmetcs622.BuildConfig;
-import com.fazemeright.chatbotmetcs622.R;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-@RunWith(AndroidJUnit4.class)
-public class SplashActivityTest {
-
+@RunWith(AndroidJUnit4::class)
+class SplashActivityTest {
     @Rule
-    public ActivityTestRule<SplashActivity> mActivityRule = new ActivityTestRule<>(SplashActivity.class);
-
+    var mActivityRule = ActivityTestRule(SplashActivity::class.java)
     @Test
-    public void display_app_version() throws Exception {
-        String expected = BuildConfig.VERSION_NAME;
-        onView(withId(R.id.tvAppVersion)).check(matches(isDisplayed()));
-        onView(withId(R.id.tvAppVersion)).check(matches(withText(expected)));
+    @Throws(Exception::class)
+    fun display_app_version() {
+        val expected = BuildConfig.VERSION_NAME
+        Espresso.onView(ViewMatchers.withId(R.id.tvAppVersion)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.tvAppVersion)).check(ViewAssertions.matches(ViewMatchers.withText(expected)))
     }
 }

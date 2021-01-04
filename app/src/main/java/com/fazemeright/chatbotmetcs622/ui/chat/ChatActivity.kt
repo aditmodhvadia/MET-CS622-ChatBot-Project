@@ -26,7 +26,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
     private var adapter: ChatListAdapter? = null
     private var etMsg: EditText? = null
     private var ivSendMsg: ImageView? = null
-    private var chatRoom: ChatRoom? = null
+    private lateinit var chatRoom: ChatRoom
     private var dataFilterChipGroup: ChipGroup? = null
     override val viewModelClass: ChatActivityViewModel
         get() = ChatActivityViewModel(application)
@@ -37,7 +37,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
         rvChatList = findViewById(R.id.rvChatList)
         dataFilterChipGroup = findViewById(R.id.dataFilterChipGroup)
         if (intent != null) {
-            chatRoom = intent.getSerializableExtra(LandingActivity.SELECTED_CHAT_ROOM) as ChatRoom?
+            chatRoom = intent.getSerializableExtra(LandingActivity.SELECTED_CHAT_ROOM) as ChatRoom
             setUpSupportActionBar()
         }
         setupFilterKeywords(resources.getStringArray(R.array.query_sample_selection))
@@ -155,7 +155,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
      *
      * @param chatRoom given ChatRoom
      */
-    private fun clearChatRoomMessagesClicked(chatRoom: ChatRoom?) {
+    private fun clearChatRoomMessagesClicked(chatRoom: ChatRoom) {
         viewModel!!.clearAllChatRoomMessages(chatRoom)
     }
 
@@ -180,7 +180,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
         if (TextUtils.isEmpty(msg)) {
             return
         }
-        val newMessage = newMessage(msg, Message.SENDER_USER, chatRoom!!.name, chatRoom!!.id)
+        val newMessage = newMessage(msg, Message.SENDER_USER, chatRoom.name, chatRoom.id)
         viewModel!!.sendNewMessage(context, newMessage)
     }
 

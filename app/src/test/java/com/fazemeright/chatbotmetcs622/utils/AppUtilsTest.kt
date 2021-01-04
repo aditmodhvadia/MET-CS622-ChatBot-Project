@@ -1,6 +1,3 @@
-package com.fazemeright.chatbotmetcs622.utils;
+package com.fazemeright.chatbotmetcs622.utils
 
-public class AppUtilsTest {
-
-
-}
+class AppUtilsTest 

@@ -86,7 +86,7 @@ data class Message(
          * @return Message object
          */
         @JvmStatic
-        fun fromMap(map: Map<String?, Any>): Message {
+        fun fromMap(map: Map<String, Any>): Message {
             return Message(
                     map["mid"] as Long, map["msg"].toString(), map["sender"].toString(), map["receiver"].toString(),
                     map["chatRoomId"] as Long,
