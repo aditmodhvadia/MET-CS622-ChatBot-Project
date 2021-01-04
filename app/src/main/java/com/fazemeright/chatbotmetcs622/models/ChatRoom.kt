@@ -5,7 +5,7 @@ import java.io.Serializable
 /**
  * POJO to hold Chat room.
  */
-class ChatRoom(
+data class ChatRoom(
         /**
          * id of the chat room.
          */

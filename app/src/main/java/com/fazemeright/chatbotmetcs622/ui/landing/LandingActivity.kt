@@ -1,108 +1,95 @@
-package com.fazemeright.chatbotmetcs622.ui.landing;
+package com.fazemeright.chatbotmetcs622.ui.landing
 
-import android.content.Intent;
-import android.view.Menu;
-import android.view.MenuItem;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.fazemeright.chatbotmetcs622.R;
-import com.fazemeright.chatbotmetcs622.models.ChatRoom;
-import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity;
-import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity;
-import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity;
-import java.util.ArrayList;
+import android.content.Intent
+import android.view.Menu
+import android.view.MenuItem
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.fazemeright.chatbotmetcs622.R
+import com.fazemeright.chatbotmetcs622.models.ChatRoom
+import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
+import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity
+import com.fazemeright.chatbotmetcs622.ui.landing.ChatSelectionListAdapter.ChatListInteractionListener
+import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity
+import java.util.*
 
-public class LandingActivity extends BaseActivity<LandingActivityViewModel>
-    implements ChatSelectionListAdapter.ChatListInteractionListener {
+class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListInteractionListener {
+    private var rvChatRoomList: RecyclerView? = null
+    private var adapter: ChatSelectionListAdapter? = null
+    override val viewModelClass: LandingActivityViewModel
+        get() = LandingActivityViewModel(application)
 
-  public static final String SELECTED_CHAT_ROOM = "chatRoomSelected";
-  private RecyclerView rvChatRoomList;
-  private ChatSelectionListAdapter adapter;
-
-  @NonNull
-  @Override
-  protected LandingActivityViewModel getViewModelClass() {
-    return new LandingActivityViewModel(getApplication());
-  }
-
-  @Override
-  public void initViews() {
-    if (getSupportActionBar() != null) {
-      String firstName =
-          viewModel.getUserName() != null
-              ? viewModel.getUserName() : "Adit";
-      getSupportActionBar().setTitle(getString(R.string.welcome_title) + " " + firstName);
+    override fun initViews() {
+        supportActionBar?.apply {
+            val firstName = viewModel?.userName ?: "Adit"
+            title = getString(R.string.welcome_title) + " " + firstName
+        }
+        rvChatRoomList = findViewById(R.id.rvChatRoomList)
+        adapter = ChatSelectionListAdapter(this)
+        setUpRecyclerView()
     }
 
-    rvChatRoomList = findViewById(R.id.rvChatRoomList);
-    adapter = new ChatSelectionListAdapter(this);
-
-    setUpRecyclerView();
-  }
-
-  /**
-   * Set up the RecyclerView.
-   */
-  private void setUpRecyclerView() {
-    rvChatRoomList.setHasFixedSize(true);
-    rvChatRoomList.setLayoutManager(new LinearLayoutManager(context));
-    rvChatRoomList.addItemDecoration(
-        new DividerItemDecoration(rvChatRoomList.getContext(), LinearLayoutManager.VERTICAL));
-    rvChatRoomList.setAdapter(adapter);
-    adapter.submitDataList(getChatRoomList());
-  }
-
-  /**
-   * Get the static chat room list.
-   *
-   * @return list of ChatRoom
-   */
-  private ArrayList<ChatRoom> getChatRoomList() {
-    ArrayList<ChatRoom> chatRooms = new ArrayList<>();
-    chatRooms.add(
-        new ChatRoom(ChatRoom.BRUTE_FORCE_ID, ChatRoom.BRUTE_FORCE, R.drawable.brute_force_logo));
-    chatRooms.add(new ChatRoom(ChatRoom.LUCENE_ID, ChatRoom.LUCENE, R.drawable.lucene_logo));
-    chatRooms.add(new ChatRoom(ChatRoom.MONGO_DB_ID, ChatRoom.MONGO_DB, R.drawable.mongodb_logo));
-    chatRooms.add(new ChatRoom(ChatRoom.MY_SQL_ID, ChatRoom.MY_SQL, R.drawable.mysql_logo));
-    return chatRooms;
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.menu_landing, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-    if (item.getItemId() == R.id.action_logout) {
-      viewModel.logOutUser();
-      openRegistrationActivity();
-      return true;
+    /**
+     * Set up the RecyclerView.
+     */
+    private fun setUpRecyclerView() {
+        rvChatRoomList!!.setHasFixedSize(true)
+        rvChatRoomList!!.layoutManager = LinearLayoutManager(context)
+        rvChatRoomList!!.addItemDecoration(
+                DividerItemDecoration(rvChatRoomList!!.context, LinearLayoutManager.VERTICAL))
+        rvChatRoomList!!.adapter = adapter
+        adapter!!.submitDataList(chatRoomList)
     }
 
-    return super.onOptionsItemSelected(item);
-  }
+    /**
+     * Get the static chat room list.
+     *
+     * @return list of ChatRoom
+     */
+    private val chatRoomList: ArrayList<ChatRoom>
+        get() {
+            return ArrayList<ChatRoom>().apply {
+                add(
+                        ChatRoom(ChatRoom.BRUTE_FORCE_ID.toLong(), ChatRoom.BRUTE_FORCE, R.drawable.brute_force_logo))
+                add(ChatRoom(ChatRoom.LUCENE_ID.toLong(), ChatRoom.LUCENE, R.drawable.lucene_logo))
+                add(ChatRoom(ChatRoom.MONGO_DB_ID.toLong(), ChatRoom.MONGO_DB, R.drawable.mongodb_logo))
+                add(ChatRoom(ChatRoom.MY_SQL_ID.toLong(), ChatRoom.MY_SQL, R.drawable.mysql_logo))
+            }
+        }
 
-  /**
-   * Navigate to RegistrationActivity.
-   */
-  private void openRegistrationActivity() {
-    startActivity(new Intent(LandingActivity.this, RegistrationActivity.class));
-    finish();
-  }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_landing, menu)
+        return true
+    }
 
-  @Override
-  public int getLayoutResId() {
-    return R.layout.activity_landing;
-  }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_logout) {
+            viewModel!!.logOutUser()
+            openRegistrationActivity()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
-  @Override
-  public void onChatRoomClicked(ChatRoom chatRoom) {
-    Intent intent = new Intent(LandingActivity.this, ChatActivity.class);
-    intent.putExtra(SELECTED_CHAT_ROOM, chatRoom);
-    startActivity(intent);
-  }
+    /**
+     * Navigate to RegistrationActivity.
+     */
+    private fun openRegistrationActivity() {
+        startActivity(Intent(this@LandingActivity, RegistrationActivity::class.java))
+        finish()
+    }
+
+    override val layoutResId: Int
+        get() = R.layout.activity_landing
+
+    override fun onChatRoomClicked(chatRoom: ChatRoom) {
+        val intent = Intent(this@LandingActivity, ChatActivity::class.java)
+        intent.putExtra(SELECTED_CHAT_ROOM, chatRoom)
+        startActivity(intent)
+    }
+
+    companion object {
+        const val SELECTED_CHAT_ROOM = "chatRoomSelected"
+    }
 }
