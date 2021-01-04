@@ -15,7 +15,7 @@ class ChatBotApp : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         }
-        NetworkManager.getInstance().init(applicationContext, 300)
+        NetworkManager.instance?.init(applicationContext, 300)
         ApiManager.BaseUrl.setLocalIp("http://192.168.43.28:8080")
         createNotificationChannel()
     }

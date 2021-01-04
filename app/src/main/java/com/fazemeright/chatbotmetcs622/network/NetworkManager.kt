@@ -1,549 +1,514 @@
-package com.fazemeright.chatbotmetcs622.network;
+package com.fazemeright.chatbotmetcs622.network
 
-import android.content.Context;
-import androidx.annotation.Nullable;
-import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.common.Priority;
-import com.androidnetworking.error.ANError;
-import com.androidnetworking.interceptors.HttpLoggingInterceptor;
-import com.androidnetworking.interfaces.ParsedRequestListener;
-import com.fazemeright.chatbotmetcs622.R;
-import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback;
-import com.fazemeright.chatbotmetcs622.network.handlers.NetworkWrapper;
-import com.fazemeright.chatbotmetcs622.network.models.ChatBotError;
-import com.fazemeright.chatbotmetcs622.network.models.NetCompoundRes;
-import com.fazemeright.chatbotmetcs622.network.models.NetError;
-import com.fazemeright.chatbotmetcs622.network.models.NetResponse;
-import com.fazemeright.chatbotmetcs622.network.utils.CoreUtils;
-import com.google.gson.reflect.TypeToken;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-import okhttp3.OkHttpClient;
-import timber.log.Timber;
+import android.content.Context
+import com.androidnetworking.AndroidNetworking
+import com.androidnetworking.common.Priority
+import com.androidnetworking.error.ANError
+import com.androidnetworking.interceptors.HttpLoggingInterceptor
+import com.androidnetworking.interfaces.ParsedRequestListener
+import com.fazemeright.chatbotmetcs622.R
+import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback
+import com.fazemeright.chatbotmetcs622.network.handlers.NetworkWrapper
+import com.fazemeright.chatbotmetcs622.network.models.ChatBotError
+import com.fazemeright.chatbotmetcs622.network.models.NetCompoundRes
+import com.fazemeright.chatbotmetcs622.network.models.NetError
+import com.fazemeright.chatbotmetcs622.network.models.NetResponse
+import com.fazemeright.chatbotmetcs622.network.utils.CoreUtils.getStringFromObject
+import com.fazemeright.chatbotmetcs622.network.utils.CoreUtils.isNetworkAvailable
+import com.fazemeright.chatbotmetcs622.network.utils.CoreUtils.isValidUrl
+import com.google.gson.reflect.TypeToken
+import okhttp3.OkHttpClient
+import timber.log.Timber
+import java.util.*
+import java.util.concurrent.TimeUnit
 
-public class NetworkManager implements NetworkWrapper {
-
-  private static final String TAG = NetworkManager.class.getSimpleName();
-  private static final String CONTENT_TYPE = "application/json; charset=utf-8";
-  private static NetworkManager networkManager = null;
-
-  /**
-   * Get singleton instance.
-   *
-   * @return instance
-   */
-  public static NetworkManager getInstance() {
-    if (networkManager == null) {
-      networkManager = new NetworkManager();
+class NetworkManager : NetworkWrapper {
+    /**
+     * Initializing at the very first time Set Request Timeout Enabling network logging.
+     *
+     * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
+     * @param context        context
+     */
+    fun init(context: Context, requestTimeOut: Int) {
+        initSecureClient(context, requestTimeOut)
     }
-    return networkManager;
-  }
 
-  /**
-   * To get Http client.
-   *
-   * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
-   * @return OkHttpClient
-   */
-  public static OkHttpClient getHttpClient(int requestTimeOut) {
-    // if set < 2 second then we put our default timeout
-
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    builder.connectTimeout(requestTimeOut, TimeUnit.SECONDS);
-    builder.readTimeout(requestTimeOut, TimeUnit.SECONDS);
-    builder.writeTimeout(requestTimeOut, TimeUnit.SECONDS);
-
-    return builder.build();
-  }
-
-  /**
-   * Initializing at the very first time Set Request Timeout Enabling network logging.
-   *
-   * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
-   * @param context        context
-   */
-  public void init(Context context, int requestTimeOut) {
-    initSecureClient(context, requestTimeOut);
-  }
-
-  /**
-   * To initialize network manager.
-   *
-   * @param context        App context
-   * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
-   */
-  private void initSecureClient(Context context, int requestTimeOut) {
-    AndroidNetworking.initialize(context, getHttpClient(requestTimeOut));
-  }
-
-  @Override
-  public <T> void makeGetRequest(
-      Context context,
-      String url,
-      TypeToken<T> typeToken,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        printUrlAndRequestParameters(url, null);
-        AndroidNetworking.get(url)
-            .setTag(tag)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    Timber.i("onResponse :: %s", CoreUtils.getStringFromObject(response));
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
-
-                  @Override
-                  public void onError(ANError anError) {
-                    Timber.e("onError :: %s", CoreUtils.getStringFromObject(anError));
-                    networkCallback.onError(getNetError(anError, null));
-                  }
-                });
-      } else {
-        networkCallback.onError(getNetErrorConnectivityError(getConnectivityError(context), null));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+    /**
+     * To initialize network manager.
+     *
+     * @param context        App context
+     * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
+     */
+    private fun initSecureClient(context: Context, requestTimeOut: Int) {
+        AndroidNetworking.initialize(context, getHttpClient(requestTimeOut))
     }
-  }
 
-  @Override
-  public <T> void makePostRequest(
-      Context context,
-      String url,
-      final Object dataObject,
-      TypeToken<T> typeToken,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        printUrlAndRequestParameters(url, dataObject);
-        // .addBodyParameter(dataObject)
-        // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
-        AndroidNetworking.post(url)
-            .addApplicationJsonBody(dataObject)
-            //                        .addHeaders(hashMapHeader)
-            .setContentType(CONTENT_TYPE) // custom ContentType
-            .setTag(tag)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    // LogUtils.getInstance().printLog(TAG, "onResponse :: "
-                    // + CoreUtils.getStringFromObject(response));
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
+    override fun <T> makeGetRequest(
+            context: Context?,
+            url: String?,
+            typeToken: TypeToken<T>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                printUrlAndRequestParameters(url, null)
+                AndroidNetworking.get(url)
+                        .setTag(tag)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        Timber.i("onResponse :: %s", getStringFromObject(response))
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
 
-                  @Override
-                  public void onError(ANError anError) {
-                    //   LogUtils.getInstance().printLog(TAG, "onError :: "
-                    // + CoreUtils.getStringFromObject(anError));
-                    networkCallback.onError(getNetError(anError, dataObject));
-                  }
-                });
-      } else {
-        networkCallback.onError(
-            getNetErrorConnectivityError(getConnectivityError(context), dataObject));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+                                    override fun onError(anError: ANError) {
+                                        Timber.e("onError :: %s", getStringFromObject(anError))
+                                        networkCallback!!.onError(getNetError(anError, null))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(getNetErrorConnectivityError(getConnectivityError(context), null))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
     }
-  }
 
-  @Override
-  public <T> void makePostRequest(
-      Context context,
-      String url,
-      TypeToken<T> typeToken,
-      HashMap<String, String> hashMapHeader,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        AndroidNetworking.post(url)
-            .setContentType("application/x-www-form-urlencoded") // custom ContentType
-            .setTag(tag)
-            .addHeaders(hashMapHeader)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
+    override fun <T> makePostRequest(
+            context: Context?,
+            url: String?,
+            dataObject: Any?,
+            typeToken: TypeToken<T>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                printUrlAndRequestParameters(url, dataObject)
+                // .addBodyParameter(dataObject)
+                // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
+                AndroidNetworking.post(url)
+                        .addApplicationJsonBody(dataObject) //                        .addHeaders(hashMapHeader)
+                        .setContentType(CONTENT_TYPE) // custom ContentType
+                        .setTag(tag)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        // LogUtils.getInstance().printLog(TAG, "onResponse :: "
+                                        // + CoreUtils.getStringFromObject(response));
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
 
-                  @Override
-                  public void onError(ANError anError) {
-                    networkCallback.onError(getNetError(anError, null));
-                  }
-                });
-      } else {
-        networkCallback.onError(getNetErrorConnectivityError(getConnectivityError(context), null));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+                                    override fun onError(anError: ANError) {
+                                        //   LogUtils.getInstance().printLog(TAG, "onError :: "
+                                        // + CoreUtils.getStringFromObject(anError));
+                                        networkCallback!!.onError(getNetError(anError, dataObject))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(
+                        getNetErrorConnectivityError(getConnectivityError(context), dataObject))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
     }
-  }
 
-  @Override
-  public <T> void makeGetRequestHeader(
-      Context context,
-      String url,
-      TypeToken<T> typeToken,
-      HashMap<String, String> hashMapHeader,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        printUrlAndRequestParameters(url, null);
-        AndroidNetworking.get(url)
-            .setTag(tag)
-            .addHeaders(hashMapHeader)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    Timber.i("onResponse :: %s", CoreUtils.getStringFromObject(response));
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
+    override fun <T> makePostRequest(
+            context: Context?,
+            url: String?,
+            typeToken: TypeToken<T>?,
+            hashMapHeader: HashMap<String?, String?>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                AndroidNetworking.post(url)
+                        .setContentType("application/x-www-form-urlencoded") // custom ContentType
+                        .setTag(tag)
+                        .addHeaders(hashMapHeader)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
 
-                  @Override
-                  public void onError(ANError anError) {
-                    Timber.e("onError :: %s", CoreUtils.getStringFromObject(anError));
-                    networkCallback.onError(getNetError(anError, null));
-                  }
-                });
-      } else {
-        networkCallback.onError(getNetErrorConnectivityError(getConnectivityError(context), null));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+                                    override fun onError(anError: ANError) {
+                                        networkCallback!!.onError(getNetError(anError, null))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(getNetErrorConnectivityError(getConnectivityError(context), null))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
     }
-  }
 
-  @Override
-  public <T> void makePutRequestHeader(
-      Context context,
-      String url,
-      final Object dataObject,
-      TypeToken<T> typeToken,
-      HashMap<String, String> hashMapHeader,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        printUrlAndRequestParameters(url, dataObject);
-        // .addBodyParameter(dataObject)
-        // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
-        AndroidNetworking.put(url)
-            .addApplicationJsonBody(dataObject)
-            .addHeaders(hashMapHeader)
-            .setContentType(CONTENT_TYPE) // custom ContentType
-            .setTag(tag)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    // LogUtils.getInstance().printLog(TAG, "onResponse :: "
-                    // + CoreUtils.getStringFromObject(response));
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
+    override fun <T> makeGetRequestHeader(
+            context: Context?,
+            url: String?,
+            typeToken: TypeToken<T>?,
+            hashMapHeader: HashMap<String?, String?>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                printUrlAndRequestParameters(url, null)
+                AndroidNetworking.get(url)
+                        .setTag(tag)
+                        .addHeaders(hashMapHeader)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        Timber.i("onResponse :: %s", getStringFromObject(response))
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
 
-                  @Override
-                  public void onError(ANError anError) {
-                    //   LogUtils.getInstance().printLog(TAG, "onError :: "
-                    // + CoreUtils.getStringFromObject(anError));
-                    networkCallback.onError(getNetError(anError, dataObject));
-                  }
-                });
-      } else {
-        networkCallback.onError(
-            getNetErrorConnectivityError(getConnectivityError(context), dataObject));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+                                    override fun onError(anError: ANError) {
+                                        Timber.e("onError :: %s", getStringFromObject(anError))
+                                        networkCallback!!.onError(getNetError(anError, null))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(getNetErrorConnectivityError(getConnectivityError(context), null))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
     }
-  }
 
-  @Override
-  public <T> void makePostStringRequest(
-      Context context,
-      String url,
-      String data,
-      TypeToken<T> typeToken,
-      String tag,
-      NetworkCallback<T> networkCallback) {
-  }
+    override fun <T> makePutRequestHeader(
+            context: Context?,
+            url: String?,
+            dataObject: Any?,
+            typeToken: TypeToken<T>?,
+            hashMapHeader: HashMap<String?, String?>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                printUrlAndRequestParameters(url, dataObject)
+                // .addBodyParameter(dataObject)
+                // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
+                AndroidNetworking.put(url)
+                        .addApplicationJsonBody(dataObject)
+                        .addHeaders(hashMapHeader)
+                        .setContentType(CONTENT_TYPE) // custom ContentType
+                        .setTag(tag)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        // LogUtils.getInstance().printLog(TAG, "onResponse :: "
+                                        // + CoreUtils.getStringFromObject(response));
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
 
-  @Override
-  public <T> NetCompoundRes<T> makePostRequestSync(
-      Context context, String url, Object dataObject, TypeToken<T> typeToken, String tag) {
-    return null;
-  }
-
-  @Override
-  public <T> void makePostRequestHeader(
-      Context context,
-      String url,
-      final Object dataObject,
-      TypeToken<T> typeToken,
-      HashMap<String, String> hashMapHeader,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        printUrlAndRequestParameters(url, dataObject);
-        // .addBodyParameter(dataObject)
-        // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
-        AndroidNetworking.post(url)
-            .addApplicationJsonBody(dataObject)
-            .addHeaders(hashMapHeader)
-            .setContentType(CONTENT_TYPE) // custom ContentType
-            .setTag(tag)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    // LogUtils.getInstance().printLog(TAG, "onResponse :: "
-                    // + CoreUtils.getStringFromObject(response));
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
-
-                  @Override
-                  public void onError(ANError anError) {
-                    //   LogUtils.getInstance().printLog(TAG, "onError :: "
-                    // + CoreUtils.getStringFromObject(anError));
-                    networkCallback.onError(getNetError(anError, dataObject));
-                  }
-                });
-      } else {
-        networkCallback.onError(
-            getNetErrorConnectivityError(getConnectivityError(context), dataObject));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+                                    override fun onError(anError: ANError) {
+                                        //   LogUtils.getInstance().printLog(TAG, "onError :: "
+                                        // + CoreUtils.getStringFromObject(anError));
+                                        networkCallback!!.onError(getNetError(anError, dataObject))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(
+                        getNetErrorConnectivityError(getConnectivityError(context), dataObject))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
     }
-  }
 
-  @Override
-  public <T> void makeDeleteRequestHeader(
-      Context context,
-      String url, /*final Object dataObject,*/
-      TypeToken<T> typeToken,
-      HashMap<String, String> hashMapHeader,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        //                printURLAndRequestParameters(url, dataObject);
-        // .addBodyParameter(dataObject)
-        // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
-        AndroidNetworking.delete(url)
-            //                        .addApplicationJsonBody(dataObject)
-            .addHeaders(hashMapHeader)
-            .setContentType(CONTENT_TYPE) // custom ContentType
-            .setTag(tag)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    // LogUtils.getInstance().printLog(TAG, "onResponse :: "
-                    // + CoreUtils.getStringFromObject(response));
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
-
-                  @Override
-                  public void onError(ANError anError) {
-                    //   LogUtils.getInstance().printLog(TAG, "onError :: "
-                    // + CoreUtils.getStringFromObject(anError));
-                    networkCallback.onError(getNetError(anError, null));
-                  }
-                });
-      } else {
-        networkCallback.onError(getNetErrorConnectivityError(getConnectivityError(context), null));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+    override fun <T> makePostStringRequest(
+            context: Context?,
+            url: String?,
+            data: String?,
+            typeToken: TypeToken<T>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
     }
-  }
 
-  @Override
-  public void cancelRequest(String tag) {
-  }
-
-  /**
-   * To use only for get id_token,access_token and refresh_token when login with Social.
-   *
-   * @param context         context
-   * @param url             endpoint
-   * @param dataObject      request data
-   * @param typeToken       response type
-   * @param hashMapHeader   header
-   * @param tag             request tag
-   * @param networkCallback network callback
-   * @param <T>             Type
-   */
-  @Override
-  public <T> void makeCustomPostForSocialRequest(
-      Context context,
-      String url,
-      final String dataObject,
-      TypeToken<T> typeToken,
-      HashMap<String, String> hashMapHeader,
-      String tag,
-      final NetworkCallback<T> networkCallback) {
-
-    String stringUrl =
-        url.concat("code=")
-            .concat(dataObject)
-            .concat("&scope=email openid profile");
-
-    if (CoreUtils.isValidUrl(url)) {
-      if (CoreUtils.isNetworkAvailable(context)) {
-        printUrlAndRequestParameters(stringUrl, dataObject);
-        AndroidNetworking.post(stringUrl)
-            .setContentType("application/x-www-form-urlencoded") // custom ContentType
-            .setTag(tag)
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsParsed(
-                typeToken,
-                new ParsedRequestListener<T>() {
-                  @Override
-                  public void onResponse(T response) {
-                    NetResponse<T> netResponse = new NetResponse<>();
-                    netResponse.setResponse(response);
-                    networkCallback.onSuccess(netResponse);
-                  }
-
-                  @Override
-                  public void onError(ANError anError) {
-                    networkCallback.onError(getNetError(anError, dataObject));
-                  }
-                });
-      } else {
-        networkCallback.onError(
-            getNetErrorConnectivityError(getConnectivityError(context), dataObject));
-      }
-    } else {
-      networkCallback.onError(getInvalidUrlError(url));
+    override fun <T> makePostRequestSync(
+            context: Context?, url: String?, dataObject: Any?, typeToken: TypeToken<T>?, tag: String?): NetCompoundRes<T>? {
+        return null
     }
-  }
 
-  /**
-   * To create class for error from network/api.
-   *
-   * @param anError       network error
-   * @param requestObject request object
-   */
-  private NetError getNetError(ANError anError, @Nullable Object requestObject) {
-    NetError netError = new NetError(anError.getMessage());
-    netError.setErrorBody(anError.getErrorBody());
-    netError.setErrorCode(anError.getErrorCode());
-    netError.setErrorDetail(anError.getErrorDetail());
-    netError.setErrorLocalizeMessage(anError.getLocalizedMessage());
-    netError.setApiRequest(requestObject);
-    netError.setResponseErrorMessage(anError.getErrorBody());
-    return netError;
-  }
+    override fun <T> makePostRequestHeader(
+            context: Context?,
+            url: String?,
+            dataObject: Any?,
+            typeToken: TypeToken<T>?,
+            hashMapHeader: HashMap<String?, String?>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                printUrlAndRequestParameters(url, dataObject)
+                // .addBodyParameter(dataObject)
+                // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
+                AndroidNetworking.post(url)
+                        .addApplicationJsonBody(dataObject)
+                        .addHeaders(hashMapHeader)
+                        .setContentType(CONTENT_TYPE) // custom ContentType
+                        .setTag(tag)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        // LogUtils.getInstance().printLog(TAG, "onResponse :: "
+                                        // + CoreUtils.getStringFromObject(response));
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
 
-  /**
-   * To create class for error from network/api.
-   *
-   * @param anError       network error
-   * @param requestObject request object
-   */
-  private NetError getNetErrorConnectivityError(ANError anError, @Nullable Object requestObject) {
-    NetError netError = new NetError(anError.getMessage());
-    netError.setErrorBody(anError.getErrorBody());
-    netError.setErrorCode(anError.getErrorCode());
-    netError.setErrorDetail(anError.getErrorDetail());
-    netError.setErrorLocalizeMessage(anError.getLocalizedMessage());
-    netError.setApiRequest(requestObject);
-    netError.setResponseErrorMessage(anError.getErrorBody());
-    return netError;
-  }
-
-  /**
-   * To get Connectivity Error.
-   *
-   * @param context context
-   * @return network error
-   */
-  private ANError getConnectivityError(Context context) {
-    ANError anError = new ANError(context.getString(R.string.no_internet_connection_available));
-    anError.setErrorCode(ChatBotError.ChatBotErrorCodes.INTERNET_NOT_AVAILABLE);
-    anError.setErrorBody(context.getString(R.string.no_internet_connection_available));
-    return anError;
-  }
-
-  /**
-   * To Print Request.
-   *
-   * @param url  endpoint
-   * @param data data
-   */
-  private void printUrlAndRequestParameters(String url, Object data) {
-    Timber.i("url :: %s", url);
-    Timber.i("requestParameters :: %s", CoreUtils.getStringFromObject(data));
-  }
-
-  /**
-   * To get Invalid Url Error.
-   *
-   * @param url url
-   * @return network error if occurred
-   */
-  private NetError getInvalidUrlError(String url) {
-    NetError anError = new NetError("Invalid url: " + url);
-    anError.setErrorCode(ChatBotError.ChatBotErrorCodes.INVALID_URL);
-    return anError;
-  }
-
-  private void enableAndroidNetworkingLogging(boolean enable) {
-    if (enable) {
-      AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.BODY);
-    } else {
-      AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.NONE);
+                                    override fun onError(anError: ANError) {
+                                        //   LogUtils.getInstance().printLog(TAG, "onError :: "
+                                        // + CoreUtils.getStringFromObject(anError));
+                                        networkCallback!!.onError(getNetError(anError, dataObject))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(
+                        getNetErrorConnectivityError(getConnectivityError(context), dataObject))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
     }
-  }
+
+    override fun <T> makeDeleteRequestHeader(
+            context: Context?,
+            url: String?,  /*final Object dataObject,*/
+            typeToken: TypeToken<T>?,
+            hashMapHeader: HashMap<String?, String?>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                //                printURLAndRequestParameters(url, dataObject);
+                // .addBodyParameter(dataObject)
+                // .addStringBody(NetworkUtility.getStringFromObject(dataObject))
+                AndroidNetworking.delete(url) //                        .addApplicationJsonBody(dataObject)
+                        .addHeaders(hashMapHeader)
+                        .setContentType(CONTENT_TYPE) // custom ContentType
+                        .setTag(tag)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        // LogUtils.getInstance().printLog(TAG, "onResponse :: "
+                                        // + CoreUtils.getStringFromObject(response));
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
+
+                                    override fun onError(anError: ANError) {
+                                        //   LogUtils.getInstance().printLog(TAG, "onError :: "
+                                        // + CoreUtils.getStringFromObject(anError));
+                                        networkCallback!!.onError(getNetError(anError, null))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(getNetErrorConnectivityError(getConnectivityError(context), null))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
+    }
+
+    override fun cancelRequest(tag: String?) {}
+
+    /**
+     * To use only for get id_token,access_token and refresh_token when login with Social.
+     *
+     * @param context         context
+     * @param url             endpoint
+     * @param dataObject      request data
+     * @param typeToken       response type
+     * @param hashMapHeader   header
+     * @param tag             request tag
+     * @param networkCallback network callback
+     * @param <T>             Type
+    </T> */
+    override fun <T> makeCustomPostForSocialRequest(
+            context: Context?,
+            url: String?,
+            dataObject: String?,
+            typeToken: TypeToken<T>?,
+            hashMapHeader: HashMap<String?, String?>?,
+            tag: String?,
+            networkCallback: NetworkCallback<T>?) {
+        val stringUrl = url + "code=" + dataObject + "&scope=email openid profile"
+        if (isValidUrl(url)) {
+            if (isNetworkAvailable(context!!)) {
+                printUrlAndRequestParameters(stringUrl, dataObject)
+                AndroidNetworking.post(stringUrl)
+                        .setContentType("application/x-www-form-urlencoded") // custom ContentType
+                        .setTag(tag)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsParsed(
+                                typeToken,
+                                object : ParsedRequestListener<T> {
+                                    override fun onResponse(response: T) {
+                                        val netResponse = NetResponse<T>()
+                                        netResponse.setResponse(response)
+                                        networkCallback!!.onSuccess(netResponse)
+                                    }
+
+                                    override fun onError(anError: ANError) {
+                                        networkCallback!!.onError(getNetError(anError, dataObject))
+                                    }
+                                })
+            } else {
+                networkCallback!!.onError(
+                        getNetErrorConnectivityError(getConnectivityError(context), dataObject))
+            }
+        } else {
+            networkCallback!!.onError(getInvalidUrlError(url))
+        }
+    }
+
+    /**
+     * To create class for error from network/api.
+     *
+     * @param anError       network error
+     * @param requestObject request object
+     */
+    private fun getNetError(anError: ANError, requestObject: Any?): NetError {
+        val netError = NetError(anError.message)
+        netError.errorBody = anError.errorBody
+        netError.errorCode = anError.errorCode
+        netError.errorDetail = anError.errorDetail
+        netError.errorLocalizeMessage = anError.localizedMessage
+        netError.apiRequest = requestObject
+        netError.setResponseErrorMessage(anError.errorBody)
+        return netError
+    }
+
+    /**
+     * To create class for error from network/api.
+     *
+     * @param anError       network error
+     * @param requestObject request object
+     */
+    private fun getNetErrorConnectivityError(anError: ANError, requestObject: Any?): NetError {
+        val netError = NetError(anError.message)
+        netError.errorBody = anError.errorBody
+        netError.errorCode = anError.errorCode
+        netError.errorDetail = anError.errorDetail
+        netError.errorLocalizeMessage = anError.localizedMessage
+        netError.apiRequest = requestObject
+        netError.setResponseErrorMessage(anError.errorBody)
+        return netError
+    }
+
+    /**
+     * To get Connectivity Error.
+     *
+     * @param context context
+     * @return network error
+     */
+    private fun getConnectivityError(context: Context?): ANError {
+        val anError = ANError(context!!.getString(R.string.no_internet_connection_available))
+        anError.errorCode = ChatBotError.ChatBotErrorCodes.INTERNET_NOT_AVAILABLE
+        anError.errorBody = context.getString(R.string.no_internet_connection_available)
+        return anError
+    }
+
+    /**
+     * To Print Request.
+     *
+     * @param url  endpoint
+     * @param data data
+     */
+    private fun printUrlAndRequestParameters(url: String?, data: Any?) {
+        Timber.i("url :: %s", url)
+        Timber.i("requestParameters :: %s", getStringFromObject(data))
+    }
+
+    /**
+     * To get Invalid Url Error.
+     *
+     * @param url url
+     * @return network error if occurred
+     */
+    private fun getInvalidUrlError(url: String?): NetError {
+        val anError = NetError("Invalid url: $url")
+        anError.errorCode = ChatBotError.ChatBotErrorCodes.INVALID_URL
+        return anError
+    }
+
+    private fun enableAndroidNetworkingLogging(enable: Boolean) {
+        if (enable) {
+            AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.BODY)
+        } else {
+            AndroidNetworking.enableLogging(HttpLoggingInterceptor.Level.NONE)
+        }
+    }
+
+    companion object {
+        private val TAG = NetworkManager::class.java.simpleName
+        private const val CONTENT_TYPE = "application/json; charset=utf-8"
+        private var networkManager: NetworkManager? = null
+
+        /**
+         * Get singleton instance.
+         *
+         * @return instance
+         */
+        @JvmStatic
+        val instance: NetworkManager?
+            get() {
+                if (networkManager == null) {
+                    networkManager = NetworkManager()
+                }
+                return networkManager
+            }
+
+        /**
+         * To get Http client.
+         *
+         * @param requestTimeOut Network Request timeout in millisecond it's configurable from backend
+         * @return OkHttpClient
+         */
+        fun getHttpClient(requestTimeOut: Int): OkHttpClient {
+            // if set < 2 second then we put our default timeout
+            val builder = OkHttpClient.Builder()
+            builder.connectTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
+            builder.readTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
+            builder.writeTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
+            return builder.build()
+        }
+    }
 }

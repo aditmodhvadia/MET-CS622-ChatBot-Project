@@ -1,34 +1,15 @@
-package com.fazemeright.chatbotmetcs622.network.models.response;
+package com.fazemeright.chatbotmetcs622.network.models.response
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class QueryResponseMessage {
+data class QueryResponseMessage(
+        @SerializedName("data")
+        @Expose
+        var data: Data? = null)
 
-  @SerializedName("data")
-  @Expose
-  private Data data;
+data class Data(
+        @SerializedName("responseMsg")
+        @Expose
+        var responseMsg: String? = null)
 
-  public Data getData() {
-    return data;
-  }
-
-  public void setData(Data data) {
-    this.data = data;
-  }
-
-  public static class Data {
-
-    @SerializedName("responseMsg")
-    @Expose
-    private String responseMsg;
-
-    public String getResponseMsg() {
-      return responseMsg;
-    }
-
-    public void setResponseMsg(String responseMsg) {
-      this.responseMsg = responseMsg;
-    }
-  }
-}

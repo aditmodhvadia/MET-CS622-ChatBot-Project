@@ -20,8 +20,8 @@ abstract class BaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         messageRepository = MessageRepository.getInstance(mContext)
-        apiManager = ApiManager.getInstance()
-        apiManager.init(NetworkManager.getInstance())
+        apiManager = ApiManager.instance
+        apiManager.init(NetworkManager.instance)
     }
 
     override fun onCreateView(

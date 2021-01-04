@@ -9,7 +9,7 @@ import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
     @JvmField
     protected var messageRepository: MessageRepository = MessageRepository.getInstance(application)
-    protected var apiManager: ApiManager = ApiManager.getInstance()
+    protected var apiManager: ApiManager = ApiManager.instance
 
     /**
      * Run on a UI safe thread.
@@ -36,6 +36,6 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     }
 
     init {
-        apiManager.init(NetworkManager.getInstance())
+        apiManager.init(NetworkManager.instance)
     }
 }

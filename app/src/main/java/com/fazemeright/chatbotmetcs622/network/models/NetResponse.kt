@@ -1,20 +1,16 @@
-package com.fazemeright.chatbotmetcs622.network.models;
+package com.fazemeright.chatbotmetcs622.network.models
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
 
 /**
  * Class for handling generic response.
  */
-public class NetResponse<T> {
+class NetResponse<T> {
+    @SerializedName("response")
+    var response: T? = null
+        private set
 
-  @SerializedName("response")
-  private T response;
-
-  public T getResponse() {
-    return response;
-  }
-
-  public void setResponse(T response) {
-    this.response = response;
-  }
+    fun setResponse(response: T) {
+        this.response = response
+    }
 }

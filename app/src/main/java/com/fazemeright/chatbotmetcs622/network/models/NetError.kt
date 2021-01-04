@@ -1,141 +1,98 @@
-package com.fazemeright.chatbotmetcs622.network.models;
+package com.fazemeright.chatbotmetcs622.network.models
 
-import android.text.TextUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.text.TextUtils
+import com.fazemeright.chatbotmetcs622.network.models.ChatBotError.ChatBotErrorCodes
+import org.json.JSONException
+import org.json.JSONObject
 
 /*
- * Class for handling Network/API related errors
- * */
-public class NetError extends Exception {
-
-  private String errorBody = "";
-  private int errorCode = ChatBotError.ChatBotErrorCodes.SOMETHING_WENT_WRONG;
-  private String errorDetail = "";
-  private String errorLocalizeMessage = "";
-  private Object apiRequest;
-  private String requestName = "";
-  private String responseErrorMessage;
-
-  /**
-   * Constructor.
-   *
-   * @param message message
-   */
-  public NetError(String message) {
-    super(message);
-    if (message == null) {
-      message = "Getting null error message.";
-    }
-    setErrorLocalizeMessage(message);
-    setErrorBody(message);
-    setErrorDetail(message);
-  }
-
-  public String getResponseErrorMessage() {
-    return responseErrorMessage;
-  }
-
-  public void setResponseErrorMessage(String responseErrorMessage) {
-    this.responseErrorMessage = parseJson(responseErrorMessage);
-  }
-
-  private String parseJson(String responseErrorMessage) {
-    String errorMessage = "Something went wrong!";
-    if (!TextUtils.isEmpty(responseErrorMessage)) {
-      try {
-        JSONObject jsonObject = new JSONObject(responseErrorMessage);
-        if (jsonObject.has("responseMessage")) {
-          errorMessage = jsonObject.getString("responseMessage");
-        } else {
-          return responseErrorMessage;
+* Class for handling Network/API related errors
+* */
+class NetError(message: String?) : Exception(message) {
+    /**
+     * Set error body.
+     *
+     * @param errorBody error body
+     */
+    var errorBody = ""
+        set(errorBody) {
+            field = errorBody
         }
-      } catch (JSONException e) {
-        e.printStackTrace();
-        return responseErrorMessage;
-      }
+    var errorCode: Int = ChatBotErrorCodes.SOMETHING_WENT_WRONG
+
+    /**
+     * Set error detail.
+     *
+     * @param errorDetail error detail
+     */
+    var errorDetail = ""
+        set(errorDetail) {
+            field = errorDetail
+        }
+
+    /**
+     * Set error localize message.
+     *
+     * @param errorLocalizeMessage message
+     */
+    var errorLocalizeMessage = ""
+        set(errorLocalizeMessage) {
+            field = errorLocalizeMessage
+        }
+
+    /**
+     * Get api request.
+     *
+     * @return api request
+     */
+    var apiRequest: Any? = null
+
+    /**
+     * Set request name.
+     *
+     * @param requestName request name
+     */
+    var requestName = ""
+        set(requestName) {
+            field = requestName
+        }
+    var responseErrorMessage: String? = null
+        private set
+
+    fun setResponseErrorMessage(responseErrorMessage: String) {
+        this.responseErrorMessage = parseJson(responseErrorMessage)
     }
-    return errorMessage;
-  }
 
-  public String getRequestName() {
-    return requestName;
-  }
-
-  /**
-   * Set request name.
-   *
-   * @param requestName request name
-   */
-  public void setRequestName(String requestName) {
-    if (requestName != null) {
-      this.requestName = requestName;
+    private fun parseJson(responseErrorMessage: String): String {
+        var errorMessage = "Something went wrong!"
+        if (!TextUtils.isEmpty(responseErrorMessage)) {
+            errorMessage = try {
+                val jsonObject = JSONObject(responseErrorMessage)
+                if (jsonObject.has("responseMessage")) {
+                    jsonObject.getString("responseMessage")
+                } else {
+                    return responseErrorMessage
+                }
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                return responseErrorMessage
+            }
+        }
+        return errorMessage
     }
-  }
 
-  /**
-   * Get api request.
-   *
-   * @return api request
-   */
-  public Object getApiRequest() {
-    return apiRequest;
-  }
-
-  public void setApiRequest(Object apiRequest) {
-    this.apiRequest = apiRequest;
-  }
-
-  public String getErrorLocalizeMessage() {
-    return errorLocalizeMessage;
-  }
-
-  /**
-   * Set error localize message.
-   *
-   * @param errorLocalizeMessage message
-   */
-  public void setErrorLocalizeMessage(String errorLocalizeMessage) {
-    if (errorLocalizeMessage != null) {
-      this.errorLocalizeMessage = errorLocalizeMessage;
+    /**
+     * Constructor.
+     *
+     * @param message message
+     */
+    init {
+        var message = message
+        if (message == null) {
+            message = "Getting null error message."
+        }
+        errorLocalizeMessage = message
+        errorBody = message
+        errorDetail = message
     }
-  }
-
-  public String getErrorDetail() {
-    return this.errorDetail;
-  }
-
-  /**
-   * Set error detail.
-   *
-   * @param errorDetail error detail
-   */
-  public void setErrorDetail(String errorDetail) {
-    if (errorDetail != null) {
-      this.errorDetail = errorDetail;
-    }
-  }
-
-  public int getErrorCode() {
-    return this.errorCode;
-  }
-
-  public void setErrorCode(int errorCode) {
-    this.errorCode = errorCode;
-  }
-
-  public String getErrorBody() {
-    return errorBody;
-  }
-
-  /**
-   * Set error body.
-   *
-   * @param errorBody error body
-   */
-  public void setErrorBody(String errorBody) {
-    if (errorBody != null) {
-      this.errorBody = errorBody;
-    }
-  }
 }
