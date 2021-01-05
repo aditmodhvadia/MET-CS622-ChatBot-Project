@@ -50,13 +50,16 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
             }
         })
         viewModel.messageSent.observe(this, { result: Result<Boolean> ->
-            if (result.isSuccessful) {
-                etMsg.setText("")
-                rvChatList.scrollToPosition(adapter.itemCount)
-            } else {
-                // TODO: Show error to the user
-                if (result.exception != null) {
-                    Toast.makeText(context, result.exception!!.message, Toast.LENGTH_SHORT).show()
+            when (result) {
+                is Result.Success -> {
+                    etMsg.setText("")
+                    rvChatList.scrollToPosition(adapter.itemCount)
+                }
+                is Result.Error -> {
+                    // TODO: Show error to the user
+                    if (result.exception != null) {
+                        Toast.makeText(context, result.exception!!.message, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         })

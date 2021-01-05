@@ -32,12 +32,15 @@ class SplashActivity : BaseActivity<SplashActivityViewModel>() {
         startAnimationOnViews(R.anim.fade_in)
         Handler().postDelayed({
             viewModel.userAuthState.observe(this, { result: Result<Boolean> ->
-                if (result.isSuccessful) {
-                    setUpWorkManagerRequest()
-                    openLandingActivity()
-                } else {
-                    Timber.i("Open Registration Activity")
-                    openRegistrationActivity()
+                when (result) {
+                    is Result.Success -> {
+                        setUpWorkManagerRequest()
+                        openLandingActivity()
+                    }
+                    else -> {
+                        Timber.i("Open Registration Activity")
+                        openRegistrationActivity()
+                    }
                 }
             })
         }, 400)

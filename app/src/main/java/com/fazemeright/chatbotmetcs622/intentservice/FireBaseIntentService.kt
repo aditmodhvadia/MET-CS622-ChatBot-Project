@@ -12,6 +12,9 @@ import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase.Companion.getInstance
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 open class FireBaseIntentService
@@ -47,11 +50,13 @@ open class FireBaseIntentService
     }
 
     override fun onHandleIntent(intent: Intent?) {
-        Timber.d("onHandleIntent")
-        if (intent != null) {
-            when (intent.getStringExtra(ACTION_INTENT)) {
-                Actions.ACTION_ADD_MESSAGE.name -> addMessageToFireStore(intent.getSerializableExtra(MESSAGE) as Message)
-                Actions.ACTION_SYNC_MESSAGES.name -> syncMessages()
+        CoroutineScope(Dispatchers.IO).launch {
+            Timber.d("onHandleIntent")
+            if (intent != null) {
+                when (intent.getStringExtra(ACTION_INTENT)) {
+                    Actions.ACTION_ADD_MESSAGE.name -> addMessageToFireStore(intent.getSerializableExtra(MESSAGE) as Message)
+                    Actions.ACTION_SYNC_MESSAGES.name -> syncMessages()
+                }
             }
         }
     }
@@ -59,7 +64,7 @@ open class FireBaseIntentService
     /**
      * Call to sync messages from FireStore to Room for the logged in user.
      */
-    private fun syncMessages() {
+    private suspend fun syncMessages() {
         messageRepository?.syncMessagesFromFireStoreToRoom()
     }
 
@@ -68,7 +73,7 @@ open class FireBaseIntentService
      *
      * @param message given message
      */
-    private fun addMessageToFireStore(message: Message) {
+    private suspend fun addMessageToFireStore(message: Message) {
         messageRepository?.addMessageToFireBase(message)
     }
 

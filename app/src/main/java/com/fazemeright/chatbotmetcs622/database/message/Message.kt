@@ -47,8 +47,8 @@ data class Message(
             return simpleDateFormat.format(cal.time)
         }
 
-    override fun getHashMap(): Map<String, Any> {
-        return mapOf(
+    override val hashMap: Map<String, Any>
+        get() = mapOf(
                 "mid" to mid,
                 "msg" to msg,
                 "sender" to sender,
@@ -56,11 +56,9 @@ data class Message(
                 "chatRoomId" to chatRoomId,
                 "timestamp" to timestamp
         )
-    }
 
-    override fun getId(): Long {
-        return mid
-    }
+    override val id: Long
+        get() = mid
 
     companion object {
         const val SENDER_USER = "User"

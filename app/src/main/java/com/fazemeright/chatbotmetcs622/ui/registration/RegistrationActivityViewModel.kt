@@ -3,9 +3,10 @@ package com.fazemeright.chatbotmetcs622.ui.registration
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
 import com.fazemeright.library.api.result.Result
-import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates
+import kotlinx.coroutines.launch
 
 class RegistrationActivityViewModel(
         application: Application) : BaseViewModel(application) {
@@ -22,10 +23,11 @@ class RegistrationActivityViewModel(
      * @param lastName  last name
      */
     fun registerNewUser(email: String, password: String, firstName: String, lastName: String) {
-        runOnThread {
+        viewModelScope.launch {
             messageRepository
-                    .createNewUserAndStoreDetails(email, password, firstName, lastName,
-                            ResultAdapterForBooleanLiveUpdates(userRegisteredMutable))
+                    .createNewUserAndStoreDetails(email, password, firstName, lastName).let {
+                        userRegisteredMutable.value = it
+                    }
         }
     }
 }

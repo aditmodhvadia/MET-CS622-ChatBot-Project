@@ -37,7 +37,7 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
         btnRegister = findViewById(R.id.btnRegister)
 
         viewModel.userRegistered.observe(this, { userRegistered: Result<Boolean> ->
-            if (userRegistered.isSuccessful) {
+            if (userRegistered is Result.Success) {
                 btnRegister?.text = getString(R.string.registration_success_msg)
                 openLandingActivity()
             }

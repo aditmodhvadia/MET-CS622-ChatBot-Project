@@ -3,9 +3,10 @@ package com.fazemeright.chatbotmetcs622.ui.login
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
 import com.fazemeright.library.api.result.Result
-import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates
+import kotlinx.coroutines.launch
 
 class LoginActivityViewModel(application: Application) : BaseViewModel(application) {
     private val userSignedInMutable = MutableLiveData<Result<Boolean>>()
@@ -19,9 +20,10 @@ class LoginActivityViewModel(application: Application) : BaseViewModel(applicati
      * @param password password
      */
     fun signInWithEmailPassword(email: String, password: String) {
-        runOnThread {
-            messageRepository.signInWithEmailAndPassword(email, password,
-                    ResultAdapterForBooleanLiveUpdates(userSignedInMutable))
+        viewModelScope.launch {
+            messageRepository.signInWithEmailAndPassword(email, password).let {
+                userSignedInMutable.value = it
+            }
         }
     }
 }
