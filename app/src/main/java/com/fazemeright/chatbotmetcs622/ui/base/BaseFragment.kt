@@ -9,20 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import com.fazemeright.chatbotmetcs622.network.ApiManager
-import com.fazemeright.chatbotmetcs622.network.NetworkManager
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
 
 abstract class BaseFragment : Fragment() {
     lateinit var mContext: Context
     protected lateinit var messageRepository: MessageRepository
-    protected lateinit var apiManager: ApiManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mContext = requireContext()
         messageRepository = MessageRepository.getInstance(mContext)
-        apiManager = ApiManager.instance
-        apiManager.init(NetworkManager.instance)
     }
 
     override fun onCreateView(

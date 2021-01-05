@@ -7,7 +7,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-class FireBaseUserAuthentication : UserAuthentication {
+object FireBaseUserAuthentication : UserAuthentication {
     override fun signOutUser() {
         FirebaseAuth.getInstance().signOut()
     }
@@ -51,22 +51,4 @@ class FireBaseUserAuthentication : UserAuthentication {
         get() = if (currentUser != null) {
             currentUser!!.uid
         } else null
-
-    companion object {
-        private var mInstance: FireBaseUserAuthentication? = null
-
-        /**
-         * Get singleton instance.
-         *
-         * @return instance
-         */
-        @get:Synchronized
-        val instance: FireBaseUserAuthentication
-            get() {
-                if (mInstance == null) {
-                    mInstance = FireBaseUserAuthentication()
-                }
-                return mInstance!!
-            }
-    }
 }

@@ -6,12 +6,7 @@ import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.database.message.Message.Companion.newMessage
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
-import com.fazemeright.chatbotmetcs622.network.ApiManager
-import com.fazemeright.chatbotmetcs622.network.NetworkManager
-import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback
-import com.fazemeright.chatbotmetcs622.network.models.NetError
-import com.fazemeright.chatbotmetcs622.network.models.NetResponse
-import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage
+import com.fazemeright.chatbotmetcs622.network.retrofit.RetrofitApiManager
 import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.domain.authentication.UserAuthentication
 import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
@@ -24,8 +19,11 @@ import timber.log.Timber
 import java.util.*
 
 class MessageRepository private constructor(
-        private val database: ChatBotDatabase, private val apiManager: ApiManager,
-        private val userAuthentication: UserAuthentication, private val onlineDatabaseStore: DatabaseStore) : Repository {
+        private val database: ChatBotDatabase,
+        private val apiManager: RetrofitApiManager,
+        private val userAuthentication: UserAuthentication,
+        private val onlineDatabaseStore: DatabaseStore
+) : Repository {
     /**
      * Call to insert given message into database with thread safety.
      *
@@ -136,40 +134,32 @@ class MessageRepository private constructor(
             context: Context,
             newMessage: Message): Result<Message> {
         return withContext(Dispatchers.IO) {
-            val result =
-                    insertMessageInRoom(newMessage)
-//            insertMessageInFireBase(context, result)
+            when (val msgInsertResult = insertMessageInRoom(newMessage)) {
+                is Result.Success -> async { insertMessageInFireBase(msgInsertResult.data) }
+                is Result.Error -> TODO()
+            }
 
-            apiManager.queryDatabase(
-                    context,
-                    newMessage,
-                    object : NetworkCallback<QueryResponseMessage> {
-                        override fun onSuccess(response: NetResponse<QueryResponseMessage>?) {
-                            val queryResponseMessage = newMessage(
-                                    response!!.response!!.data!!.responseMsg!!,
-                                    newMessage.receiver,
-                                    newMessage.sender,
-                                    newMessage.chatRoomId)
-//                            val newMessageResult = insertMessageInRoom(queryResponseMessage)
-//                            insertMessageInFireBase(context, newMessageResult.data)
-                            Result.Success(queryResponseMessage)
-                        }
-
-                        override fun onError(error: NetError?) {
-                            Result.Error(error)
-                        }
-                    })
-            Result.Error()
+            apiManager.queryDatabase(newMessage).let {
+                val queryResponseMessage = newMessage(
+                        it.data?.responseMsg ?: "Some error occurred",
+                        newMessage.receiver,
+                        newMessage.sender,
+                        newMessage.chatRoomId)
+                when (val newMessageResult = insertMessageInRoom(queryResponseMessage)) {
+                    is Result.Success -> async { insertMessageInFireBase(newMessageResult.data) }
+                    is Result.Error -> TODO()
+                }
+                Result.Success(queryResponseMessage)
+            }
         }
     }
 
     /**
      * Call to insert the given new message to FireStore database.
      *
-     * @param context    context
      * @param newMessage given new message
      */
-    private suspend fun insertMessageInFireBase(context: Context, newMessage: Message) {
+    private suspend fun insertMessageInFireBase(newMessage: Message) {
         withContext(Dispatchers.IO) {
             addMessageToFireBase(newMessage)
         }
@@ -301,6 +291,7 @@ class MessageRepository private constructor(
     override suspend fun reloadCurrentUserAuthState(): Result<Boolean> {
         return try {
             userAuthentication.reloadCurrentUserAuthState()?.await()
+                    ?: throw Exception("User not logged in")
             Result.Success(true)
         } catch (e: Exception) {
             Result.Error(e)
@@ -325,12 +316,8 @@ class MessageRepository private constructor(
             if (repository == null) {
                 synchronized(MessageRepository::class.java) {
                     val database = ChatBotDatabase.getInstance(context)
-                    val apiManager = ApiManager.instance
-                    val userAuthentication: UserAuthentication = FireBaseUserAuthentication.instance
-                    val databaseStore: DatabaseStore = FireBaseDatabaseStore.instance
-                    apiManager.init(NetworkManager.instance)
-                    repository = MessageRepository(database, apiManager, userAuthentication,
-                            databaseStore)
+                    repository = MessageRepository(database, RetrofitApiManager, FireBaseUserAuthentication,
+                            FireBaseDatabaseStore)
                 }
             }
             return repository!!
