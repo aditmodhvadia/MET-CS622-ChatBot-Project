@@ -176,11 +176,13 @@ class MessageRepository private constructor(
      * @param newMessage given new message
      */
     private fun insertMessageInFireBase(context: Context, newMessage: Message) {
-        val intent = Intent(context, FireBaseIntentService::class.java)
-        intent.putExtra(FireBaseIntentService.ACTION_INTENT,
-                FireBaseIntentService.Actions.ACTION_ADD_MESSAGE)
-        intent.putExtra(FireBaseIntentService.MESSAGE, newMessage)
-        context.startService(intent)
+        Intent(context, FireBaseIntentService::class.java).apply {
+            putExtra(FireBaseIntentService.ACTION_INTENT,
+                    FireBaseIntentService.Actions.ACTION_ADD_MESSAGE)
+            putExtra(FireBaseIntentService.MESSAGE, newMessage)
+        }.also {
+            context.startService(it)
+        }
     }
 
     /**
@@ -242,9 +244,7 @@ class MessageRepository private constructor(
      * @param messageList given messages list
      */
     fun addMessagesToFireBase(messageList: List<Message>) {
-        for (message in messageList) {
-            addMessageToFireBase(message)
-        }
+        messageList.forEach(::addMessageToFireBase)
     }
 
     /**

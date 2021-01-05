@@ -50,7 +50,7 @@ open class FireBaseIntentService
         Timber.d("onHandleIntent")
         if (intent != null) {
             when (intent.getStringExtra(ACTION_INTENT)) {
-                Actions.ACTION_ADD_MESSAGE.name -> addMessageToFireStore(intent.getSerializableExtra(MESSAGE) as Message?)
+                Actions.ACTION_ADD_MESSAGE.name -> addMessageToFireStore(intent.getSerializableExtra(MESSAGE) as Message)
                 Actions.ACTION_SYNC_MESSAGES.name -> syncMessages()
             }
         }
@@ -68,7 +68,7 @@ open class FireBaseIntentService
      *
      * @param message given message
      */
-    private fun addMessageToFireStore(message: Message?) {
+    private fun addMessageToFireStore(message: Message) {
         messageRepository?.addMessageToFireBase(message)
     }
 

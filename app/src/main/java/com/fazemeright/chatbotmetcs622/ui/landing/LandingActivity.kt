@@ -15,14 +15,14 @@ import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity
 import java.util.*
 
 class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListInteractionListener {
-    private var rvChatRoomList: RecyclerView? = null
-    private var adapter: ChatSelectionListAdapter? = null
+    private lateinit var rvChatRoomList: RecyclerView
+    private lateinit var adapter: ChatSelectionListAdapter
     override val viewModelClass: LandingActivityViewModel
         get() = LandingActivityViewModel(application)
 
     override fun initViews() {
         supportActionBar?.apply {
-            val firstName = viewModel?.userName ?: "Adit"
+            val firstName = viewModel.userName ?: "Adit"
             title = getString(R.string.welcome_title) + " " + firstName
         }
         rvChatRoomList = findViewById(R.id.rvChatRoomList)
@@ -34,12 +34,14 @@ class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListIntera
      * Set up the RecyclerView.
      */
     private fun setUpRecyclerView() {
-        rvChatRoomList!!.setHasFixedSize(true)
-        rvChatRoomList!!.layoutManager = LinearLayoutManager(context)
-        rvChatRoomList!!.addItemDecoration(
-                DividerItemDecoration(rvChatRoomList!!.context, LinearLayoutManager.VERTICAL))
-        rvChatRoomList!!.adapter = adapter
-        adapter!!.submitDataList(chatRoomList)
+        rvChatRoomList.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            addItemDecoration(
+                    DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            adapter = adapter
+        }
+        adapter.submitDataList(chatRoomList)
     }
 
     /**
@@ -65,7 +67,7 @@ class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListIntera
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_logout) {
-            viewModel!!.logOutUser()
+            viewModel.logOutUser()
             openRegistrationActivity()
             return true
         }
@@ -80,13 +82,14 @@ class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListIntera
         finish()
     }
 
-    override val layoutResId: Int
-        get() = R.layout.activity_landing
+    override val layoutResId: Int = R.layout.activity_landing
 
     override fun onChatRoomClicked(chatRoom: ChatRoom) {
-        val intent = Intent(this@LandingActivity, ChatActivity::class.java)
-        intent.putExtra(SELECTED_CHAT_ROOM, chatRoom)
-        startActivity(intent)
+        Intent(this@LandingActivity, ChatActivity::class.java).apply {
+            putExtra(SELECTED_CHAT_ROOM, chatRoom)
+        }.also {
+            startActivity(it)
+        }
     }
 
     companion object {

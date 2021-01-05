@@ -22,14 +22,13 @@ import timber.log.Timber
 import java.util.*
 
 class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener {
-    private var rvChatList: RecyclerView? = null
-    private var adapter: ChatListAdapter? = null
-    private var etMsg: EditText? = null
-    private var ivSendMsg: ImageView? = null
+    private lateinit var rvChatList: RecyclerView
+    private lateinit var adapter: ChatListAdapter
+    private lateinit var etMsg: EditText
+    private lateinit var ivSendMsg: ImageView
     private lateinit var chatRoom: ChatRoom
-    private var dataFilterChipGroup: ChipGroup? = null
-    override val viewModelClass: ChatActivityViewModel
-        get() = ChatActivityViewModel(application)
+    private lateinit var dataFilterChipGroup: ChipGroup
+    override val viewModelClass: ChatActivityViewModel = ChatActivityViewModel(application)
 
     override fun initViews() {
         etMsg = findViewById(R.id.etMsg)
@@ -41,19 +40,19 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
             setUpSupportActionBar()
         }
         setupFilterKeywords(resources.getStringArray(R.array.query_sample_selection))
-        adapter = ChatListAdapter(context!!)
+        adapter = ChatListAdapter(context)
         setUpRecyclerView()
-        viewModel!!.getMessagesForChatRoom(chatRoom).observe(this, { messages: List<Message?>? ->
+        viewModel.getMessagesForChatRoom(chatRoom).observe(this, { messages: List<Message?>? ->
             if (messages != null) {
-                adapter!!.updateList(messages)
+                adapter.updateList(messages)
             } else {
                 Timber.e("No messages found")
             }
         })
-        viewModel!!.messageSent.observe(this, { result: Result<Boolean> ->
+        viewModel.messageSent.observe(this, { result: Result<Boolean> ->
             if (result.isSuccessful) {
-                etMsg?.setText("")
-                rvChatList?.scrollToPosition(adapter!!.itemCount)
+                etMsg.setText("")
+                rvChatList.scrollToPosition(adapter.itemCount)
             } else {
                 // TODO: Show error to the user
                 if (result.exception != null) {
@@ -67,11 +66,11 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
      * Set up the recyclerview.
      */
     private fun setUpRecyclerView() {
-        rvChatList!!.adapter = adapter
-        rvChatList!!.layoutManager = linearLayoutManager
-        rvChatList!!.setHasFixedSize(true)
+        rvChatList.adapter = adapter
+        rvChatList.layoutManager = linearLayoutManager
+        rvChatList.setHasFixedSize(true)
         // Show user the most recent messages, hence scroll to the top
-        rvChatList!!.scrollToPosition(adapter!!.itemCount)
+        rvChatList.scrollToPosition(adapter.itemCount)
     }
 
     /**
@@ -81,9 +80,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
         if (supportActionBar != null) {
             supportActionBar!!.setHomeButtonEnabled(true)
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            if (chatRoom != null) {
-                supportActionBar!!.title = chatRoom!!.name
-            }
+            supportActionBar!!.title = chatRoom.name
         }
     }
 
@@ -107,25 +104,25 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
      */
     private fun setupFilterKeywords(dataFilters: Array<String>?) {
         //        remove all views from ChipGroup if any
-        dataFilterChipGroup!!.removeAllViews()
+        dataFilterChipGroup.removeAllViews()
         if (dataFilters == null) {
             //      hide ChipGroup if list is empty
-            dataFilterChipGroup!!.visibility = View.INVISIBLE
+            dataFilterChipGroup.visibility = View.INVISIBLE
         } else {
             for (dataFilter in dataFilters) {
                 //                create new chip and apply attributes
                 val chip = getChip(dataFilter)
-                dataFilterChipGroup!!.addView(chip) // add chip to ChipGroup
+                dataFilterChipGroup.addView(chip) // add chip to ChipGroup
                 chip.setOnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
                     if (isChecked) {
-                        etMsg!!.requestFocus()
-                        etMsg!!.setText(buttonView.text.toString())
-                        etMsg!!.setSelection(buttonView.text.toString().length)
+                        etMsg.requestFocus()
+                        etMsg.setText(buttonView.text.toString())
+                        etMsg.setSelection(buttonView.text.toString().length)
                         showKeyBoard(etMsg)
                     }
                 }
             }
-            dataFilterChipGroup!!.visibility = View.VISIBLE
+            dataFilterChipGroup.visibility = View.VISIBLE
         }
     }
 
@@ -156,15 +153,14 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
      * @param chatRoom given ChatRoom
      */
     private fun clearChatRoomMessagesClicked(chatRoom: ChatRoom) {
-        viewModel!!.clearAllChatRoomMessages(chatRoom)
+        viewModel.clearAllChatRoomMessages(chatRoom)
     }
 
     override fun setListeners() {
-        ivSendMsg!!.setOnClickListener(this)
+        ivSendMsg.setOnClickListener(this)
     }
 
-    override val layoutResId: Int
-        get() = R.layout.activity_chat
+    override val layoutResId: Int = R.layout.activity_chat
 
     override fun onClick(v: View) {
         if (v.id == R.id.ivSendMsg) {
@@ -176,12 +172,13 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
      * User clicked send message. Show new message to user and pass it to repository.
      */
     private fun sendMessageClicked() {
-        val msg = etMsg!!.text.toString().trim { it <= ' ' }
+        val msg = etMsg.text.toString().trim()
         if (TextUtils.isEmpty(msg)) {
             return
         }
-        val newMessage = newMessage(msg, Message.SENDER_USER, chatRoom.name, chatRoom.id)
-        viewModel!!.sendNewMessage(context, newMessage)
+        newMessage(msg, Message.SENDER_USER, chatRoom.name, chatRoom.id).let {
+            viewModel.sendNewMessage(context, it)
+        }
     }
 
     override val menuId: Int

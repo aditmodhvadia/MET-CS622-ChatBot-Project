@@ -58,28 +58,19 @@ class ChatSelectionListAdapter constructor(private val listener: ChatListInterac
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var tvChatRoomName: TextView
-        var ivChatRoom: ImageView
+        private val tvChatRoomName: TextView = itemView.findViewById(R.id.tvChatRoomName)
+        private val ivChatRoom: ImageView = itemView.findViewById(R.id.ivChatRoom)
 
         /**
          * Bind model to view.
          *
          * @param item ChatRoom
          */
-        fun bind(item: ChatRoom?) {
-            tvChatRoomName.text = item!!.name
+        fun bind(item: ChatRoom) {
+            tvChatRoomName.text = item.name
             ivChatRoom.setBackgroundResource(item.logoId)
-            itemView.setOnClickListener { v: View? -> listener.onChatRoomClicked(getItem(adapterPosition)) }
+            itemView.setOnClickListener { listener.onChatRoomClicked(getItem(adapterPosition)) }
         }
 
-        /**
-         * ViewHolder.
-         *
-         * @param itemView view for list item
-         */
-        init {
-            tvChatRoomName = itemView.findViewById(R.id.tvChatRoomName)
-            ivChatRoom = itemView.findViewById(R.id.ivChatRoom)
-        }
     }
 }
