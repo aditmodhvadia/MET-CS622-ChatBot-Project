@@ -1,12 +1,10 @@
 package com.fazemeright.chatbotmetcs622.repositories
 
 import android.content.Context
-import android.content.Intent
 import androidx.lifecycle.LiveData
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.database.message.Message.Companion.newMessage
-import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.chatbotmetcs622.network.ApiManager
 import com.fazemeright.chatbotmetcs622.network.NetworkManager
@@ -14,11 +12,11 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback
 import com.fazemeright.chatbotmetcs622.network.models.NetError
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage
-import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.domain.authentication.UserAuthentication
-import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
+import com.fazemeright.library.api.domain.database.DatabaseStore
+import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.fazemeright.library.api.result.Result
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
@@ -171,13 +169,9 @@ class MessageRepository private constructor(
      * @param context    context
      * @param newMessage given new message
      */
-    private fun insertMessageInFireBase(context: Context, newMessage: Message) {
-        Intent(context, FireBaseIntentService::class.java).apply {
-            putExtra(FireBaseIntentService.ACTION_INTENT,
-                    FireBaseIntentService.Actions.ACTION_ADD_MESSAGE)
-            putExtra(FireBaseIntentService.MESSAGE, newMessage)
-        }.also {
-            context.startService(it)
+    private suspend fun insertMessageInFireBase(context: Context, newMessage: Message) {
+        withContext(Dispatchers.IO) {
+            addMessageToFireBase(newMessage)
         }
     }
 
@@ -311,6 +305,11 @@ class MessageRepository private constructor(
         } catch (e: Exception) {
             Result.Error(e)
         }
+    }
+
+    suspend fun syncMessagesWithCloudAndLocal() {
+        addMessagesToFireBase(allMessagesInLocal)
+        syncMessagesFromFireStoreToRoom()
     }
 
     companion object {

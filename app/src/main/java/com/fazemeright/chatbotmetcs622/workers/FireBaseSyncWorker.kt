@@ -16,8 +16,7 @@ class FireBaseSyncWorker(context: Context, workerParams: WorkerParameters) : Cor
      */
     private suspend fun syncMessagesWithCloudAndLocal() {
         MessageRepository.getInstance(applicationContext).apply {
-            addMessagesToFireBase(allMessagesInLocal)
-            syncMessagesFromFireStoreToRoom()
+            this.syncMessagesWithCloudAndLocal()
         }
     }
 }

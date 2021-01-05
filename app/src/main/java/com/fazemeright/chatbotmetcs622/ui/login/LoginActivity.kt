@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.fazemeright.chatbotmetcs622.R
-import com.fazemeright.chatbotmetcs622.intentservice.FireBaseIntentService
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity
 import com.fazemeright.chatbotmetcs622.utils.AppUtils.isValidEmail
@@ -39,13 +38,7 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(), View.OnClickListen
      * Sync messages of the cloud with local.
      */
     private fun startMessageSyncWithCloud() {
-        Intent(context, FireBaseIntentService::class.java).apply {
-            putExtra(
-                    FireBaseIntentService.ACTION_INTENT,
-                    FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES)
-        }.also {
-            ContextCompat.startForegroundService(context, it)
-        }
+        viewModel.syncMessagesWithLocalAndCloud()
     }
 
     /**

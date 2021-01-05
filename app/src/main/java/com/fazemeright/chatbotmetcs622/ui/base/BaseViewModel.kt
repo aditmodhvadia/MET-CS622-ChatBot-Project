@@ -2,9 +2,11 @@ package com.fazemeright.chatbotmetcs622.ui.base
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.fazemeright.chatbotmetcs622.network.ApiManager
 import com.fazemeright.chatbotmetcs622.network.NetworkManager
 import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
+import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
     @JvmField
@@ -33,6 +35,12 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
      */
     fun logOutUser() {
         messageRepository.logOutUser()
+    }
+
+    fun syncMessagesWithLocalAndCloud() {
+        viewModelScope.launch {
+            messageRepository.syncMessagesWithCloudAndLocal()
+        }
     }
 
     init {
