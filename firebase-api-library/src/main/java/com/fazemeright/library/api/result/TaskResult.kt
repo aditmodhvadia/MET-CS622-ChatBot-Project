@@ -1,15 +1,8 @@
-package com.fazemeright.library.api.result;
+package com.fazemeright.library.api.result
 
-import javax.annotation.Nullable;
-
-public interface TaskResult<T> {
-  boolean isSuccessful();
-
-  boolean isFailed();
-
-  @Nullable
-  T getData();
-
-  @Nullable
-  Exception getException();
+interface TaskResult<T> {
+    val isSuccessful: Boolean
+    val isFailed: Boolean
+    val data: T
+    val exception: Exception?
 }

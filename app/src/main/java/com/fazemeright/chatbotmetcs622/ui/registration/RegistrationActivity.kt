@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.lifecycle.Observer
 import com.fazemeright.chatbotmetcs622.R
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity
@@ -36,7 +35,8 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
         userConPasswordEditText = findViewById(R.id.userConPasswordEditText)
         tvHaveAccount = findViewById(R.id.tvHaveAccount)
         btnRegister = findViewById(R.id.btnRegister)
-        viewModel!!.userRegistered.observe(this, Observer { userRegistered: Result<Boolean> ->
+
+        viewModel.userRegistered.observe(this, { userRegistered: Result<Boolean> ->
             if (userRegistered.isSuccessful) {
                 btnRegister?.text = getString(R.string.registration_success_msg)
                 openLandingActivity()
@@ -58,8 +58,7 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
         tvHaveAccount?.setOnClickListener(this)
     }
 
-    override val layoutResId: Int
-        get() = R.layout.activity_registration
+    override val layoutResId: Int = R.layout.activity_registration
 
     override fun onClick(v: View) {
         val id = v.id
@@ -108,33 +107,33 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
             conPassword: String) {
         // TODO: Move to ViewModel
         if (!isValidEmail(email)) {
-            userEmailEditText!!.error = context!!.getString(R.string.incorrect_email_err_msg)
+            userEmailEditText!!.error = context.getString(R.string.incorrect_email_err_msg)
             userEmailEditText!!.requestFocus()
             return
         }
         if (!isValidName(firstName)) {
-            etFirstName!!.error = context!!.getString(R.string.incorrect_first_name)
+            etFirstName!!.error = context.getString(R.string.incorrect_first_name)
             etFirstName!!.requestFocus()
             return
         }
         if (!isValidName(lastName)) {
-            etLastName!!.error = context!!.getString(R.string.incorrect_last_name)
+            etLastName!!.error = context.getString(R.string.incorrect_last_name)
             etLastName!!.requestFocus()
             return
         }
         if (!isValidPassword(password)) {
-            userPasswordEditText!!.error = context!!.getString(R.string.incorrect_pass_err_msg)
+            userPasswordEditText!!.error = context.getString(R.string.incorrect_pass_err_msg)
             userPasswordEditText!!.requestFocus()
             return
         }
         if (!arePasswordsValid(password, conPassword)) {
-            userPasswordEditText!!.error = context!!.getString(R.string.passwords_dont_match_err_msg)
+            userPasswordEditText!!.error = context.getString(R.string.passwords_dont_match_err_msg)
             userPasswordEditText!!.requestFocus()
             userPasswordEditText!!.setText("")
             userConPasswordEditText!!.setText("")
             return
         }
-        viewModel!!.registerNewUser(
+        viewModel.registerNewUser(
                 email,
                 password,
                 firstName,

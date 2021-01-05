@@ -18,8 +18,9 @@ abstract class BaseActivity<T : BaseViewModel> : AppCompatActivity() {
 
     lateinit var context: Context
 
-    @JvmField
-    protected var viewModel: T? = null
+    protected lateinit var viewModel: T
+        private set
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         context = this

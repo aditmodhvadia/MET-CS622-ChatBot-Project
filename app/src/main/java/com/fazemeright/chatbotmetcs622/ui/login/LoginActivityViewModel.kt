@@ -7,16 +7,9 @@ import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
 import com.fazemeright.library.api.result.Result
 import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates
 
-class LoginActivityViewModel
-/**
- * Constructor.
- *
- * @param application application
- */
-(application: Application) : BaseViewModel(application) {
+class LoginActivityViewModel(application: Application) : BaseViewModel(application) {
     private val userSignedInMutable = MutableLiveData<Result<Boolean>>()
 
-    @JvmField
     var userSignedIn: LiveData<Result<Boolean>> = userSignedInMutable
 
     /**

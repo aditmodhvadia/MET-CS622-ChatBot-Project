@@ -24,14 +24,14 @@ abstract class ChatBotDatabase : RoomDatabase() {
          */
         @JvmStatic
         @Synchronized
-        fun getInstance(context: Context?): ChatBotDatabase? {
+        fun getInstance(context: Context): ChatBotDatabase {
             if (INSTANCE == null) {
-                INSTANCE = Room.databaseBuilder(context!!, ChatBotDatabase::class.java, DATABASE_NAME)
+                INSTANCE = Room.databaseBuilder(context, ChatBotDatabase::class.java, DATABASE_NAME)
                         // Wipes and rebuilds instead of migrating if no Migration object.
                         .fallbackToDestructiveMigration()
                         .build()
             }
-            return INSTANCE
+            return INSTANCE!!
         }
     }
 }

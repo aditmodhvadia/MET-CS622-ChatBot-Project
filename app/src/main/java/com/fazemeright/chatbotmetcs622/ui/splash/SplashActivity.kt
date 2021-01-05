@@ -1,7 +1,6 @@
 package com.fazemeright.chatbotmetcs622.ui.splash
 
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Handler
 import android.view.WindowManager
@@ -23,8 +22,7 @@ import java.util.concurrent.TimeUnit
 class SplashActivity : BaseActivity<SplashActivityViewModel>() {
     private var tvAppVersion: TextView? = null
     private var tvAppTitle: TextView? = null
-    override val viewModelClass: SplashActivityViewModel
-        get() = SplashActivityViewModel(application)
+    override val viewModelClass: SplashActivityViewModel = SplashActivityViewModel(application)
 
     override fun initViews() {
         hideSystemUi()
@@ -33,7 +31,7 @@ class SplashActivity : BaseActivity<SplashActivityViewModel>() {
         tvAppVersion?.text = appVersion
         startAnimationOnViews(R.anim.fade_in)
         Handler().postDelayed({
-            viewModel!!.userAuthState.observe(this, { result: Result<Boolean> ->
+            viewModel.userAuthState.observe(this, { result: Result<Boolean> ->
                 if (result.isSuccessful) {
                     setUpWorkManagerRequest()
                     openLandingActivity()
@@ -49,11 +47,15 @@ class SplashActivity : BaseActivity<SplashActivityViewModel>() {
      * Set up work manager request to sync message once daily.
      */
     private fun setUpWorkManagerRequest() {
-        val constraints = Constraints.Builder().setRequiresCharging(true).build()
-        val saveRequest = PeriodicWorkRequest.Builder(FireBaseSyncWorker::class.java, 1, TimeUnit.DAYS)
-                .setConstraints(constraints)
+        val constraints = Constraints.Builder().apply {
+            setRequiresCharging(true)
+        }
                 .build()
-        WorkManager.getInstance(context!!).enqueue(saveRequest)
+        val saveRequest = PeriodicWorkRequest.Builder(FireBaseSyncWorker::class.java, 1, TimeUnit.DAYS).apply {
+            setConstraints(constraints)
+        }
+                .build()
+        WorkManager.getInstance(context).enqueue(saveRequest)
     }
 
     /**
@@ -92,10 +94,8 @@ class SplashActivity : BaseActivity<SplashActivityViewModel>() {
      */
     private val appVersion: String
         get() {
-            val packageInfo: PackageInfo
             return try {
-                packageInfo = packageManager.getPackageInfo(packageName, 0)
-                packageInfo.versionName
+                packageManager.getPackageInfo(packageName, 0).versionName
             } catch (e: NameNotFoundException) {
                 "beta-testing"
             }
@@ -110,6 +110,5 @@ class SplashActivity : BaseActivity<SplashActivityViewModel>() {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
-    override val layoutResId: Int
-        get() = R.layout.activity_splash
+    override val layoutResId: Int = R.layout.activity_splash
 }

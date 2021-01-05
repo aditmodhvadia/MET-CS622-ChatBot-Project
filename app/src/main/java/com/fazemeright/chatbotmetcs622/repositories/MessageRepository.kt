@@ -28,7 +28,7 @@ import timber.log.Timber
 import java.util.*
 
 class MessageRepository private constructor(
-        private val database: ChatBotDatabase?, private val apiManager: ApiManager,
+        private val database: ChatBotDatabase, private val apiManager: ApiManager,
         private val userAuthentication: UserAuthentication, private val onlineDatabaseStore: DatabaseStore) {
     /**
      * Call to insert given message into database with thread safety.
@@ -37,9 +37,9 @@ class MessageRepository private constructor(
      * @param listener   task completion listener
      */
     private fun insertMessageInRoom(newMessage: Message,
-                                    listener: OnTaskCompleteListener<Message>?) {
+                                    listener: OnTaskCompleteListener<Message>? = null) {
         Timber.i("Insert message in Room called%s", newMessage.msg)
-        database!!.messageDao().insert(newMessage)
+        database.messageDao().insert(newMessage)
         val insertedMsg = database.messageDao().getLatestMessage(newMessage.chatRoomId)
         listener?.onComplete(Result.withData(insertedMsg))
     }
@@ -54,20 +54,20 @@ class MessageRepository private constructor(
      * @param onTaskCompleteListener task completion listener
      */
     fun createNewUserAndStoreDetails(userEmail: String,
-                                     password: String?,
+                                     password: String,
                                      firstName: String,
                                      lastName: String,
-                                     onTaskCompleteListener: OnTaskCompleteListener<Void?>?) {
-        userAuthentication.createNewUserWithEmailPassword(userEmail, password!!) { result: TaskResult<UserAuthResult?> ->
+                                     onTaskCompleteListener: OnTaskCompleteListener<Void>? = null) {
+        userAuthentication.createNewUserWithEmailPassword(userEmail, password) { result: TaskResult<UserAuthResult> ->
             if (result.isSuccessful) {
                 userAuthentication.currentUserUid?.let {
                     onlineDatabaseStore.storeUserData(
                             it,
                             getStorableFromUserDetails(userEmail, firstName, lastName))
                 }
-                onTaskCompleteListener!!.onComplete(Result.nullResult())
+                onTaskCompleteListener?.onComplete(Result.nullResult())
             } else {
-                onTaskCompleteListener!!.onComplete(Result.exception(result.exception))
+                onTaskCompleteListener?.onComplete(Result.exception(result.exception))
             }
         }
     }
@@ -76,11 +76,11 @@ class MessageRepository private constructor(
                                            lastName: String): Storable {
         return object : Storable {
             override fun getHashMap(): Map<String, Any> {
-                val userProfile: MutableMap<String, Any> = HashMap()
-                userProfile["emailAddress"] = userEmail
-                userProfile["firstName"] = firstName
-                userProfile["lastName"] = lastName
-                return userProfile
+                return mapOf(
+                        "emailAddress" to userEmail,
+                        "firstName" to firstName,
+                        "lastName" to lastName
+                )
             }
 
             override fun getId(): Long {
@@ -96,7 +96,7 @@ class MessageRepository private constructor(
      */
     private fun updateMessage(oldMessage: Message) {
         //        insert into Room using AsyncTask
-        database!!.messageDao().update(oldMessage)
+        database.messageDao().update(oldMessage)
     }
 
     /**
@@ -115,7 +115,7 @@ class MessageRepository private constructor(
      * @param message given Message
      */
     fun deleteMessage(message: Message) {
-        runOnThread { database!!.messageDao().deleteItem(message) }
+        runOnThread { database.messageDao().deleteItem(message) }
     }
 
     /**
@@ -129,7 +129,7 @@ class MessageRepository private constructor(
     }
 
     private fun getChatRoomMessagesFromDatabase(chatRoom: ChatRoom): LiveData<List<Message>> {
-        return database!!.messageDao().getAllMessagesFromChatRoomLive(chatRoom.id)
+        return database.messageDao().getAllMessagesFromChatRoomLive(chatRoom.id)
     }
 
     /**
@@ -141,7 +141,7 @@ class MessageRepository private constructor(
     fun newMessageSent(
             context: Context,
             newMessage: Message,
-            listener: OnTaskCompleteListener<Message>) {
+            listener: OnTaskCompleteListener<Message>? = null) {
         insertMessageInRoom(newMessage) { result: TaskResult<Message> ->
             val roomLastMessage = result.data
             insertMessageInFireBase(context, roomLastMessage)
@@ -175,7 +175,7 @@ class MessageRepository private constructor(
      * @param context    context
      * @param newMessage given new message
      */
-    private fun insertMessageInFireBase(context: Context, newMessage: Message?) {
+    private fun insertMessageInFireBase(context: Context, newMessage: Message) {
         val intent = Intent(context, FireBaseIntentService::class.java)
         intent.putExtra(FireBaseIntentService.ACTION_INTENT,
                 FireBaseIntentService.Actions.ACTION_ADD_MESSAGE)
@@ -189,7 +189,7 @@ class MessageRepository private constructor(
      * @return `List` of  messages
      */
     val allMessages: ArrayList<Message>
-        get() = database!!.messageDao().allMessages as ArrayList<Message>
+        get() = database.messageDao().allMessages as ArrayList<Message>
 
     /**
      * Clear all given chat room messages - From Room - From FireStore.
@@ -197,7 +197,7 @@ class MessageRepository private constructor(
      * @param chatRoom given chat room
      */
     fun clearAllChatRoomMessages(chatRoom: ChatRoom) {
-        database!!.messageDao().clearChatRoomMessages(chatRoom.id)
+        database.messageDao().clearChatRoomMessages(chatRoom.id)
     }
 
     /**
@@ -212,17 +212,17 @@ class MessageRepository private constructor(
      * Call to clear all messages from Room.
      */
     private fun clearAllMessages() {
-        database!!.messageDao().clear()
+        database.messageDao().clear()
     }
 
     /**
      * Add given list of messages to Room.
      */
-    fun addMessagesToLocal(messages: List<Message>) {
-        runOnThread { database!!.messageDao().insertAllMessages(messages) }
+    private fun addMessagesToLocal(messages: List<Message>) {
+        runOnThread { database.messageDao().insertAllMessages(messages) }
     }
 
-    fun runOnThread(runnable: Runnable?) {
+    private fun runOnThread(runnable: Runnable?) {
         Thread(runnable).start()
     }
 
@@ -231,9 +231,9 @@ class MessageRepository private constructor(
      *
      * @param message given message
      */
-    fun addMessageToFireBase(message: Message?) {
+    fun addMessageToFireBase(message: Message) {
         onlineDatabaseStore
-                .storeMessage(message!!, userAuthentication.currentUserUid)
+                .storeMessage(message, userAuthentication.currentUserUid)
     }
 
     /**
@@ -241,7 +241,7 @@ class MessageRepository private constructor(
      *
      * @param messageList given messages list
      */
-    fun addMessagesToFireBase(messageList: List<Message?>) {
+    fun addMessagesToFireBase(messageList: List<Message>) {
         for (message in messageList) {
             addMessageToFireBase(message)
         }
@@ -253,12 +253,7 @@ class MessageRepository private constructor(
     fun syncMessagesFromFireStoreToRoom() {
         onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!) { result: TaskResult<List<Map<String, Any>>> ->
             if (result.isSuccessful) {
-                val messages: MutableList<Message> = ArrayList()
-                for (data in result.data!!) {
-                    Timber.i(data["mid"].toString())
-                    messages.add(fromMap(data))
-                }
-                addMessagesToLocal(messages)
+                addMessagesToLocal(result.data.map(Message::fromMap))
             }
         }
     }
@@ -278,9 +273,9 @@ class MessageRepository private constructor(
      * @param password password
      * @param listener task completion listener`
      */
-    fun signInWithEmailAndPassword(email: String?, password: String?,
-                                   listener: OnTaskCompleteListener<UserAuthResult?>?) {
-        userAuthentication.signInWithEmailAndPassword(email!!, password!!, listener)
+    fun signInWithEmailAndPassword(email: String, password: String,
+                                   listener: OnTaskCompleteListener<UserAuthResult>?) {
+        userAuthentication.signInWithEmailAndPassword(email, password, listener)
     }
 
     /**
@@ -289,7 +284,7 @@ class MessageRepository private constructor(
      * @param listener listener for updates
      */
     fun reloadCurrentUserAuthState(
-            listener: OnTaskCompleteListener<Void?>?) {
+            listener: OnTaskCompleteListener<Void>?) {
         userAuthentication.reloadCurrentUserAuthState(listener)
     }
 
@@ -302,7 +297,7 @@ class MessageRepository private constructor(
          * @param context given context
          * @return synchronized call to get Instance of MessageRepository class
          */
-        fun getInstance(context: Context?): MessageRepository {
+        fun getInstance(context: Context): MessageRepository {
             if (repository == null) {
                 synchronized(MessageRepository::class.java) {
                     val database = ChatBotDatabase.getInstance(context)

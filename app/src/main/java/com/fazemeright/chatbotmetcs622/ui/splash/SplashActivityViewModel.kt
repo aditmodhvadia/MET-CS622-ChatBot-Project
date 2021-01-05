@@ -10,7 +10,6 @@ import com.fazemeright.library.api.result.ResultAdapterForBooleanLiveUpdates
 class SplashActivityViewModel(application: Application) : BaseViewModel(application) {
     private val userAuthStateMutable = MutableLiveData<Result<Boolean>>()
 
-    @JvmField
     var userAuthState: LiveData<Result<Boolean>> = userAuthStateMutable
 
     /**

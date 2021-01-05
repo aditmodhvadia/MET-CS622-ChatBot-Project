@@ -20,8 +20,7 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(), View.OnClickListen
     private var userPasswordEditText: EditText? = null
     private var tvDoNotHaveAccount: TextView? = null
     private var btnLogin: Button? = null
-    override val viewModelClass: LoginActivityViewModel
-        get() = LoginActivityViewModel(application)
+    override val viewModelClass: LoginActivityViewModel = LoginActivityViewModel(application)
 
     override fun initViews() {
         setUpSupportActionBar()
@@ -29,7 +28,7 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(), View.OnClickListen
         userPasswordEditText = findViewById(R.id.userPasswordEditText)
         tvDoNotHaveAccount = findViewById(R.id.tvDontHaveAccount)
         btnLogin = findViewById(R.id.btnLogin)
-        viewModel!!.userSignedIn.observe(this, {
+        viewModel.userSignedIn.observe(this, {
             setLoginSuccessInButton()
             startMessageSyncWithCloud()
             openLandingActivity()
@@ -40,18 +39,20 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(), View.OnClickListen
      * Sync messages of the cloud with local.
      */
     private fun startMessageSyncWithCloud() {
-        val intent = Intent(context, FireBaseIntentService::class.java)
-        intent.putExtra(
-                FireBaseIntentService.ACTION_INTENT,
-                FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES)
-        ContextCompat.startForegroundService(context!!, intent)
+        Intent(context, FireBaseIntentService::class.java).apply {
+            putExtra(
+                    FireBaseIntentService.ACTION_INTENT,
+                    FireBaseIntentService.Actions.ACTION_SYNC_MESSAGES)
+        }.also {
+            ContextCompat.startForegroundService(context, it)
+        }
     }
 
     /**
      * Set login successful message in the login button.
      */
     private fun setLoginSuccessInButton() {
-        btnLogin!!.text = getString(R.string.login_success_msg)
+        btnLogin?.text = getString(R.string.login_success_msg)
     }
 
     /**
@@ -73,8 +74,8 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(), View.OnClickListen
     }
 
     override fun setListeners() {
-        btnLogin!!.setOnClickListener(this)
-        tvDoNotHaveAccount!!.setOnClickListener(this)
+        btnLogin?.setOnClickListener(this)
+        tvDoNotHaveAccount?.setOnClickListener(this)
     }
 
     override val layoutResId: Int
@@ -86,8 +87,8 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(), View.OnClickListen
             goToRegistrationActivity()
         } else if (clickedViewId == R.id.btnLogin) {
             disableButton(btnLogin!!)
-            performLogin(userEmailEditText!!.text.toString().trim { it <= ' ' },
-                    userPasswordEditText!!.text.toString().trim { it <= ' ' })
+            performLogin(userEmailEditText!!.text.toString().trim(),
+                    userPasswordEditText!!.text.toString().trim())
             enableButton(btnLogin!!)
         }
     }
@@ -101,17 +102,17 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(), View.OnClickListen
     private fun performLogin(email: String, password: String) {
         //    TODO: Move to ViewModel
         if (!isValidEmail(email)) {
-            userEmailEditText!!.error = context!!.getString(R.string.incorrect_email_err_msg)
+            userEmailEditText!!.error = context.getString(R.string.incorrect_email_err_msg)
             userEmailEditText!!.requestFocus()
             return
         }
         if (!isValidPassword(password)) {
-            userPasswordEditText!!.error = context!!.getString(R.string.incorrect_pass_err_msg)
+            userPasswordEditText!!.error = context.getString(R.string.incorrect_pass_err_msg)
             userPasswordEditText!!.requestFocus()
             return
         }
         Timber.i("Login clicked")
-        viewModel!!.signInWithEmailPassword(
+        viewModel.signInWithEmailPassword(
                 email,
                 password)
     }

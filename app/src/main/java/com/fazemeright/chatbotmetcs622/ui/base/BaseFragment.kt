@@ -19,6 +19,7 @@ abstract class BaseFragment : Fragment() {
     protected lateinit var apiManager: ApiManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mContext = requireContext()
         messageRepository = MessageRepository.getInstance(mContext)
         apiManager = ApiManager.instance
         apiManager.init(NetworkManager.instance)

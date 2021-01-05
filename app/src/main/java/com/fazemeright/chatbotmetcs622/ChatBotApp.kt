@@ -15,7 +15,7 @@ class ChatBotApp : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         }
-        NetworkManager.instance?.init(applicationContext, 300)
+        NetworkManager.instance.init(applicationContext, 300)
         ApiManager.BaseUrl.setLocalIp("http://192.168.43.28:8080")
         createNotificationChannel()
     }
@@ -25,10 +25,8 @@ class ChatBotApp : Application() {
      */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val serviceChannel = NotificationChannel(
-                    CHANNEL_ID, "FireBase Sync channel", NotificationManager.IMPORTANCE_DEFAULT)
-            val manager = getSystemService(NotificationManager::class.java)
-            manager?.createNotificationChannel(serviceChannel)
+            getSystemService(NotificationManager::class.java)?.createNotificationChannel(NotificationChannel(
+                    CHANNEL_ID, "FireBase Sync channel", NotificationManager.IMPORTANCE_DEFAULT))
         }
     }
 

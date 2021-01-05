@@ -48,14 +48,14 @@ data class Message(
         }
 
     override fun getHashMap(): Map<String, Any> {
-        val messageHashMap: MutableMap<String, Any> = HashMap()
-        messageHashMap["mid"] = mid
-        messageHashMap["msg"] = msg
-        messageHashMap["sender"] = sender
-        messageHashMap["receiver"] = receiver
-        messageHashMap["chatRoomId"] = chatRoomId
-        messageHashMap["timestamp"] = timestamp
-        return messageHashMap
+        return mapOf(
+                "mid" to mid,
+                "msg" to msg,
+                "sender" to sender,
+                "receiver" to receiver,
+                "chatRoomId" to chatRoomId,
+                "timestamp" to timestamp
+        )
     }
 
     override fun getId(): Long {

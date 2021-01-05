@@ -488,12 +488,12 @@ class NetworkManager : NetworkWrapper {
          * @return instance
          */
         @JvmStatic
-        val instance: NetworkManager?
+        val instance: NetworkManager
             get() {
                 if (networkManager == null) {
                     networkManager = NetworkManager()
                 }
-                return networkManager
+                return networkManager!!
             }
 
         /**
@@ -504,11 +504,11 @@ class NetworkManager : NetworkWrapper {
          */
         fun getHttpClient(requestTimeOut: Int): OkHttpClient {
             // if set < 2 second then we put our default timeout
-            val builder = OkHttpClient.Builder()
-            builder.connectTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
-            builder.readTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
-            builder.writeTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
-            return builder.build()
+            return OkHttpClient.Builder().apply {
+                connectTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
+                readTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
+                writeTimeout(requestTimeOut.toLong(), TimeUnit.SECONDS)
+            }.build()
         }
     }
 }

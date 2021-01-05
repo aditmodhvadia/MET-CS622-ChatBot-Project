@@ -11,7 +11,6 @@ class RegistrationActivityViewModel(
         application: Application) : BaseViewModel(application) {
     private val userRegisteredMutable = MutableLiveData<Result<Boolean>>()
 
-    @JvmField
     var userRegistered: LiveData<Result<Boolean>> = userRegisteredMutable
 
     /**
