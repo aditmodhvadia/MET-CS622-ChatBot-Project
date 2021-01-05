@@ -1,7 +1,8 @@
 package com.fazemeright.library.api
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fazemeright.library.api.firebase.FireBaseUserAuthentication
+import com.fazemeright.library.api.domain.authentication.UserAuthentication
+import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

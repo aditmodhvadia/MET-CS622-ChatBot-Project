@@ -1,5 +1,6 @@
-package com.fazemeright.library.api
+package com.fazemeright.library.api.domain.database
 
+import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.result.Result
 
 interface DatabaseStore {

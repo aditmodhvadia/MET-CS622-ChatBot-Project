@@ -1,6 +1,6 @@
-package com.fazemeright.library.api.firebase
+package com.fazemeright.library.api.domain.database.firebase
 
-import com.fazemeright.library.api.DatabaseStore
+import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.result.Result
 import com.google.android.gms.tasks.Task

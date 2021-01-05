@@ -1,7 +1,7 @@
-package com.fazemeright.library.api.firebase
+package com.fazemeright.library.api.domain.authentication.firebase.authresult
 
 import android.app.Activity
-import com.fazemeright.library.api.UserAuthResult
+import com.fazemeright.library.api.domain.authentication.UserAuthResult
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task

@@ -14,11 +14,11 @@ import com.fazemeright.chatbotmetcs622.network.handlers.NetworkCallback
 import com.fazemeright.chatbotmetcs622.network.models.NetError
 import com.fazemeright.chatbotmetcs622.network.models.NetResponse
 import com.fazemeright.chatbotmetcs622.network.models.response.QueryResponseMessage
-import com.fazemeright.library.api.DatabaseStore
+import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.Storable
-import com.fazemeright.library.api.UserAuthentication
-import com.fazemeright.library.api.firebase.FireBaseDatabaseStore
-import com.fazemeright.library.api.firebase.FireBaseUserAuthentication
+import com.fazemeright.library.api.domain.authentication.UserAuthentication
+import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
+import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
 import com.fazemeright.library.api.result.Result
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await

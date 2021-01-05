@@ -1,4 +1,4 @@
-package com.fazemeright.library.api
+package com.fazemeright.library.api.domain.authentication
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser

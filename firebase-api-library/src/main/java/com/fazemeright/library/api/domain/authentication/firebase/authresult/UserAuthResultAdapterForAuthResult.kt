@@ -1,6 +1,6 @@
-package com.fazemeright.library.api.firebase
+package com.fazemeright.library.api.domain.authentication.firebase.authresult
 
-import com.fazemeright.library.api.UserAuthResult
+import com.fazemeright.library.api.domain.authentication.UserAuthResult
 import com.google.firebase.auth.AuthResult
 
 class UserAuthResultAdapterForAuthResult(private val authResult: AuthResult?) : UserAuthResult {

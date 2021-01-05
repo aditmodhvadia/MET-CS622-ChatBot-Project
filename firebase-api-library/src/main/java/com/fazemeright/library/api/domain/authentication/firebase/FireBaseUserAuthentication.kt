@@ -1,7 +1,8 @@
-package com.fazemeright.library.api.firebase
+package com.fazemeright.library.api.domain.authentication.firebase
 
-import com.fazemeright.library.api.UserAuthResult
-import com.fazemeright.library.api.UserAuthentication
+import com.fazemeright.library.api.domain.authentication.UserAuthResult
+import com.fazemeright.library.api.domain.authentication.UserAuthentication
+import com.fazemeright.library.api.domain.authentication.firebase.authresult.TaskAuthResultToUserAuthResultAdapter
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

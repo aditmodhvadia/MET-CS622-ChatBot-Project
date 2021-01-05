@@ -2,6 +2,7 @@ package com.fazemeright.library.api.firebase
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import org.junit.*
