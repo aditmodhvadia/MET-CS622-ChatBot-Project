@@ -3,14 +3,15 @@ package com.fazemeright.chatbotmetcs622.ui.splash
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Handler
+import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
-import android.widget.TextView
 import androidx.annotation.AnimRes
 import androidx.work.Constraints
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.fazemeright.chatbotmetcs622.R
+import com.fazemeright.chatbotmetcs622.databinding.ActivitySplashBinding
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity
@@ -19,18 +20,15 @@ import com.fazemeright.library.api.result.Result
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class SplashActivity : BaseActivity<SplashActivityViewModel>() {
-    private var tvAppVersion: TextView? = null
-    private var tvAppTitle: TextView? = null
+class SplashActivity : BaseActivity<SplashActivityViewModel, ActivitySplashBinding>() {
     override val viewModelClass: SplashActivityViewModel = SplashActivityViewModel(application)
 
     override fun initViews() {
         hideSystemUi()
-        tvAppVersion = findViewById(R.id.tvAppVersion)
-        tvAppTitle = findViewById(R.id.tvAppTitle)
-        tvAppVersion?.text = appVersion
+
+        binding.tvAppVersion.text = appVersion
         startAnimationOnViews(R.anim.fade_in)
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             viewModel.userAuthState.observe(this, { result: Result<Boolean> ->
                 when (result) {
                     is Result.Success -> {
@@ -77,8 +75,8 @@ class SplashActivity : BaseActivity<SplashActivityViewModel>() {
      */
     private fun startAnimationOnViews(@AnimRes animationId: Int) {
         val animFadeOut = AnimationUtils.loadAnimation(applicationContext, animationId)
-        tvAppVersion?.startAnimation(animFadeOut)
-        tvAppTitle?.startAnimation(animFadeOut)
+        binding.tvAppVersion.startAnimation(animFadeOut)
+        binding.tvAppTitle.startAnimation(animFadeOut)
     }
 
     /**
@@ -113,5 +111,7 @@ class SplashActivity : BaseActivity<SplashActivityViewModel>() {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
-    override val layoutResId: Int = R.layout.activity_splash
+    override fun inflateLayoutFromBinding(): ActivitySplashBinding {
+        return ActivitySplashBinding.inflate(layoutInflater)
+    }
 }

@@ -5,8 +5,8 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.fazemeright.chatbotmetcs622.R
+import com.fazemeright.chatbotmetcs622.databinding.ActivityLandingBinding
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
 import com.fazemeright.chatbotmetcs622.ui.chat.ChatActivity
@@ -14,8 +14,7 @@ import com.fazemeright.chatbotmetcs622.ui.landing.ChatSelectionListAdapter.ChatL
 import com.fazemeright.chatbotmetcs622.ui.registration.RegistrationActivity
 import java.util.*
 
-class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListInteractionListener {
-    private lateinit var rvChatRoomList: RecyclerView
+class LandingActivity : BaseActivity<LandingActivityViewModel, ActivityLandingBinding>(), ChatListInteractionListener {
     private lateinit var adapter: ChatSelectionListAdapter
     override val viewModelClass: LandingActivityViewModel
         get() = LandingActivityViewModel(application)
@@ -25,7 +24,6 @@ class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListIntera
             val firstName = viewModel.userName ?: "Adit"
             title = getString(R.string.welcome_title) + " " + firstName
         }
-        rvChatRoomList = findViewById(R.id.rvChatRoomList)
         adapter = ChatSelectionListAdapter(this)
         setUpRecyclerView()
     }
@@ -34,7 +32,7 @@ class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListIntera
      * Set up the RecyclerView.
      */
     private fun setUpRecyclerView() {
-        rvChatRoomList.apply {
+        binding.rvChatRoomList.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(
@@ -82,8 +80,6 @@ class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListIntera
         finish()
     }
 
-    override val layoutResId: Int = R.layout.activity_landing
-
     override fun onChatRoomClicked(chatRoom: ChatRoom) {
         Intent(this@LandingActivity, ChatActivity::class.java).apply {
             putExtra(SELECTED_CHAT_ROOM, chatRoom)
@@ -94,5 +90,9 @@ class LandingActivity : BaseActivity<LandingActivityViewModel>(), ChatListIntera
 
     companion object {
         const val SELECTED_CHAT_ROOM = "chatRoomSelected"
+    }
+
+    override fun inflateLayoutFromBinding(): ActivityLandingBinding {
+        return ActivityLandingBinding.inflate(layoutInflater)
     }
 }

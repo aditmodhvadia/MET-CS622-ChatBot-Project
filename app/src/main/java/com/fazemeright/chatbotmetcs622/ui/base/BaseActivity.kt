@@ -3,7 +3,6 @@ package com.fazemeright.chatbotmetcs622.ui.base
 import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -13,22 +12,27 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewbinding.ViewBinding
 
-abstract class BaseActivity<T : BaseViewModel> : AppCompatActivity() {
+abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatActivity() {
 
     lateinit var context: Context
 
-    protected lateinit var viewModel: T
+    protected lateinit var binding: VB
+    protected lateinit var viewModel: VM
         private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = inflateLayoutFromBinding()
         context = this
         viewModel = ViewModelProvider(this).get(viewModelClass::class.java)
-        setContentView(layoutResId)
+        setContentView(binding.root)
     }
 
-    protected abstract val viewModelClass: T
+    abstract fun inflateLayoutFromBinding(): VB
+
+    protected abstract val viewModelClass: VM
     override fun setContentView(@LayoutRes layoutResId: Int) {
         super.setContentView(layoutResId)
         initViews()
@@ -90,20 +94,14 @@ abstract class BaseActivity<T : BaseViewModel> : AppCompatActivity() {
     open fun setListeners() {}
 
     /**
-     * To get layout resource id.
-     */
-    abstract val layoutResId: Int
-
-    /**
      * Determine if network is available and connected.
      *
      * @return `true` if connected, else `false`
      */
     val isNetworkConnected: Boolean
         get() {
-            val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo: NetworkInfo? = cm.activeNetworkInfo
-            return networkInfo != null && networkInfo.isConnected
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            return cm.isDefaultNetworkActive
         }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
