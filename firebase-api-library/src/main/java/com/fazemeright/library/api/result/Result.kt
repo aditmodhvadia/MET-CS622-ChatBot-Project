@@ -1,6 +1,6 @@
 package com.fazemeright.library.api.result
 
-public sealed class Result<out T : Any> {
+sealed class Result<out T : Any> {
 
     data class Success<out T : Any>(val data: T, val msg: String = "") : Result<T>()
     data class Error(val exception: Exception? = null, val msg: String? = exception?.message) : Result<Nothing>()

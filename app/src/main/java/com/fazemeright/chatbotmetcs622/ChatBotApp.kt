@@ -4,8 +4,6 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import com.fazemeright.chatbotmetcs622.network.ApiManager
-import com.fazemeright.chatbotmetcs622.network.NetworkManager
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -15,8 +13,6 @@ class ChatBotApp : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         }
-        NetworkManager.instance.init(applicationContext, 300)
-        ApiManager.BaseUrl.setLocalIp("http://192.168.43.28:8080")
         createNotificationChannel()
     }
 

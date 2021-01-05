@@ -1,7 +1,7 @@
 package com.fazemeright.library.api.domain.database.firebase
 
-import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.Storable
+import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.result.Result
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class FireBaseDatabaseStore : DatabaseStore {
+object FireBaseDatabaseStore : DatabaseStore {
     override suspend fun storeUserData(uid: String, userData: Storable): Result<Boolean> {
         return runInScope {
             FirebaseFirestore.getInstance().collection(BaseUrl.USERS).document(uid).let {
@@ -83,23 +83,5 @@ class FireBaseDatabaseStore : DatabaseStore {
     object BaseUrl {
         const val USERS = "users"
         const val MESSAGES = "messages" // Declare the constants over here
-    }
-
-    companion object {
-        private var mInstance: FireBaseDatabaseStore? = null
-
-        /**
-         * Get singleton instance of the object.
-         *
-         * @return instance
-         */
-        @get:Synchronized
-        val instance: FireBaseDatabaseStore
-            get() {
-                if (mInstance == null) {
-                    mInstance = FireBaseDatabaseStore()
-                }
-                return mInstance!!
-            }
     }
 }
