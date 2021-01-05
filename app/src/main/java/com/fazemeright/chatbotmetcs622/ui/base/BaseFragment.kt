@@ -2,7 +2,6 @@ package com.fazemeright.chatbotmetcs622.ui.base
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,8 +24,8 @@ abstract class BaseFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(layoutResId, container, false)
-        initViews(view)
-        setListeners(view)
+        initViews()
+        setListeners()
         return view
     }
 
@@ -39,14 +38,14 @@ abstract class BaseFragment : Fragment() {
     /**
      * Template method to initialize views of activity.
      */
-    fun initViews(view: View?) {}
+    fun initViews() {}
 
     /**
      * Template method to set listeners of view or callback.
      *
      * @param view view
      */
-    fun setListeners(view: View?) {}
+    private fun setListeners() {}
 
     /**
      * Determine if network is connected.
@@ -56,7 +55,6 @@ abstract class BaseFragment : Fragment() {
     val isNetworkConnected: Boolean
         get() {
             val cm = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo: NetworkInfo? = cm.activeNetworkInfo
-            return networkInfo != null && networkInfo.isConnected
+            return cm.isDefaultNetworkActive
         }
 }

@@ -2,10 +2,8 @@ package com.fazemeright.chatbotmetcs622.ui.registration
 
 import android.content.Intent
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import com.fazemeright.chatbotmetcs622.R
+import com.fazemeright.chatbotmetcs622.databinding.ActivityRegistrationBinding
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity
 import com.fazemeright.chatbotmetcs622.ui.login.LoginActivity
@@ -15,30 +13,16 @@ import com.fazemeright.chatbotmetcs622.utils.AppUtils.isValidName
 import com.fazemeright.chatbotmetcs622.utils.AppUtils.isValidPassword
 import com.fazemeright.library.api.result.Result
 
-class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View.OnClickListener {
-    private var userEmailEditText: EditText? = null
-    private var userPasswordEditText: EditText? = null
-    private var userConPasswordEditText: EditText? = null
-    private var etFirstName: EditText? = null
-    private var etLastName: EditText? = null
-    private var tvHaveAccount: TextView? = null
-    private var btnRegister: Button? = null
+class RegistrationActivity : BaseActivity<RegistrationActivityViewModel, ActivityRegistrationBinding>(), View.OnClickListener {
     override val viewModelClass: RegistrationActivityViewModel
         get() = RegistrationActivityViewModel(application)
 
     override fun initViews() {
         setUpSupportActionBar()
-        userEmailEditText = findViewById(R.id.userLoginEmailEditText)
-        etFirstName = findViewById(R.id.etFirstName)
-        etLastName = findViewById(R.id.etLastName)
-        userPasswordEditText = findViewById(R.id.userPasswordEditText)
-        userConPasswordEditText = findViewById(R.id.userConPasswordEditText)
-        tvHaveAccount = findViewById(R.id.tvHaveAccount)
-        btnRegister = findViewById(R.id.btnRegister)
 
         viewModel.userRegistered.observe(this, { userRegistered: Result<Boolean> ->
             if (userRegistered is Result.Success) {
-                btnRegister?.text = getString(R.string.registration_success_msg)
+                binding.btnRegister.text = getString(R.string.registration_success_msg)
                 openLandingActivity()
             }
         })
@@ -54,20 +38,18 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
     }
 
     override fun setListeners() {
-        btnRegister?.setOnClickListener(this)
-        tvHaveAccount?.setOnClickListener(this)
+        binding.btnRegister.setOnClickListener(this)
+        binding.tvHaveAccount.setOnClickListener(this)
     }
-
-    override val layoutResId: Int = R.layout.activity_registration
 
     override fun onClick(v: View) {
         val id = v.id
         if (id == R.id.tvHaveAccount) {
             openLoginActivity()
         } else if (id == R.id.btnRegister) {
-            disableButton(btnRegister!!)
+            disableButton(binding.btnRegister)
             registerUser()
-            enableButton(btnRegister!!)
+            enableButton(binding.btnRegister)
         }
     }
 
@@ -75,11 +57,11 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
      * Register the user.
      */
     private fun registerUser() {
-        val email = userEmailEditText!!.text.toString()
-        val firstName = etFirstName!!.text.toString()
-        val lastName = etLastName!!.text.toString()
-        val password = userPasswordEditText!!.text.toString()
-        val conPassword = userConPasswordEditText!!.text.toString()
+        val email = binding.userLoginEmailEditText.text.toString()
+        val firstName = binding.etFirstName.text.toString()
+        val lastName = binding.etLastName.text.toString()
+        val password = binding.userPasswordEditText.text.toString()
+        val conPassword = binding.userConPasswordEditText.text.toString()
         performRegistration(email, firstName, lastName, password, conPassword)
     }
 
@@ -107,30 +89,30 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
             conPassword: String) {
         // TODO: Move to ViewModel
         if (!isValidEmail(email)) {
-            userEmailEditText!!.error = context.getString(R.string.incorrect_email_err_msg)
-            userEmailEditText!!.requestFocus()
+            binding.userLoginEmailEditText.error = context.getString(R.string.incorrect_email_err_msg)
+            binding.userLoginEmailEditText.requestFocus()
             return
         }
         if (!isValidName(firstName)) {
-            etFirstName!!.error = context.getString(R.string.incorrect_first_name)
-            etFirstName!!.requestFocus()
+            binding.etFirstName.error = context.getString(R.string.incorrect_first_name)
+            binding.etFirstName.requestFocus()
             return
         }
         if (!isValidName(lastName)) {
-            etLastName!!.error = context.getString(R.string.incorrect_last_name)
-            etLastName!!.requestFocus()
+            binding.etLastName.error = context.getString(R.string.incorrect_last_name)
+            binding.etLastName.requestFocus()
             return
         }
         if (!isValidPassword(password)) {
-            userPasswordEditText!!.error = context.getString(R.string.incorrect_pass_err_msg)
-            userPasswordEditText!!.requestFocus()
+            binding.userPasswordEditText.error = context.getString(R.string.incorrect_pass_err_msg)
+            binding.userPasswordEditText.requestFocus()
             return
         }
         if (!arePasswordsValid(password, conPassword)) {
-            userPasswordEditText!!.error = context.getString(R.string.passwords_dont_match_err_msg)
-            userPasswordEditText!!.requestFocus()
-            userPasswordEditText!!.setText("")
-            userConPasswordEditText!!.setText("")
+            binding.userPasswordEditText.error = context.getString(R.string.passwords_dont_match_err_msg)
+            binding.userPasswordEditText.requestFocus()
+            binding.userPasswordEditText.setText("")
+            binding.userConPasswordEditText.setText("")
             return
         }
         viewModel.registerNewUser(
@@ -146,5 +128,9 @@ class RegistrationActivity : BaseActivity<RegistrationActivityViewModel>(), View
     private fun openLandingActivity() {
         startActivity(Intent(this@RegistrationActivity, LandingActivity::class.java))
         finish()
+    }
+
+    override fun inflateLayoutFromBinding(): ActivityRegistrationBinding {
+        return ActivityRegistrationBinding.inflate(layoutInflater)
     }
 }

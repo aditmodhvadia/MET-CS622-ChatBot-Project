@@ -4,14 +4,12 @@ import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.CompoundButton
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.fazemeright.chatbotmetcs622.R
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.database.message.Message.Companion.newMessage
+import com.fazemeright.chatbotmetcs622.databinding.ActivityChatBinding
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity
@@ -21,19 +19,13 @@ import com.google.android.material.chip.ChipGroup
 import timber.log.Timber
 import java.util.*
 
-class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener {
-    private lateinit var rvChatList: RecyclerView
+class ChatActivity : BaseActivity<ChatActivityViewModel, ActivityChatBinding>(), View.OnClickListener {
     private lateinit var adapter: ChatListAdapter
-    private lateinit var etMsg: EditText
-    private lateinit var ivSendMsg: ImageView
     private lateinit var chatRoom: ChatRoom
     private lateinit var dataFilterChipGroup: ChipGroup
     override val viewModelClass: ChatActivityViewModel = ChatActivityViewModel(application)
 
     override fun initViews() {
-        etMsg = findViewById(R.id.etMsg)
-        ivSendMsg = findViewById(R.id.ivSendMsg)
-        rvChatList = findViewById(R.id.rvChatList)
         dataFilterChipGroup = findViewById(R.id.dataFilterChipGroup)
         if (intent != null) {
             chatRoom = intent.getSerializableExtra(LandingActivity.SELECTED_CHAT_ROOM) as ChatRoom
@@ -52,8 +44,8 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
         viewModel.messageSent.observe(this, { result: Result<Boolean> ->
             when (result) {
                 is Result.Success -> {
-                    etMsg.setText("")
-                    rvChatList.scrollToPosition(adapter.itemCount)
+                    binding.etMsg.setText("")
+                    binding.rvChatList.scrollToPosition(adapter.itemCount)
                 }
                 is Result.Error -> {
                     // TODO: Show error to the user
@@ -69,21 +61,23 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
      * Set up the recyclerview.
      */
     private fun setUpRecyclerView() {
-        rvChatList.adapter = adapter
-        rvChatList.layoutManager = linearLayoutManager
-        rvChatList.setHasFixedSize(true)
-        // Show user the most recent messages, hence scroll to the top
-        rvChatList.scrollToPosition(adapter.itemCount)
+        binding.rvChatList.apply {
+            adapter = adapter
+            layoutManager = linearLayoutManager
+            setHasFixedSize(true)
+            // Show user the most recent messages, hence scroll to the top
+            scrollToPosition(adapter!!.itemCount)
+        }
     }
 
     /**
      * Set up the support action bar.
      */
     private fun setUpSupportActionBar() {
-        if (supportActionBar != null) {
-            supportActionBar!!.setHomeButtonEnabled(true)
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            supportActionBar!!.title = chatRoom.name
+        supportActionBar?.apply {
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
+            title = chatRoom.name
         }
     }
 
@@ -118,10 +112,12 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
                 dataFilterChipGroup.addView(chip) // add chip to ChipGroup
                 chip.setOnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
                     if (isChecked) {
-                        etMsg.requestFocus()
-                        etMsg.setText(buttonView.text.toString())
-                        etMsg.setSelection(buttonView.text.toString().length)
-                        showKeyBoard(etMsg)
+                        binding.etMsg.apply {
+                            requestFocus()
+                            setText(buttonView.text.toString())
+                            setSelection(buttonView.text.toString().length)
+                            showKeyBoard(this)
+                        }
                     }
                 }
             }
@@ -160,10 +156,8 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
     }
 
     override fun setListeners() {
-        ivSendMsg.setOnClickListener(this)
+        binding.ivSendMsg.setOnClickListener(this)
     }
-
-    override val layoutResId: Int = R.layout.activity_chat
 
     override fun onClick(v: View) {
         if (v.id == R.id.ivSendMsg) {
@@ -175,7 +169,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
      * User clicked send message. Show new message to user and pass it to repository.
      */
     private fun sendMessageClicked() {
-        val msg = etMsg.text.toString().trim()
+        val msg = binding.etMsg.text.toString().trim()
         if (TextUtils.isEmpty(msg)) {
             return
         }
@@ -186,4 +180,8 @@ class ChatActivity : BaseActivity<ChatActivityViewModel>(), View.OnClickListener
 
     override val menuId: Int
         get() = R.menu.menu_chat
+
+    override fun inflateLayoutFromBinding(): ActivityChatBinding {
+        return ActivityChatBinding.inflate(layoutInflater)
+    }
 }
