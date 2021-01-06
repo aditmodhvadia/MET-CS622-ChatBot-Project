@@ -8,15 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
+import com.fazemeright.chatbotmetcs622.repositories.message.MessageRepositoryImpl
 
 abstract class BaseFragment : Fragment() {
     lateinit var mContext: Context
-    protected lateinit var messageRepository: MessageRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mContext = requireContext()
-        messageRepository = MessageRepository.getInstance(mContext)
     }
 
     override fun onCreateView(

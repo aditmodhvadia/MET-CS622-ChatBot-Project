@@ -1,4 +1,4 @@
-package com.fazemeright.chatbotmetcs622.repositories
+package com.fazemeright.chatbotmetcs622.repositories.message
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -6,27 +6,7 @@ import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.library.api.result.Result
 
-interface Repository {
-    /**
-     * Get user name of the current user.
-     *
-     * @return user name
-     */
-    val userName: String?
-
-    /**
-     * Register new user and store the details.
-     *
-     * @param userEmail              email
-     * @param password               password
-     * @param firstName              first name
-     * @param lastName               last name
-     */
-    suspend fun createNewUserAndStoreDetails(userEmail: String,
-                                             password: String,
-                                             firstName: String,
-                                             lastName: String): Result<Boolean>
-
+interface MessageRepository {
     /**
      * Call to get Message with given Message ID.
      *
@@ -40,7 +20,7 @@ interface Repository {
      *
      * @param message given Message
      */
-    fun deleteMessage(message: Message)
+    suspend fun deleteMessage(message: Message)
 
     /**
      * Get messages from the given chat room.
@@ -65,12 +45,12 @@ interface Repository {
      *
      * @param chatRoom given chat room
      */
-    fun clearAllChatRoomMessages(chatRoom: ChatRoom)
+    suspend fun clearAllChatRoomMessages(chatRoom: ChatRoom)
 
     /**
-     * Call to logout user and clear all messages from Room.
+     * Call to clear all messages from Room.
      */
-    fun logOutUser()
+    suspend fun clearAllMessages()
 
     /**
      * Call to add the given message to FireStore.
@@ -91,18 +71,5 @@ interface Repository {
      */
     suspend fun syncMessagesFromFireStoreToRoom()
 
-    /**
-     * Sign in user with email and password.
-     *
-     * @param email    email
-     * @param password password
-     * @param listener task completion listener`
-     */
-    suspend fun signInWithEmailAndPassword(email: String, password: String): Result<Boolean>
-
-    /**
-     * Reload the current user authentication state.
-     *
-     */
-    suspend fun reloadCurrentUserAuthState(): Result<Boolean>
+    suspend fun syncMessagesWithCloudAndLocal()
 }

@@ -24,7 +24,9 @@ class ChatActivityViewModel(application: Application) : BaseViewModel(applicatio
      * @param chatRoom chat room
      */
     fun clearAllChatRoomMessages(chatRoom: ChatRoom) {
-        runOnThread { messageRepository.clearAllChatRoomMessages(chatRoom) }
+        viewModelScope.launch {
+            messageRepository.clearAllChatRoomMessages(chatRoom)
+        }
     }
 
     /**

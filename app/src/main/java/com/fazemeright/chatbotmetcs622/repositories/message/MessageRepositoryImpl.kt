@@ -1,4 +1,4 @@
-package com.fazemeright.chatbotmetcs622.repositories
+package com.fazemeright.chatbotmetcs622.repositories.message
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -7,77 +7,36 @@ import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.database.message.Message.Companion.newMessage
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
-import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.domain.authentication.UserAuthentication
 import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
 import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.fazemeright.library.api.result.Result
-import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
+import com.fazemeright.library.api.result.safeApiCall
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import timber.log.Timber
 import java.util.*
 
-class MessageRepository private constructor(
+class MessageRepositoryImpl private constructor(
         private val database: ChatBotDatabase,
         private val apiManager: RetrofitApiManager,
         private val userAuthentication: UserAuthentication,
         private val onlineDatabaseStore: DatabaseStore
-) : Repository {
+) : MessageRepository {
     /**
      * Call to insert given message into database with thread safety.
      *
      * @param newMessage given message
      */
     private suspend fun insertMessageInRoom(newMessage: Message): Result<Message> {
-        return withContext(Dispatchers.IO) {
+        return safeApiCall {
             Timber.i("Insert message in Room called%s", newMessage.msg)
             database.messageDao().insert(newMessage)
             database.messageDao().getLatestMessage(newMessage.chatRoomId).let {
-                return@withContext Result.Success(it)
+                Result.Success(it)
             }
-        }
-    }
-
-    /**
-     * Register new user and store the details.
-     *
-     * @param userEmail              email
-     * @param password               password
-     * @param firstName              first name
-     * @param lastName               last name
-     */
-    override suspend fun createNewUserAndStoreDetails(userEmail: String,
-                                                      password: String,
-                                                      firstName: String,
-                                                      lastName: String): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
-            try {
-                userAuthentication.createNewUserWithEmailPassword(
-                        userEmail,
-                        password).await()
-                userAuthentication.currentUserUid?.let {
-                    onlineDatabaseStore.storeUserData(
-                            it,
-                            getStorableFromUserDetails(userEmail, firstName, lastName))
-                } ?: throw UnsupportedOperationException("User not logged in")
-            } catch (e: Exception) {
-                Result.Error(e)
-            }
-        }
-    }
-
-    private fun getStorableFromUserDetails(userEmail: String, firstName: String,
-                                           lastName: String): Storable {
-        return object : Storable {
-            override val hashMap: Map<String, Any>
-                get() = mapOf(
-                        "emailAddress" to userEmail,
-                        "firstName" to firstName,
-                        "lastName" to lastName
-                )
-
-            override val id: Long = 0
         }
     }
 
@@ -86,9 +45,12 @@ class MessageRepository private constructor(
      *
      * @param oldMessage given project
      */
-    private fun updateMessage(oldMessage: Message) {
+    private suspend fun updateMessage(oldMessage: Message) {
         //        insert into Room using AsyncTask
-        database.messageDao().update(oldMessage)
+        safeApiCall {
+            database.messageDao().update(oldMessage)
+            Result.Success(true)
+        }
     }
 
     /**
@@ -106,8 +68,11 @@ class MessageRepository private constructor(
      *
      * @param message given Message
      */
-    override fun deleteMessage(message: Message) {
-        runOnThread { database.messageDao().deleteItem(message) }
+    override suspend fun deleteMessage(message: Message) {
+        safeApiCall {
+            database.messageDao().deleteItem(message)
+            Result.Success(true)
+        }
     }
 
     /**
@@ -133,7 +98,7 @@ class MessageRepository private constructor(
     override suspend fun newMessageSent(
             context: Context,
             newMessage: Message): Result<Message> {
-        return withContext(Dispatchers.IO) {
+        return safeApiCall {
             when (val msgInsertResult = insertMessageInRoom(newMessage)) {
                 is Result.Success -> async { insertMessageInFireBase(msgInsertResult.data) }
                 is Result.Error -> TODO()
@@ -160,7 +125,7 @@ class MessageRepository private constructor(
      * @param newMessage given new message
      */
     private suspend fun insertMessageInFireBase(newMessage: Message) {
-        withContext(Dispatchers.IO) {
+        safeApiCall {
             addMessageToFireBase(newMessage)
         }
     }
@@ -170,7 +135,7 @@ class MessageRepository private constructor(
      *
      * @return `List` of  messages
      */
-    val allMessagesInLocal: ArrayList<Message>
+    private val allMessagesInLocal: ArrayList<Message>
         get() = database.messageDao().allMessages as ArrayList<Message>
 
     /**
@@ -178,34 +143,31 @@ class MessageRepository private constructor(
      *
      * @param chatRoom given chat room
      */
-    override fun clearAllChatRoomMessages(chatRoom: ChatRoom) {
-        database.messageDao().clearChatRoomMessages(chatRoom.id)
-    }
-
-    /**
-     * Call to logout user and clear all messages from Room.
-     */
-    override fun logOutUser() {
-        userAuthentication.signOutUser()
-        clearAllMessages()
+    override suspend fun clearAllChatRoomMessages(chatRoom: ChatRoom) {
+        safeApiCall {
+            database.messageDao().clearChatRoomMessages(chatRoom.id)
+            Result.Success(true)
+        }
     }
 
     /**
      * Call to clear all messages from Room.
      */
-    private fun clearAllMessages() {
-        database.messageDao().clear()
+    override suspend fun clearAllMessages() {
+        safeApiCall {
+            database.messageDao().clear()
+            Result.Success(true)
+        }
     }
 
     /**
      * Add given list of messages to Room.
      */
-    private fun addMessagesToLocal(messages: List<Message>) {
-        runOnThread { database.messageDao().insertAllMessages(messages) }
-    }
-
-    private fun runOnThread(runnable: Runnable?) {
-        Thread(runnable).start()
+    private suspend fun addMessagesToLocal(messages: List<Message>) {
+        safeApiCall {
+            database.messageDao().insertAllMessages(messages)
+            Result.Success(true)
+        }
     }
 
     /**
@@ -214,14 +176,10 @@ class MessageRepository private constructor(
      * @param message given message
      */
     override suspend fun addMessageToFireBase(message: Message): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
-            try {
-                onlineDatabaseStore
-                        .storeMessage(message, userAuthentication.currentUserUid
-                                ?: throw UnsupportedOperationException("User not logged in"))
-            } catch (e: Exception) {
-                Result.Error(e)
-            }
+        return safeApiCall {
+            onlineDatabaseStore
+                    .storeMessage(message, userAuthentication.currentUserUid
+                            ?: throw UnsupportedOperationException("User not logged in"))
         }
     }
 
@@ -231,7 +189,7 @@ class MessageRepository private constructor(
      * @param messageList given messages list
      */
     override suspend fun addMessagesToFireBase(messageList: List<Message>): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
+        return safeApiCall {
             val results = mutableListOf<Deferred<Result<Boolean>>>()
             messageList.forEach {
                 results.add(async { addMessageToFireBase(it) })
@@ -254,53 +212,18 @@ class MessageRepository private constructor(
      * Call to sync messages from FireStore to Room for the logged in user.
      */
     override suspend fun syncMessagesFromFireStoreToRoom() {
-        onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!)
-    }
-
-    /**
-     * Get user name of the current user.
-     *
-     * @return user name
-     */
-    override val userName: String?
-        get() = userAuthentication.userName
-
-    /**
-     * Sign in user with email and password.
-     *
-     * @param email    email
-     * @param password password
-     * @param listener task completion listener`
-     */
-    override suspend fun signInWithEmailAndPassword(email: String, password: String): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
-            try {
-                userAuthentication.signInWithEmailAndPassword(email, password).await().let {
-                    Result.Success(true)
-                }
-            } catch (e: Exception) {
-                Result.Error(e)
-            }
-        }
-    }
-
-    /**
-     * Reload the current user authentication state.
-     *
-     */
-    override suspend fun reloadCurrentUserAuthState(): Result<Boolean> {
-        return try {
-            userAuthentication.reloadCurrentUserAuthState()?.await()
-                    ?: throw Exception("User not logged in")
+        safeApiCall {
+            onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!)
             Result.Success(true)
-        } catch (e: Exception) {
-            Result.Error(e)
         }
     }
 
-    suspend fun syncMessagesWithCloudAndLocal() {
-        addMessagesToFireBase(allMessagesInLocal)
-        syncMessagesFromFireStoreToRoom()
+    override suspend fun syncMessagesWithCloudAndLocal() {
+        safeApiCall {
+            addMessagesToFireBase(allMessagesInLocal)
+            syncMessagesFromFireStoreToRoom()
+            Result.Success(true)
+        }
     }
 
     private fun getServerEndPoint(chatRoomId: Int): String {
@@ -323,7 +246,7 @@ class MessageRepository private constructor(
     }
 
     companion object {
-        private var repository: MessageRepository? = null
+        private var repository: MessageRepositoryImpl? = null
 
         /**
          * Call to get instance of MessageRepository with the given context.
@@ -331,11 +254,11 @@ class MessageRepository private constructor(
          * @param context given context
          * @return synchronized call to get Instance of MessageRepository class
          */
-        fun getInstance(context: Context): MessageRepository {
+        fun getInstance(context: Context): MessageRepositoryImpl {
             if (repository == null) {
-                synchronized(MessageRepository::class.java) {
+                synchronized(MessageRepositoryImpl::class.java) {
                     val database = ChatBotDatabase.getInstance(context)
-                    repository = MessageRepository(database, RetrofitApiManager, FireBaseUserAuthentication,
+                    repository = MessageRepositoryImpl(database, RetrofitApiManager, FireBaseUserAuthentication,
                             FireBaseDatabaseStore)
                 }
             }

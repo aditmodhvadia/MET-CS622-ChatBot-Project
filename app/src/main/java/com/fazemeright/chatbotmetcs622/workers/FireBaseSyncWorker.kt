@@ -3,7 +3,7 @@ package com.fazemeright.chatbotmetcs622.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
+import com.fazemeright.chatbotmetcs622.repositories.message.MessageRepositoryImpl
 
 class FireBaseSyncWorker(context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
@@ -15,7 +15,7 @@ class FireBaseSyncWorker(context: Context, workerParams: WorkerParameters) : Cor
      * Sync messages from local to cloud, and then from cloud to local.
      */
     private suspend fun syncMessagesWithCloudAndLocal() {
-        MessageRepository.getInstance(applicationContext).apply {
+        MessageRepositoryImpl.getInstance(applicationContext).apply {
             this.syncMessagesWithCloudAndLocal()
         }
     }

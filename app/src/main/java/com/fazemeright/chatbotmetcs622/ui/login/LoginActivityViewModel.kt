@@ -21,7 +21,7 @@ class LoginActivityViewModel(application: Application) : BaseViewModel(applicati
      */
     fun signInWithEmailPassword(email: String, password: String) {
         viewModelScope.launch {
-            messageRepository.signInWithEmailAndPassword(email, password).let {
+            userRepository.signInWithEmailAndPassword(email, password).let {
                 userSignedInMutable.value = it
             }
         }
