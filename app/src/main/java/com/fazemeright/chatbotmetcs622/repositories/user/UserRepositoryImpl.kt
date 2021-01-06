@@ -10,9 +10,8 @@ import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAu
 import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.fazemeright.library.api.result.Result
-import kotlinx.coroutines.Dispatchers
+import com.fazemeright.library.api.result.safeApiCall
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 class UserRepositoryImpl(
         private val database: ChatBotDatabase,
@@ -37,19 +36,15 @@ class UserRepositoryImpl(
      * @param lastName               last name
      */
     override suspend fun createNewUserAndStoreDetails(userEmail: String, password: String, firstName: String, lastName: String): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
-            try {
-                userAuthentication.createNewUserWithEmailPassword(
-                        userEmail,
-                        password).await()
-                userAuthentication.currentUserUid?.let {
-                    onlineDatabaseStore.storeUserData(
-                            it,
-                            getStorableFromUserDetails(userEmail, firstName, lastName))
-                } ?: throw UnsupportedOperationException("User not logged in")
-            } catch (e: Exception) {
-                Result.Error(e)
-            }
+        return safeApiCall {
+            userAuthentication.createNewUserWithEmailPassword(
+                    userEmail,
+                    password).await()
+            userAuthentication.currentUserUid?.let {
+                onlineDatabaseStore.storeUserData(
+                        it,
+                        getStorableFromUserDetails(userEmail, firstName, lastName))
+            } ?: throw UnsupportedOperationException("User not logged in")
         }
     }
 
@@ -82,13 +77,9 @@ class UserRepositoryImpl(
      * @param listener task completion listener`
      */
     override suspend fun signInWithEmailAndPassword(email: String, password: String): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
-            try {
-                userAuthentication.signInWithEmailAndPassword(email, password).await().let {
-                    Result.Success(true)
-                }
-            } catch (e: Exception) {
-                Result.Error(e)
+        return safeApiCall {
+            userAuthentication.signInWithEmailAndPassword(email, password).await().let {
+                Result.Success(true)
             }
         }
     }
@@ -98,14 +89,11 @@ class UserRepositoryImpl(
      *
      */
     override suspend fun reloadCurrentUserAuthState(): Result<Boolean> {
-        return try {
+        return safeApiCall {
             userAuthentication.reloadCurrentUserAuthState()?.await()
                     ?: throw Exception("User not logged in")
             Result.Success(true)
-        } catch (e: Exception) {
-            Result.Error(e)
         }
-
     }
 
     companion object {

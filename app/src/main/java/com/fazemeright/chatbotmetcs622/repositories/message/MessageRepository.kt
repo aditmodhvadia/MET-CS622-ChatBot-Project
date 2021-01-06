@@ -45,7 +45,7 @@ interface MessageRepository {
      *
      * @param chatRoom given chat room
      */
-    fun clearAllChatRoomMessages(chatRoom: ChatRoom)
+    suspend fun clearAllChatRoomMessages(chatRoom: ChatRoom)
 
     /**
      * Call to clear all messages from Room.

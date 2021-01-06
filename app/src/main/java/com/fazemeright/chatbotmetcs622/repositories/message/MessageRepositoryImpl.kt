@@ -12,7 +12,10 @@ import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAu
 import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.fazemeright.library.api.result.Result
-import kotlinx.coroutines.*
+import com.fazemeright.library.api.result.safeApiCall
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import timber.log.Timber
 import java.util.*
 
@@ -28,11 +31,11 @@ class MessageRepositoryImpl private constructor(
      * @param newMessage given message
      */
     private suspend fun insertMessageInRoom(newMessage: Message): Result<Message> {
-        return withContext(Dispatchers.IO) {
+        return safeApiCall {
             Timber.i("Insert message in Room called%s", newMessage.msg)
             database.messageDao().insert(newMessage)
             database.messageDao().getLatestMessage(newMessage.chatRoomId).let {
-                return@withContext Result.Success(it)
+                Result.Success(it)
             }
         }
     }
@@ -42,9 +45,12 @@ class MessageRepositoryImpl private constructor(
      *
      * @param oldMessage given project
      */
-    private fun updateMessage(oldMessage: Message) {
+    private suspend fun updateMessage(oldMessage: Message) {
         //        insert into Room using AsyncTask
-        database.messageDao().update(oldMessage)
+        safeApiCall {
+            database.messageDao().update(oldMessage)
+            Result.Success(true)
+        }
     }
 
     /**
@@ -63,8 +69,9 @@ class MessageRepositoryImpl private constructor(
      * @param message given Message
      */
     override suspend fun deleteMessage(message: Message) {
-        withContext(Dispatchers.IO) {
+        safeApiCall {
             database.messageDao().deleteItem(message)
+            Result.Success(true)
         }
     }
 
@@ -91,7 +98,7 @@ class MessageRepositoryImpl private constructor(
     override suspend fun newMessageSent(
             context: Context,
             newMessage: Message): Result<Message> {
-        return withContext(Dispatchers.IO) {
+        return safeApiCall {
             when (val msgInsertResult = insertMessageInRoom(newMessage)) {
                 is Result.Success -> async { insertMessageInFireBase(msgInsertResult.data) }
                 is Result.Error -> TODO()
@@ -118,7 +125,7 @@ class MessageRepositoryImpl private constructor(
      * @param newMessage given new message
      */
     private suspend fun insertMessageInFireBase(newMessage: Message) {
-        withContext(Dispatchers.IO) {
+        safeApiCall {
             addMessageToFireBase(newMessage)
         }
     }
@@ -128,7 +135,7 @@ class MessageRepositoryImpl private constructor(
      *
      * @return `List` of  messages
      */
-    val allMessagesInLocal: ArrayList<Message>
+    private val allMessagesInLocal: ArrayList<Message>
         get() = database.messageDao().allMessages as ArrayList<Message>
 
     /**
@@ -136,16 +143,20 @@ class MessageRepositoryImpl private constructor(
      *
      * @param chatRoom given chat room
      */
-    override fun clearAllChatRoomMessages(chatRoom: ChatRoom) {
-        database.messageDao().clearChatRoomMessages(chatRoom.id)
+    override suspend fun clearAllChatRoomMessages(chatRoom: ChatRoom) {
+        safeApiCall {
+            database.messageDao().clearChatRoomMessages(chatRoom.id)
+            Result.Success(true)
+        }
     }
 
     /**
      * Call to clear all messages from Room.
      */
     override suspend fun clearAllMessages() {
-        withContext(Dispatchers.IO) {
+        safeApiCall {
             database.messageDao().clear()
+            Result.Success(true)
         }
     }
 
@@ -153,8 +164,9 @@ class MessageRepositoryImpl private constructor(
      * Add given list of messages to Room.
      */
     private suspend fun addMessagesToLocal(messages: List<Message>) {
-        withContext(Dispatchers.IO) {
+        safeApiCall {
             database.messageDao().insertAllMessages(messages)
+            Result.Success(true)
         }
     }
 
@@ -164,14 +176,10 @@ class MessageRepositoryImpl private constructor(
      * @param message given message
      */
     override suspend fun addMessageToFireBase(message: Message): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
-            try {
-                onlineDatabaseStore
-                        .storeMessage(message, userAuthentication.currentUserUid
-                                ?: throw UnsupportedOperationException("User not logged in"))
-            } catch (e: Exception) {
-                Result.Error(e)
-            }
+        return safeApiCall {
+            onlineDatabaseStore
+                    .storeMessage(message, userAuthentication.currentUserUid
+                            ?: throw UnsupportedOperationException("User not logged in"))
         }
     }
 
@@ -181,7 +189,7 @@ class MessageRepositoryImpl private constructor(
      * @param messageList given messages list
      */
     override suspend fun addMessagesToFireBase(messageList: List<Message>): Result<Boolean> {
-        return withContext(Dispatchers.IO) {
+        return safeApiCall {
             val results = mutableListOf<Deferred<Result<Boolean>>>()
             messageList.forEach {
                 results.add(async { addMessageToFireBase(it) })
@@ -204,12 +212,18 @@ class MessageRepositoryImpl private constructor(
      * Call to sync messages from FireStore to Room for the logged in user.
      */
     override suspend fun syncMessagesFromFireStoreToRoom() {
-        onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!)
+        safeApiCall {
+            onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!)
+            Result.Success(true)
+        }
     }
 
     override suspend fun syncMessagesWithCloudAndLocal() {
-        addMessagesToFireBase(allMessagesInLocal)
-        syncMessagesFromFireStoreToRoom()
+        safeApiCall {
+            addMessagesToFireBase(allMessagesInLocal)
+            syncMessagesFromFireStoreToRoom()
+            Result.Success(true)
+        }
     }
 
     private fun getServerEndPoint(chatRoomId: Int): String {
