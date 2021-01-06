@@ -2,11 +2,11 @@ package com.fazemeright.chatbotmetcs622.repositories
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.example.network_library.retrofit.RetrofitApiManager
 import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.database.message.Message.Companion.newMessage
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
-import com.fazemeright.chatbotmetcs622.network.retrofit.RetrofitApiManager
 import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.domain.authentication.UserAuthentication
 import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
@@ -139,7 +139,7 @@ class MessageRepository private constructor(
                 is Result.Error -> TODO()
             }
 
-            apiManager.queryDatabase(newMessage).let {
+            apiManager.queryDatabase(newMessage.msg, getServerEndPoint(newMessage.chatRoomId.toInt())).let {
                 val queryResponseMessage = newMessage(
                         it.data?.responseMsg ?: "Some error occurred",
                         newMessage.receiver,
@@ -301,6 +301,25 @@ class MessageRepository private constructor(
     suspend fun syncMessagesWithCloudAndLocal() {
         addMessagesToFireBase(allMessagesInLocal)
         syncMessagesFromFireStoreToRoom()
+    }
+
+    private fun getServerEndPoint(chatRoomId: Int): String {
+        return when (chatRoomId) {
+            ChatRoom.BRUTE_FORCE_ID -> DatabaseUrl.BRUTE_FORCE
+            ChatRoom.LUCENE_ID -> DatabaseUrl.LUCENE
+            ChatRoom.MONGO_DB_ID -> DatabaseUrl.MONGO_DB
+            else -> DatabaseUrl.MY_SQL
+        }
+    }
+
+    /**
+     * DatabaseUrl module Api sub url.
+     */
+    internal object DatabaseUrl {
+        const val MONGO_DB = "/mongodb"
+        const val LUCENE = "/lucene"
+        const val MY_SQL = "/mysql"
+        const val BRUTE_FORCE = "/bruteforce"
     }
 
     companion object {

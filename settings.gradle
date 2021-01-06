@@ -1,2 +1,3 @@
-include ':app', ':firebase-api-library'
-rootProject.name='ChatBot MET CS622'
+include ':app', ':firebase-api-library', ':network-library'
+rootProject.name = 'ChatBot MET CS622'
+//include ':network-library'
