@@ -3,12 +3,13 @@ package com.fazemeright.chatbotmetcs622.ui.base
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.fazemeright.chatbotmetcs622.repositories.MessageRepository
+import com.fazemeright.chatbotmetcs622.repositories.message.MessageRepository
+import com.fazemeright.chatbotmetcs622.repositories.message.MessageRepositoryImpl
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
     @JvmField
-    protected var messageRepository: MessageRepository = MessageRepository.getInstance(application)
+    protected val messageRepository: MessageRepository = MessageRepositoryImpl.getInstance(application)
 
     /**
      * Run on a UI safe thread.

@@ -1,4 +1,4 @@
-package com.fazemeright.chatbotmetcs622.repositories
+package com.fazemeright.chatbotmetcs622.repositories.message
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -18,12 +18,12 @@ import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.util.*
 
-class MessageRepository private constructor(
+class MessageRepositoryImpl private constructor(
         private val database: ChatBotDatabase,
         private val apiManager: RetrofitApiManager,
         private val userAuthentication: UserAuthentication,
         private val onlineDatabaseStore: DatabaseStore
-) : Repository {
+) : MessageRepository {
     /**
      * Call to insert given message into database with thread safety.
      *
@@ -298,7 +298,7 @@ class MessageRepository private constructor(
         }
     }
 
-    suspend fun syncMessagesWithCloudAndLocal() {
+    override suspend fun syncMessagesWithCloudAndLocal() {
         addMessagesToFireBase(allMessagesInLocal)
         syncMessagesFromFireStoreToRoom()
     }
@@ -323,7 +323,7 @@ class MessageRepository private constructor(
     }
 
     companion object {
-        private var repository: MessageRepository? = null
+        private var repository: MessageRepositoryImpl? = null
 
         /**
          * Call to get instance of MessageRepository with the given context.
@@ -331,11 +331,11 @@ class MessageRepository private constructor(
          * @param context given context
          * @return synchronized call to get Instance of MessageRepository class
          */
-        fun getInstance(context: Context): MessageRepository {
+        fun getInstance(context: Context): MessageRepositoryImpl {
             if (repository == null) {
-                synchronized(MessageRepository::class.java) {
+                synchronized(MessageRepositoryImpl::class.java) {
                     val database = ChatBotDatabase.getInstance(context)
-                    repository = MessageRepository(database, RetrofitApiManager, FireBaseUserAuthentication,
+                    repository = MessageRepositoryImpl(database, RetrofitApiManager, FireBaseUserAuthentication,
                             FireBaseDatabaseStore)
                 }
             }

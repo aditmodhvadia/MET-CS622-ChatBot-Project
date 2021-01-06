@@ -1,4 +1,4 @@
-package com.fazemeright.chatbotmetcs622.repositories
+package com.fazemeright.chatbotmetcs622.repositories.message
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -6,7 +6,7 @@ import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.library.api.result.Result
 
-interface Repository {
+interface MessageRepository {
     /**
      * Get user name of the current user.
      *
@@ -105,4 +105,5 @@ interface Repository {
      *
      */
     suspend fun reloadCurrentUserAuthState(): Result<Boolean>
+    suspend fun syncMessagesWithCloudAndLocal()
 }
