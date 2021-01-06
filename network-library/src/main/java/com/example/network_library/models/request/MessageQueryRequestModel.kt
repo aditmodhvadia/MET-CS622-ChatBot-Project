@@ -1,4 +1,4 @@
-package com.fazemeright.chatbotmetcs622.network.models.request
+package com.example.network_library.models.request
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

@@ -38,5 +38,6 @@
         <item>Did I receive heart rate notifications on </item>
         <item>Did I receive heart rate notifications on </item>
     </string-array>
+    <string name="title_network_library">Network Library</string>
 
 </resources>
