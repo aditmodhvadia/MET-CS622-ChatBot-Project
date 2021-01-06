@@ -24,7 +24,7 @@ class RegistrationActivityViewModel(
      */
     fun registerNewUser(email: String, password: String, firstName: String, lastName: String) {
         viewModelScope.launch {
-            messageRepository
+            userRepository
                     .createNewUserAndStoreDetails(email, password, firstName, lastName).let {
                         userRegisteredMutable.value = it
                     }

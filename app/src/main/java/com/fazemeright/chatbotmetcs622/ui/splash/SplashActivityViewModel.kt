@@ -18,7 +18,7 @@ class SplashActivityViewModel(application: Application) : BaseViewModel(applicat
      */
     private fun observeForUserAuthenticationState() {
         viewModelScope.launch {
-            messageRepository
+            userRepository
                     .reloadCurrentUserAuthState().let {
                         userAuthStateMutable.value = it
                     }

@@ -8,26 +8,6 @@ import com.fazemeright.library.api.result.Result
 
 interface MessageRepository {
     /**
-     * Get user name of the current user.
-     *
-     * @return user name
-     */
-    val userName: String?
-
-    /**
-     * Register new user and store the details.
-     *
-     * @param userEmail              email
-     * @param password               password
-     * @param firstName              first name
-     * @param lastName               last name
-     */
-    suspend fun createNewUserAndStoreDetails(userEmail: String,
-                                             password: String,
-                                             firstName: String,
-                                             lastName: String): Result<Boolean>
-
-    /**
      * Call to get Message with given Message ID.
      *
      * @param messageId given Message ID
@@ -40,7 +20,7 @@ interface MessageRepository {
      *
      * @param message given Message
      */
-    fun deleteMessage(message: Message)
+    suspend fun deleteMessage(message: Message)
 
     /**
      * Get messages from the given chat room.
@@ -68,9 +48,9 @@ interface MessageRepository {
     fun clearAllChatRoomMessages(chatRoom: ChatRoom)
 
     /**
-     * Call to logout user and clear all messages from Room.
+     * Call to clear all messages from Room.
      */
-    fun logOutUser()
+    suspend fun clearAllMessages()
 
     /**
      * Call to add the given message to FireStore.
@@ -91,19 +71,5 @@ interface MessageRepository {
      */
     suspend fun syncMessagesFromFireStoreToRoom()
 
-    /**
-     * Sign in user with email and password.
-     *
-     * @param email    email
-     * @param password password
-     * @param listener task completion listener`
-     */
-    suspend fun signInWithEmailAndPassword(email: String, password: String): Result<Boolean>
-
-    /**
-     * Reload the current user authentication state.
-     *
-     */
-    suspend fun reloadCurrentUserAuthState(): Result<Boolean>
     suspend fun syncMessagesWithCloudAndLocal()
 }
