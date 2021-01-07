@@ -8,8 +8,7 @@ import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.database.message.Message.Companion.newMessage
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.library.api.Storable
-import com.fazemeright.library.api.domain.authentication.UserAuthentication
-import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
+import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication.currentUserUid
 import com.fazemeright.library.api.domain.database.DatabaseStore
 import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.fazemeright.library.api.result.Result
@@ -23,7 +22,6 @@ import java.util.*
 class MessageRepositoryImpl private constructor(
         private val database: ChatBotDatabase,
         private val apiManager: RetrofitApiManager,
-        private val userAuthentication: UserAuthentication,
         private val onlineDatabaseStore: DatabaseStore
 ) : MessageRepository {
     /**
@@ -179,7 +177,7 @@ class MessageRepositoryImpl private constructor(
     override suspend fun addMessageToFireBase(message: Message): Result<Boolean> {
         return safeApiCall {
             onlineDatabaseStore
-                    .storeMessage(message, userAuthentication.currentUserUid
+                    .storeMessage(message, currentUserUid
                             ?: throw UnsupportedOperationException("User not logged in"))
         }
     }
@@ -214,8 +212,10 @@ class MessageRepositoryImpl private constructor(
      */
     override suspend fun syncMessagesFromFireStoreToRoom() {
         safeApiCall {
-            onlineDatabaseStore.getAllMessagesForUser(userAuthentication.currentUserUid!!)
-            Result.Success(true)
+            currentUserUid?.let {
+                onlineDatabaseStore.getAllMessagesForUser(it)
+                Result.Success(true)
+            } ?: throw UnsupportedOperationException("User not logged in")
         }
     }
 
@@ -259,7 +259,7 @@ class MessageRepositoryImpl private constructor(
             if (repository == null) {
                 synchronized(MessageRepositoryImpl::class.java) {
                     val database = ChatBotDatabase.getInstance(context)
-                    repository = MessageRepositoryImpl(database, RetrofitApiManager, FireBaseUserAuthentication,
+                    repository = MessageRepositoryImpl(database, RetrofitApiManager,
                             FireBaseDatabaseStore)
                 }
             }
