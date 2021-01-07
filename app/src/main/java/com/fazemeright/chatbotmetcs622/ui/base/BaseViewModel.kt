@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
     @JvmField
     protected val messageRepository: MessageRepository = MessageRepositoryImpl.getInstance(application)
-    protected val userRepository: UserRepository = UserRepositoryImpl.getInstance(application)
+    protected val userRepository: UserRepository = UserRepositoryImpl.getInstance()
 
     /**
      * Run on a UI safe thread.

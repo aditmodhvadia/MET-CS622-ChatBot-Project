@@ -32,9 +32,7 @@ class UserRepositoryImpl(
                     userEmail,
                     password).await()
 
-            userAuthentication.updateUserProfile {
-                displayName = "$firstName $lastName"
-            }?.await()
+            userAuthentication.updateUserProfile("$firstName $lastName")?.await()
             Result.Success(true)
         }
     }
