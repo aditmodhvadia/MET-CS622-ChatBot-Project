@@ -2,6 +2,7 @@ package com.fazemeright.library.api.domain.authentication
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 
 interface UserAuthentication {
     /**
@@ -26,6 +27,7 @@ interface UserAuthentication {
 
     fun sendPasswordResetEmail(userEmail: String): Task<Void>
     fun reloadCurrentUserAuthState(): Task<Void>?
+    fun updateUserProfile(userProfileUpdate: UserProfileChangeRequest.Builder.() -> Unit): Task<Void>?
 
     /**
      * Determine is user is authenticated or not.

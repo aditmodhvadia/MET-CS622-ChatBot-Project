@@ -7,6 +7,7 @@ import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.database.message.Message.Companion.newMessage
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
+import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.domain.authentication.UserAuthentication
 import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
 import com.fazemeright.library.api.domain.database.DatabaseStore
@@ -263,6 +264,19 @@ class MessageRepositoryImpl private constructor(
                 }
             }
             return repository!!
+        }
+    }
+
+    private fun getStorableFromUserDetails(userEmail: String, firstName: String,
+                                           lastName: String): Storable {
+        return object : Storable {
+            override val hashMap: Map<String, Any>
+                get() = mapOf(
+                        "emailAddress" to userEmail,
+                        "firstName" to firstName,
+                        "lastName" to lastName
+                )
+            override val id: Long = 0
         }
     }
 }

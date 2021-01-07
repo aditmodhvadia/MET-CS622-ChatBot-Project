@@ -6,6 +6,8 @@ import com.fazemeright.library.api.domain.authentication.firebase.authresult.Tas
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 
 object FireBaseUserAuthentication : UserAuthentication {
     override fun signOutUser() {
@@ -45,6 +47,12 @@ object FireBaseUserAuthentication : UserAuthentication {
 
     override fun reloadCurrentUserAuthState(): Task<Void>? {
         return currentUser?.reload()
+    }
+
+    override fun updateUserProfile(userProfileUpdate: UserProfileChangeRequest.Builder.() -> Unit): Task<Void>? {
+        userProfileChangeRequest(userProfileUpdate).let {
+            return currentUser?.updateProfile(it)
+        }
     }
 
     override val currentUserUid: String?
