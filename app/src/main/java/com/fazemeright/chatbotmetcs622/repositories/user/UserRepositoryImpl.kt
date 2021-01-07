@@ -1,23 +1,14 @@
 package com.fazemeright.chatbotmetcs622.repositories.user
 
-import android.content.Context
-import com.example.network_library.retrofit.RetrofitApiManager
-import com.fazemeright.chatbotmetcs622.database.ChatBotDatabase
 import com.fazemeright.chatbotmetcs622.repositories.message.MessageRepositoryImpl
-import com.fazemeright.library.api.Storable
 import com.fazemeright.library.api.domain.authentication.UserAuthentication
 import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAuthentication
-import com.fazemeright.library.api.domain.database.DatabaseStore
-import com.fazemeright.library.api.domain.database.firebase.FireBaseDatabaseStore
 import com.fazemeright.library.api.result.Result
 import com.fazemeright.library.api.result.safeApiCall
 import kotlinx.coroutines.tasks.await
 
 class UserRepositoryImpl(
-        private val database: ChatBotDatabase,
-        private val apiManager: RetrofitApiManager,
-        private val userAuthentication: UserAuthentication,
-        private val onlineDatabaseStore: DatabaseStore
+        private val userAuthentication: UserAuthentication
 ) : UserRepository {
     /**
      * Get user name of the current user.
@@ -35,29 +26,14 @@ class UserRepositoryImpl(
      * @param firstName              first name
      * @param lastName               last name
      */
-    override suspend fun createNewUserAndStoreDetails(userEmail: String, password: String, firstName: String, lastName: String): Result<Boolean> {
+    override suspend fun createNewUser(userEmail: String, password: String, firstName: String, lastName: String): Result<Boolean> {
         return safeApiCall {
             userAuthentication.createNewUserWithEmailPassword(
                     userEmail,
                     password).await()
-            userAuthentication.currentUserUid?.let {
-                onlineDatabaseStore.storeUserData(
-                        it,
-                        getStorableFromUserDetails(userEmail, firstName, lastName))
-            } ?: throw UnsupportedOperationException("User not logged in")
-        }
-    }
 
-    private fun getStorableFromUserDetails(userEmail: String, firstName: String,
-                                           lastName: String): Storable {
-        return object : Storable {
-            override val hashMap: Map<String, Any>
-                get() = mapOf(
-                        "emailAddress" to userEmail,
-                        "firstName" to firstName,
-                        "lastName" to lastName
-                )
-            override val id: Long = 0
+            userAuthentication.updateUserProfile("$firstName $lastName")?.await()
+            Result.Success(true)
         }
     }
 
@@ -105,12 +81,10 @@ class UserRepositoryImpl(
          * @param context given context
          * @return synchronized call to get Instance of MessageRepository class
          */
-        fun getInstance(context: Context): UserRepositoryImpl {
+        fun getInstance(): UserRepositoryImpl {
             if (repository == null) {
                 synchronized(MessageRepositoryImpl::class.java) {
-                    val database = ChatBotDatabase.getInstance(context)
-                    repository = UserRepositoryImpl(database, RetrofitApiManager, FireBaseUserAuthentication,
-                            FireBaseDatabaseStore)
+                    repository = UserRepositoryImpl(FireBaseUserAuthentication)
                 }
             }
             return repository!!

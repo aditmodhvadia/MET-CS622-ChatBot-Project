@@ -26,6 +26,7 @@ interface UserAuthentication {
 
     fun sendPasswordResetEmail(userEmail: String): Task<Void>
     fun reloadCurrentUserAuthState(): Task<Void>?
+    fun updateUserProfile(displayName: String): Task<Void>?
 
     /**
      * Determine is user is authenticated or not.
