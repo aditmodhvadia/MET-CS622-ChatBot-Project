@@ -10,9 +10,8 @@ import com.fazemeright.chatbotmetcs622.repositories.user.UserRepositoryImpl
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
-    @JvmField
-    protected val messageRepository: MessageRepository = MessageRepositoryImpl.getInstance(application)
-    protected val userRepository: UserRepository = UserRepositoryImpl.getInstance()
+    protected val messageRepository: MessageRepository by lazy { MessageRepositoryImpl.getInstance(application) }
+    protected val userRepository: UserRepository by lazy { UserRepositoryImpl.getInstance() }
 
     /**
      * Run on a UI safe thread.

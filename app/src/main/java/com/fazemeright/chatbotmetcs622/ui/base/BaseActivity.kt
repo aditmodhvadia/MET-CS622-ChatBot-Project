@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -28,16 +27,13 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         context = this
         viewModel = ViewModelProvider(this).get(viewModelClass::class.java)
         setContentView(binding.root)
+        initViews()
+        setListeners()
     }
 
     abstract fun inflateLayoutFromBinding(): VB
 
     protected abstract val viewModelClass: VM
-    override fun setContentView(@LayoutRes layoutResId: Int) {
-        super.setContentView(layoutResId)
-        initViews()
-        setListeners()
-    }
 
     /**
      * Call to hide soft keyboard.

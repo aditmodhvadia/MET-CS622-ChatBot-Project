@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
 import com.fazemeright.library.api.result.Result
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SplashActivityViewModel(application: Application) : BaseViewModel(application) {
     private val userAuthStateMutable = MutableLiveData<Result<Boolean>>()
@@ -17,6 +18,7 @@ class SplashActivityViewModel(application: Application) : BaseViewModel(applicat
      * Observe for user authentication state changes and report it.
      */
     private fun observeForUserAuthenticationState() {
+        Timber.d("Auth state observe called")
         viewModelScope.launch {
             userRepository
                     .reloadCurrentUserAuthState().let {

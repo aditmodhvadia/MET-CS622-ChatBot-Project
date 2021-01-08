@@ -3,7 +3,6 @@ package com.fazemeright.chatbotmetcs622.ui.splash
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Handler
-import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
@@ -21,14 +20,15 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class SplashActivity : BaseActivity<SplashActivityViewModel, ActivitySplashBinding>() {
-    override val viewModelClass: SplashActivityViewModel = SplashActivityViewModel(application)
+    override val viewModelClass: SplashActivityViewModel by lazy { SplashActivityViewModel(application) }
 
     override fun initViews() {
         hideSystemUi()
 
         binding.tvAppVersion.text = appVersion
         startAnimationOnViews(R.anim.fade_in)
-        Handler(Looper.getMainLooper()).postDelayed({
+        Handler().postDelayed({
+            Timber.d("Handler called")
             viewModel.userAuthState.observe(this, { result: Result<Boolean> ->
                 when (result) {
                     is Result.Success -> {
