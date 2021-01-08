@@ -56,6 +56,9 @@ object FireBaseUserAuthentication : UserAuthentication {
         }
     }
 
+    override val isUserLoggedIn: Boolean
+        get() = currentUser != null
+
     override val currentUserUid: String?
         get() = if (currentUser != null) {
             currentUser!!.uid

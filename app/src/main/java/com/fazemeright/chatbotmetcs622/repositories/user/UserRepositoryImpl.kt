@@ -6,6 +6,7 @@ import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAu
 import com.fazemeright.library.api.result.Result
 import com.fazemeright.library.api.result.safeApiCall
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 class UserRepositoryImpl(
         private val userAuthentication: UserAuthentication
@@ -66,9 +67,15 @@ class UserRepositoryImpl(
      */
     override suspend fun reloadCurrentUserAuthState(): Result<Boolean> {
         return safeApiCall {
+            Timber.d("User: ${userAuthentication.currentUserEmail}")
             userAuthentication.reloadCurrentUserAuthState()?.await()
-                    ?: throw Exception("User not logged in")
-            Result.Success(true)
+            userAuthentication.isUserLoggedIn.let {
+                if (it) {
+                    Result.Success(it)
+                } else {
+                    Result.Error(Exception("User not logged in"))
+                }
+            }
         }
     }
 

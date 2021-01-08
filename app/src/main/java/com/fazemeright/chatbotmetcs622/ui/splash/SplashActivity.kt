@@ -30,6 +30,7 @@ class SplashActivity : BaseActivity<SplashActivityViewModel, ActivitySplashBindi
         Handler().postDelayed({
             Timber.d("Handler called")
             viewModel.userAuthState.observe(this, { result: Result<Boolean> ->
+                Timber.d("$result")
                 when (result) {
                     is Result.Success -> {
                         setUpWorkManagerRequest()
