@@ -5,7 +5,7 @@ import com.fazemeright.chatbotmetcs622.repositories.user.UserRepositoryImpl
 import com.fazemeright.library.api.result.Result
 import com.fazemeright.library.api.result.safeApiCall
 
-class RegisterUserDomain(
+class RegisterUserUseCase(
         private val userRepository: UserRepository = UserRepositoryImpl.getInstance()
 ) {
     suspend operator fun invoke(email: String, password: String, firstName: String, lastName: String): Result<Boolean> {
