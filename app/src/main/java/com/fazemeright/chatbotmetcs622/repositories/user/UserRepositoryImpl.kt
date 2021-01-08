@@ -27,17 +27,22 @@ class UserRepositoryImpl(
      * @param firstName              first name
      * @param lastName               last name
      */
-    override suspend fun createNewUser(userEmail: String, password: String, firstName: String, lastName: String): Result<Boolean> {
+    override suspend fun createNewUser(userEmail: String, password: String): Result<Boolean> {
         return safeApiCall {
             userAuthentication.createNewUserWithEmailPassword(
                     userEmail,
                     password).await()
 
-            userAuthentication.updateUserProfile("$firstName $lastName")?.await()
             Result.Success(true)
         }
     }
 
+    override suspend fun updateUserDetails(firstName: String, lastName: String): Result<Boolean> {
+        return safeApiCall {
+            userAuthentication.updateUserProfile("$firstName $lastName")?.await()
+            Result.Success(true)
+        }
+    }
 
     /**
      * Call to logout user and clear all messages from Room.

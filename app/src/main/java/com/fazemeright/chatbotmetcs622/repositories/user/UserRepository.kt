@@ -19,9 +19,9 @@ interface UserRepository {
      * @param lastName               last name
      */
     suspend fun createNewUser(userEmail: String,
-                              password: String,
-                              firstName: String,
-                              lastName: String): Result<Boolean>
+                              password: String): Result<Boolean>
+
+    suspend fun updateUserDetails(firstName: String, lastName: String): Result<Boolean>
 
     /**
      * Call to logout user and clear all messages from Room.
