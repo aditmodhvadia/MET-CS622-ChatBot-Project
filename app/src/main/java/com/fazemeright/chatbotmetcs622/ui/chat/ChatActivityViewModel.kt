@@ -6,16 +6,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fazemeright.chatbotmetcs622.database.message.Message
+import com.fazemeright.chatbotmetcs622.domain.ClearAllMessagesForChatRoomUseCase
+import com.fazemeright.chatbotmetcs622.domain.MessagesForChatRoomUseCase
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
 import com.fazemeright.library.api.result.Result
 import kotlinx.coroutines.launch
 
 class ChatActivityViewModel(application: Application) : BaseViewModel(application) {
+    private val messageForChatRoom: MessagesForChatRoomUseCase = MessagesForChatRoomUseCase(application)
+    private val clearAllMessagesForChatRoom: ClearAllMessagesForChatRoomUseCase = ClearAllMessagesForChatRoomUseCase(application)
+
     private val messageSentMutable = MutableLiveData<Result<Boolean>>()
     var messageSent: LiveData<Result<Boolean>> = messageSentMutable
+
     fun getMessagesForChatRoom(chatRoom: ChatRoom): LiveData<List<Message>> {
-        return messageRepository.getMessagesForChatRoom(chatRoom)
+        return messageForChatRoom(chatRoom)
     }
 
     /**
@@ -25,7 +31,7 @@ class ChatActivityViewModel(application: Application) : BaseViewModel(applicatio
      */
     fun clearAllChatRoomMessages(chatRoom: ChatRoom) {
         viewModelScope.launch {
-            messageRepository.clearAllChatRoomMessages(chatRoom)
+            clearAllMessagesForChatRoom(chatRoom)
         }
     }
 
