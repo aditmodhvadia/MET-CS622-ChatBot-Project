@@ -28,6 +28,8 @@ interface UserAuthentication {
     fun reloadCurrentUserAuthState(): Task<Void>?
     fun updateUserProfile(displayName: String): Task<Void>?
 
+    val isUserLoggedIn: Boolean
+
     /**
      * Determine is user is authenticated or not.
      *

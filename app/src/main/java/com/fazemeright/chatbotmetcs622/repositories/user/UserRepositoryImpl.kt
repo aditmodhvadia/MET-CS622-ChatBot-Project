@@ -6,6 +6,7 @@ import com.fazemeright.library.api.domain.authentication.firebase.FireBaseUserAu
 import com.fazemeright.library.api.result.Result
 import com.fazemeright.library.api.result.safeApiCall
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 class UserRepositoryImpl(
         private val userAuthentication: UserAuthentication
@@ -26,17 +27,22 @@ class UserRepositoryImpl(
      * @param firstName              first name
      * @param lastName               last name
      */
-    override suspend fun createNewUser(userEmail: String, password: String, firstName: String, lastName: String): Result<Boolean> {
+    override suspend fun createNewUser(userEmail: String, password: String): Result<Boolean> {
         return safeApiCall {
             userAuthentication.createNewUserWithEmailPassword(
                     userEmail,
                     password).await()
 
-            userAuthentication.updateUserProfile("$firstName $lastName")?.await()
             Result.Success(true)
         }
     }
 
+    override suspend fun updateUserDetails(firstName: String, lastName: String): Result<Boolean> {
+        return safeApiCall {
+            userAuthentication.updateUserProfile("$firstName $lastName")?.await()
+            Result.Success(true)
+        }
+    }
 
     /**
      * Call to logout user and clear all messages from Room.
@@ -66,9 +72,15 @@ class UserRepositoryImpl(
      */
     override suspend fun reloadCurrentUserAuthState(): Result<Boolean> {
         return safeApiCall {
+            Timber.d("User: ${userAuthentication.currentUserEmail}")
             userAuthentication.reloadCurrentUserAuthState()?.await()
-                    ?: throw Exception("User not logged in")
-            Result.Success(true)
+            userAuthentication.isUserLoggedIn.let {
+                if (it) {
+                    Result.Success(it)
+                } else {
+                    Result.Error(Exception("User not logged in"))
+                }
+            }
         }
     }
 

@@ -1,22 +1,16 @@
 package com.fazemeright.chatbotmetcs622.workers
 
+import android.app.Application
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.fazemeright.chatbotmetcs622.repositories.message.MessageRepositoryImpl
+import com.fazemeright.chatbotmetcs622.domain.SyncLocalAndCloudMessagesUseCase
 
 class FireBaseSyncWorker(context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
-    override suspend fun doWork(): Result {
-        syncMessagesWithCloudAndLocal()
-        return Result.success()
-    }
+    private val syncLocalAndCloudMessagesUseCase by lazy { SyncLocalAndCloudMessagesUseCase(context as Application) }
 
-    /**
-     * Sync messages from local to cloud, and then from cloud to local.
-     */
-    private suspend fun syncMessagesWithCloudAndLocal() {
-        MessageRepositoryImpl.getInstance(applicationContext).apply {
-            this.syncMessagesWithCloudAndLocal()
-        }
+    override suspend fun doWork(): Result {
+        syncLocalAndCloudMessagesUseCase()
+        return Result.success()
     }
 }

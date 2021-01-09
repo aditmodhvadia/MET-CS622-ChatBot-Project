@@ -1,15 +1,18 @@
 package com.fazemeright.chatbotmetcs622.ui.registration
 
+import android.annotation.SuppressLint
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.fazemeright.chatbotmetcs622.domain.RegisterUserUseCase
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
 import com.fazemeright.library.api.result.Result
 import kotlinx.coroutines.launch
 
 class RegistrationActivityViewModel(
         application: Application) : BaseViewModel(application) {
+    private val registerUserAndStoreDetails by lazy { RegisterUserUseCase() }
     private val userRegisteredMutable = MutableLiveData<Result<Boolean>>()
 
     var userRegistered: LiveData<Result<Boolean>> = userRegisteredMutable
@@ -22,12 +25,10 @@ class RegistrationActivityViewModel(
      * @param firstName first name
      * @param lastName  last name
      */
+    @SuppressLint("NullSafeMutableLiveData")
     fun registerNewUser(email: String, password: String, firstName: String, lastName: String) {
         viewModelScope.launch {
-            userRepository
-                    .createNewUser(email, password, firstName, lastName).let {
-                        userRegisteredMutable.value = it
-                    }
+            userRegisteredMutable.value = registerUserAndStoreDetails(email, password, firstName, lastName)
         }
     }
 }

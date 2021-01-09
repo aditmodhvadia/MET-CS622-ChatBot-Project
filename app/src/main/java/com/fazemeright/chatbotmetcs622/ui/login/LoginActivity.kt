@@ -12,22 +12,15 @@ import com.fazemeright.chatbotmetcs622.utils.AppUtils.isValidPassword
 import timber.log.Timber
 
 class LoginActivity : BaseActivity<LoginActivityViewModel, ActivityLoginBinding>(), View.OnClickListener {
-    override val viewModelClass: LoginActivityViewModel = LoginActivityViewModel(application)
+    override val viewModelClass: LoginActivityViewModel by lazy { LoginActivityViewModel(application) }
 
     override fun initViews() {
         setUpSupportActionBar()
         viewModel.userSignedIn.observe(this, {
             setLoginSuccessInButton()
-            startMessageSyncWithCloud()
+            viewModel.syncLocalAndCloudData()
             openLandingActivity()
         })
-    }
-
-    /**
-     * Sync messages of the cloud with local.
-     */
-    private fun startMessageSyncWithCloud() {
-        viewModel.syncMessagesWithLocalAndCloud()
     }
 
     /**

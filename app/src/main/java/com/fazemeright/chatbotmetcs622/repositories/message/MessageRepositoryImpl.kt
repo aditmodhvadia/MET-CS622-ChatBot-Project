@@ -94,9 +94,7 @@ class MessageRepositoryImpl private constructor(
      *
      * @param newMessage given new message
      */
-    override suspend fun newMessageSent(
-            context: Context,
-            newMessage: Message): Result<Message> {
+    override suspend fun newMessageSent(newMessage: Message): Result<Message> {
         return safeApiCall {
             when (val msgInsertResult = insertMessageInRoom(newMessage)) {
                 is Result.Success -> async { insertMessageInFireBase(msgInsertResult.data) }
