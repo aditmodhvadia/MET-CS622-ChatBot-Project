@@ -81,10 +81,6 @@ class MessageRepositoryImpl private constructor(
      * @return List of Messages
      */
     override fun getMessagesForChatRoom(chatRoom: ChatRoom): LiveData<List<Message>> {
-        return getChatRoomMessagesFromDatabase(chatRoom)
-    }
-
-    private fun getChatRoomMessagesFromDatabase(chatRoom: ChatRoom): LiveData<List<Message>> {
         return database.messageDao().getAllMessagesFromChatRoomLive(chatRoom.id)
     }
 
@@ -97,7 +93,7 @@ class MessageRepositoryImpl private constructor(
     override suspend fun newMessageSent(newMessage: Message): Result<Message> {
         return safeApiCall {
             when (val msgInsertResult = insertMessageInRoom(newMessage)) {
-                is Result.Success -> async { insertMessageInFireBase(msgInsertResult.data) }
+                is Result.Success -> async { addMessageToFireBase(msgInsertResult.data) }
                 is Result.Error -> TODO()
             }
 
@@ -108,22 +104,11 @@ class MessageRepositoryImpl private constructor(
                         newMessage.sender,
                         newMessage.chatRoomId)
                 when (val newMessageResult = insertMessageInRoom(queryResponseMessage)) {
-                    is Result.Success -> async { insertMessageInFireBase(newMessageResult.data) }
+                    is Result.Success -> async { addMessageToFireBase(newMessageResult.data) }
                     is Result.Error -> TODO()
                 }
                 Result.Success(queryResponseMessage)
             }
-        }
-    }
-
-    /**
-     * Call to insert the given new message to FireStore database.
-     *
-     * @param newMessage given new message
-     */
-    private suspend fun insertMessageInFireBase(newMessage: Message) {
-        safeApiCall {
-            addMessageToFireBase(newMessage)
         }
     }
 
@@ -210,8 +195,13 @@ class MessageRepositoryImpl private constructor(
      */
     override suspend fun syncMessagesFromFireStoreToRoom() {
         safeApiCall {
-            currentUserUid?.let {
-                onlineDatabaseStore.getAllMessagesForUser(it)
+            currentUserUid?.let { uid ->
+                when (val result = onlineDatabaseStore.getAllMessagesForUser(uid)) {
+                    is Result.Success -> {
+                        addMessagesToLocal(result.data.map { Message.fromMap(it) })
+                    }
+                }
+
                 Result.Success(true)
             } ?: throw UnsupportedOperationException("User not logged in")
         }

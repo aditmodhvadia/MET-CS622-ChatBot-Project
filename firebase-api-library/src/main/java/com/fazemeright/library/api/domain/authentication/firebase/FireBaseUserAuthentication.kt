@@ -1,8 +1,6 @@
 package com.fazemeright.library.api.domain.authentication.firebase
 
-import com.fazemeright.library.api.domain.authentication.UserAuthResult
 import com.fazemeright.library.api.domain.authentication.UserAuthentication
-import com.fazemeright.library.api.domain.authentication.firebase.authresult.TaskAuthResultToUserAuthResultAdapter
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -16,14 +14,12 @@ object FireBaseUserAuthentication : UserAuthentication {
     override val isUserVerified: Boolean
         get() = FirebaseAuth.getInstance().currentUser != null
 
-    override fun createNewUserWithEmailPassword(userEmail: String, password: String): Task<UserAuthResult> {
-        val createUserTask = FirebaseAuth.getInstance().createUserWithEmailAndPassword(userEmail, password)
-        return TaskAuthResultToUserAuthResultAdapter(createUserTask)
+    override fun createNewUserWithEmailPassword(userEmail: String, password: String): Task<*> {
+        return FirebaseAuth.getInstance().createUserWithEmailAndPassword(userEmail, password)
     }
 
-    override fun signInWithEmailAndPassword(userEmail: String, password: String): Task<UserAuthResult> {
-        val signInTask = FirebaseAuth.getInstance().signInWithEmailAndPassword(userEmail, password)
-        return TaskAuthResultToUserAuthResultAdapter(signInTask)
+    override fun signInWithEmailAndPassword(userEmail: String, password: String): Task<*> {
+        return FirebaseAuth.getInstance().signInWithEmailAndPassword(userEmail, password)
     }
 
     override fun sendEmailVerification(): Task<Void>? {

@@ -1,6 +1,7 @@
 package com.fazemeright.library.api.domain.authentication
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 
 interface UserAuthentication {
@@ -17,10 +18,10 @@ interface UserAuthentication {
      * @param onTaskCompleteListener task listener
      */
     fun createNewUserWithEmailPassword(
-            userEmail: String, password: String): Task<UserAuthResult>
+            userEmail: String, password: String): Task<*>
 
     fun signInWithEmailAndPassword(
-            userEmail: String, password: String): Task<UserAuthResult>
+            userEmail: String, password: String): Task<*>
 
     fun sendEmailVerification(): Task<Void>?
 

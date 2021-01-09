@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fazemeright.chatbotmetcs622.R
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
-import java.util.*
 
 /**
  * RecyclerView Adapter to show Chat Rooms.
@@ -33,15 +32,17 @@ class ChatSelectionListAdapter constructor(private val listener: ChatListInterac
      *
      * @param dataList list of ChatRoom
      */
-    fun submitDataList(dataList: ArrayList<ChatRoom>) {
+    fun submitDataList(dataList: MutableList<ChatRoom>) {
         submitList(dataList)
     }
 
     /**
      * Chat List Item interaction listener.
      */
-    interface ChatListInteractionListener {
-        fun onChatRoomClicked(chatRoom: ChatRoom)
+    class ChatListInteractionListener(
+            val chatRoomListener: (ChatRoom) -> Unit
+    ) {
+        fun onChatRoomClicked(chatRoom: ChatRoom) = chatRoomListener(chatRoom)
     }
 
     /**
