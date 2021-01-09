@@ -21,7 +21,7 @@ class LandingActivity : BaseActivity<LandingActivityViewModel, ActivityLandingBi
 
     override fun initViews() {
         supportActionBar?.apply {
-            val firstName = viewModel.userName ?: "Adit"
+            val firstName = viewModel.userName() ?: "Adit"
             title = getString(R.string.welcome_title) + " " + firstName
         }
         adapter = ChatSelectionListAdapter(this)

@@ -18,7 +18,7 @@ class LoginActivity : BaseActivity<LoginActivityViewModel, ActivityLoginBinding>
         setUpSupportActionBar()
         viewModel.userSignedIn.observe(this, {
             setLoginSuccessInButton()
-            viewModel.syncMessagesWithLocalAndCloud()
+            viewModel.syncLocalAndCloudData()
             openLandingActivity()
         })
     }
