@@ -174,7 +174,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel, ActivityChatBinding>(),
             return
         }
         newMessage(msg, Message.SENDER_USER, chatRoom.name, chatRoom.id).let {
-            viewModel.sendNewMessage(context, it)
+            viewModel.sendNewMessage(it)
         }
     }
 

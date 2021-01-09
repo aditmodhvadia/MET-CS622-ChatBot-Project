@@ -1,13 +1,13 @@
 package com.fazemeright.chatbotmetcs622.ui.chat
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.domain.ClearAllMessagesForChatRoomUseCase
 import com.fazemeright.chatbotmetcs622.domain.MessagesForChatRoomUseCase
+import com.fazemeright.chatbotmetcs622.domain.SendNewQueryMessageInChatRoomUseCase
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
 import com.fazemeright.chatbotmetcs622.ui.base.BaseViewModel
 import com.fazemeright.library.api.result.Result
@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 class ChatActivityViewModel(application: Application) : BaseViewModel(application) {
     private val messageForChatRoom: MessagesForChatRoomUseCase = MessagesForChatRoomUseCase(application)
     private val clearAllMessagesForChatRoom: ClearAllMessagesForChatRoomUseCase = ClearAllMessagesForChatRoomUseCase(application)
+    private val sendNewQueryMessageInChatRoom: SendNewQueryMessageInChatRoomUseCase = SendNewQueryMessageInChatRoomUseCase(application)
 
     private val messageSentMutable = MutableLiveData<Result<Boolean>>()
     var messageSent: LiveData<Result<Boolean>> = messageSentMutable
@@ -39,12 +40,11 @@ class ChatActivityViewModel(application: Application) : BaseViewModel(applicatio
      * Send new message.
      * Store in local database.
      *
-     * @param context    context
      * @param newMessage message
      */
-    fun sendNewMessage(context: Context, newMessage: Message) {
+    fun sendNewMessage(newMessage: Message) {
         viewModelScope.launch {
-            messageRepository.newMessageSent(context, newMessage)
+            sendNewQueryMessageInChatRoom(newMessage)
             messageSentMutable.value = Result.Success(true)
         }
     }

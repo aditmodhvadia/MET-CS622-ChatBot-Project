@@ -1,6 +1,5 @@
 package com.fazemeright.chatbotmetcs622.repositories.message
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import com.fazemeright.chatbotmetcs622.database.message.Message
 import com.fazemeright.chatbotmetcs622.models.ChatRoom
@@ -36,9 +35,7 @@ interface MessageRepository {
      *
      * @param newMessage given new message
      */
-    suspend fun newMessageSent(
-            context: Context,
-            newMessage: Message): Result<Message>
+    suspend fun newMessageSent(newMessage: Message): Result<Message>
 
     /**
      * Clear all given chat room messages - From Room - From FireStore.
