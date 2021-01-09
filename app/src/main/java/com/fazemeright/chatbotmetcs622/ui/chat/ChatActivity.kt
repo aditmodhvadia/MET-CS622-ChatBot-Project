@@ -20,10 +20,10 @@ import timber.log.Timber
 import java.util.*
 
 class ChatActivity : BaseActivity<ChatActivityViewModel, ActivityChatBinding>(), View.OnClickListener {
-    private lateinit var adapter: ChatListAdapter
+    private lateinit var chatListAdapter: ChatListAdapter
     private lateinit var chatRoom: ChatRoom
     private lateinit var dataFilterChipGroup: ChipGroup
-    override val viewModelClass: ChatActivityViewModel = ChatActivityViewModel(application)
+    override val viewModelClass: ChatActivityViewModel by lazy { ChatActivityViewModel(application) }
 
     override fun initViews() {
         dataFilterChipGroup = findViewById(R.id.dataFilterChipGroup)
@@ -32,11 +32,11 @@ class ChatActivity : BaseActivity<ChatActivityViewModel, ActivityChatBinding>(),
             setUpSupportActionBar()
         }
         setupFilterKeywords(resources.getStringArray(R.array.query_sample_selection))
-        adapter = ChatListAdapter(context)
+        chatListAdapter = ChatListAdapter(context)
         setUpRecyclerView()
         viewModel.getMessagesForChatRoom(chatRoom).observe(this, { messages: List<Message?>? ->
             if (messages != null) {
-                adapter.updateList(messages)
+                chatListAdapter.updateList(messages)
             } else {
                 Timber.e("No messages found")
             }
@@ -45,7 +45,7 @@ class ChatActivity : BaseActivity<ChatActivityViewModel, ActivityChatBinding>(),
             when (result) {
                 is Result.Success -> {
                     binding.etMsg.setText("")
-                    binding.rvChatList.scrollToPosition(adapter.itemCount)
+                    binding.rvChatList.scrollToPosition(chatListAdapter.itemCount)
                 }
                 is Result.Error -> {
                     // TODO: Show error to the user
@@ -62,11 +62,11 @@ class ChatActivity : BaseActivity<ChatActivityViewModel, ActivityChatBinding>(),
      */
     private fun setUpRecyclerView() {
         binding.rvChatList.apply {
-            adapter = adapter
+            adapter = chatListAdapter
             layoutManager = linearLayoutManager
             setHasFixedSize(true)
             // Show user the most recent messages, hence scroll to the top
-            scrollToPosition(adapter!!.itemCount)
+            scrollToPosition(chatListAdapter.itemCount)
         }
     }
 

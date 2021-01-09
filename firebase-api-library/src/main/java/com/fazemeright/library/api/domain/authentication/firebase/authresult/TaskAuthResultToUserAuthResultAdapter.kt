@@ -2,9 +2,7 @@ package com.fazemeright.library.api.domain.authentication.firebase.authresult
 
 import android.app.Activity
 import com.fazemeright.library.api.domain.authentication.UserAuthResult
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.*
 import com.google.firebase.auth.AuthResult
 import java.util.concurrent.Executor
 
@@ -30,7 +28,6 @@ class TaskAuthResultToUserAuthResultAdapter(private val task: Task<AuthResult>) 
     override fun getException() = task.exception
 
     override fun addOnSuccessListener(p0: OnSuccessListener<in UserAuthResult>): Task<UserAuthResult> {
-        successListeners.add(p0)
         return this
     }
 
@@ -54,4 +51,27 @@ class TaskAuthResultToUserAuthResultAdapter(private val task: Task<AuthResult>) 
         return this
     }
 
+    override fun addOnCompleteListener(p0: OnCompleteListener<UserAuthResult>): Task<UserAuthResult> {
+        return this
+    }
+
+    override fun addOnCompleteListener(p0: Executor, p1: OnCompleteListener<UserAuthResult>): Task<UserAuthResult> {
+        return this
+    }
+
+    override fun addOnCompleteListener(p0: Activity, p1: OnCompleteListener<UserAuthResult>): Task<UserAuthResult> {
+        return this
+    }
+
+    override fun addOnCanceledListener(p0: OnCanceledListener): Task<UserAuthResult> {
+        return this
+    }
+
+    override fun addOnCanceledListener(p0: Executor, p1: OnCanceledListener): Task<UserAuthResult> {
+        return this
+    }
+
+    override fun addOnCanceledListener(p0: Activity, p1: OnCanceledListener): Task<UserAuthResult> {
+        return this
+    }
 }

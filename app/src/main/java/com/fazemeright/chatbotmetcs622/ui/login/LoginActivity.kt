@@ -3,12 +3,14 @@ package com.fazemeright.chatbotmetcs622.ui.login
 import android.content.Intent
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.fazemeright.chatbotmetcs622.R
 import com.fazemeright.chatbotmetcs622.databinding.ActivityLoginBinding
 import com.fazemeright.chatbotmetcs622.ui.base.BaseActivity
 import com.fazemeright.chatbotmetcs622.ui.landing.LandingActivity
 import com.fazemeright.chatbotmetcs622.utils.AppUtils.isValidEmail
 import com.fazemeright.chatbotmetcs622.utils.AppUtils.isValidPassword
+import com.fazemeright.library.api.result.Result
 import timber.log.Timber
 
 class LoginActivity : BaseActivity<LoginActivityViewModel, ActivityLoginBinding>(), View.OnClickListener {
@@ -17,10 +19,23 @@ class LoginActivity : BaseActivity<LoginActivityViewModel, ActivityLoginBinding>
     override fun initViews() {
         setUpSupportActionBar()
         viewModel.userSignedIn.observe(this, {
-            setLoginSuccessInButton()
-            viewModel.syncLocalAndCloudData()
-            openLandingActivity()
+            when (it) {
+                is Result.Success -> {
+                    if (it.data) {
+                        setLoginSuccessInButton()
+                        viewModel.syncLocalAndCloudData()
+                        openLandingActivity()
+                    } else {
+                        incorrectCredentials(Result.Error(msg = "Incorrect credentials"))
+                    }
+                }
+                is Result.Error -> incorrectCredentials(it)
+            }
         })
+    }
+
+    private fun incorrectCredentials(error: Result.Error) {
+        Toast.makeText(this, "Incorrect credentials", Toast.LENGTH_SHORT).show()
     }
 
     /**

@@ -33,7 +33,6 @@ interface UserRepository {
      *
      * @param email    email
      * @param password password
-     * @param listener task completion listener`
      */
     suspend fun signInWithEmailAndPassword(email: String, password: String): Result<Boolean>
 

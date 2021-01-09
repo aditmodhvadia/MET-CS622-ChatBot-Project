@@ -10,6 +10,7 @@ suspend fun <T : Any> safeApiCall(call: suspend CoroutineScope.() -> Result<T>):
             call()
         }
     } catch (e: Exception) {
+        e.printStackTrace()
         Result.Error(e)
     }
 }
