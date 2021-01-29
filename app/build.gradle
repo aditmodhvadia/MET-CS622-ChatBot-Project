@@ -76,7 +76,7 @@ dependencies {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     // Kotlin + coroutines
-    implementation "androidx.work:work-runtime-ktx:2.4.0"
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
     implementation 'com.google.guava:guava:30.1-android'
 
     implementation project(':firebase-api-library')
