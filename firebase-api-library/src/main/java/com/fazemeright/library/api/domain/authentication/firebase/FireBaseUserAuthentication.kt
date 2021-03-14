@@ -4,6 +4,7 @@ import com.fazemeright.library.api.domain.authentication.UserAuthentication
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 
 object FireBaseUserAuthentication : UserAuthentication {
@@ -37,7 +38,7 @@ object FireBaseUserAuthentication : UserAuthentication {
 
     override fun sendPasswordResetEmail(userEmail: String): Task<Void> {
         return FirebaseAuth.getInstance()
-                .sendPasswordResetEmail(userEmail)
+            .sendPasswordResetEmail(userEmail)
     }
 
     override fun reloadCurrentUserAuthState(): Task<Void>? {
@@ -45,11 +46,9 @@ object FireBaseUserAuthentication : UserAuthentication {
     }
 
     override fun updateUserProfile(displayName: String): Task<Void>? {
-        userProfileChangeRequest {
-            setDisplayName(displayName)
-        }.let {
-            return currentUser?.updateProfile(it)
-        }
+        return currentUser?.updateProfile(
+            UserProfileChangeRequest.Builder().setDisplayName(displayName).build()
+        )
     }
 
     override val isUserLoggedIn: Boolean
